@@ -1,0 +1,31 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: url('../img/bg_auth.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+}
+.card {
+    max-width: 400px;
+    width: 100%;
+    font-family: "Poppins", sans-serif;
+}
+
+.card-title {
+    font-weight: 700;
+    color: #444;
+    font-family: "Montserrat", sans-serif;
+}
+
+.fpass {
+    text-decoration: none;
+    float: right;
+}
+
+.fpass:hover {
+    text-decoration: #2e6da4;
+}
