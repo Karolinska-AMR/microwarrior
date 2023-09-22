@@ -1,0 +1,113 @@
+body {
+  color: #16365f;
+  font-family: "Poppins", sans-serif;
+  background-color: #f7f8fb;
+}
+.scroll-to-top {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  display: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  text-align: center;
+  color: #fff;
+  background: rgba(90, 92, 105, 0.5);
+  line-height: 46px;
+}
+.navbar {
+  background: #236bd2 !important;
+  height: 50px;
+  z-index: 997;
+  padding: 5px 0;
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  transition: all 0.5s;
+}
+
+.navbar-brand,
+.nav-link {
+  color: gainsboro;
+}
+.nav-link:hover,
+.nav-link:active,
+.nav-link:focus,
+.nav-link.active {
+  color: white !important;
+  font-weight: 700;
+}
+.navbar-collapse {
+  background: #236bd2 !important;
+  opacity: 0.9;
+}
+.masthead {
+  height: 100vh;
+  min-height: 400px;
+  background-image: url("../img/bg_home.jpeg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-bottom: 5px solid #2e95d5;
+  margin-top: 45px;
+  padding-bottom: 10px;
+}
+
+.masthead h1 {
+  margin-bottom: 10px;
+  font-size: 35px;
+  font-weight: 700;
+}
+.blur {
+  backdrop-filter: blur(3px);
+}
+section {
+  margin-top: 5px;
+}
+.section-bg {
+  background-color: #b3d7e51c;
+}
+.section-header h3 {
+  font-size: 26px;
+  text-align: center;
+  font-weight: 700;
+  position: relative;
+}
+.section-header h4 {
+  font-size: 20px;
+  text-align: center;
+  font-weight: 700;
+  position: relative;
+}
+
+#feed {
+  padding: 30px 0;
+}
+#feed .container {
+  height: 70vh;
+  min-height: 400px;
+}
+#feed .card {
+  background-color: rgba(245, 245, 245, 0.3);
+}
+
+#feed .card:hover {
+  -webkit-transform: scale(1.05);
+  transform: scale(1.05);
+}
+#feed .card-title a {
+  color: #444;
+  font-family: sans-serif;
+}
+#feed .card-title a:hover,
+a:active,
+a:focus {
+  color: #2e95d5;
+}
+#updates .card {
+  background-color: rgba(245, 245, 245, 0.3);
+}
+#about-us .card {
+  background-color: rgba(245, 245, 245, 0.3);
+}

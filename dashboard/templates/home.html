@@ -1,0 +1,224 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Montserrat|Roboto|Open+Sans|Poppins"
+    />
+  <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="{% static "css/home.css" %}" />
+    <title>Spear-MTB</title>
+  </head>
+  <body id = "page-top" class="sidebar-toggled">
+    <nav class="navbar navbar-expand-md fixed-top">
+      <div class="container-fluid">
+        <a class="navbar-brand">
+          <img
+            src="{% static "img/logo.svg" %}"
+            alt="Logo"
+            width="50"
+            height="30"
+            class="d-inline-block align-text-top"
+          />
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarCollapse"
+          aria-controls="navbarCollapse"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+          <ul class="navbar-nav me-auto mb-2 mb-md-0">
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" aria-disabled="true" href="#feed">News</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" aria-disabled="true" href="#updates"
+                >Updates</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" aria-disabled="true" href="#about-us"
+                >About us</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" aria-disabled="true" href="#footer"
+                >Contact us</a
+              >
+            </li>
+          </ul>
+          <a class="nav-link" aria-disabled="true" href="./login.html">Login</a>
+        </div>
+      </div>
+    </nav>
+    <header class="masthead">
+      <div class="container h-100">
+        <div class="row h-50 align-items-center">
+          <div class="col-12 text-center blur">
+            <h1>Fighting Antimicrobial Resistance at the Genomic Frontier</h1>
+            <h3>Your Portal to Genomic Solutions Against Tuberculosis</h3>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section id="feed">
+      <header class="row section-header mb-3">
+        <h3>Stay Informed: Tuberculosis Developments</h3>
+      </header>
+      <div class="container overflow-auto">
+        <div class="row">
+          <div class="col-md-6">
+            <header class="row section-header">
+              <h4>NEWS</h4>
+              <div id="news-feed" class="card-columns"></div>
+            </header>
+          </div>
+          <div id="ms-feed" class="col-md-6">
+            <header class="row section-header">
+              <h4>PUBLICATIONS</h4>
+            </header>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="updates" class="section-bg">
+      <div class="container">
+        <header class="section-header mt-3">
+          <h3>What's New:</h3>
+        </header>
+        <div class="row">
+          <div class="col-12">
+            <div class="card mb-3 mt-3 border-0">
+              <div class="row no-gutters">
+                <div class="col-md-4">
+                  <img src="{% static "img/updates.jpeg" %}" class="card-img" />
+                </div>
+                <div class="col-md-8">
+                  <div class="card-body overflow-auto">
+                    <p class="card-text">
+                      Stay tuned for the latest updates and news regarding the
+                      pipeline, which will be shared right here!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about-us">
+      <div class="container">
+        <header class="section-header">
+          <h3>About us</h3>
+        </header>
+        <div class="row">
+          <div class="col-12">
+            <div class="card mb-3 mt-3 border-0">
+              <div class="row no-gutters">
+                <div class="col-md-8">
+                  <div class="card-body overflow-auto">
+                    <p class="card-text">
+                      Welcome to our project dedicated to combating
+                      drug-resistant tuberculosis (TB) through innovative
+                      research. At KI, we are deeply committed to addressing one
+                      of the most pressing global health challenges of our time.
+                      Our multidisciplinary team of experts has harnessed the
+                      power of data and cutting-edge technology to develop a
+                      solution that aims to predict drug-resistant TB.
+                    </p>
+                    <p class="card-text">
+                      Our mission is centered on mitigating the impact of
+                      drug-resistant TB on individuals, communities, and
+                      healthcare systems. We are striving for a world where TB
+                      is no longer a threat, and in achieving this vision, our
+                      project plays a pivotal role. It offers key features, such
+                      as the early identification of drug-resistant TB to
+                      expedite treatment, informing treatment strategies for
+                      more effective resistance management, and ongoing research
+                      and development efforts aimed at enhancing our predictive
+                      algorithms.
+                    </p>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <img src="{% static "img/lab.jpeg" %}" class="card-img" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="footer" class="section-bg">
+      <div class="container">
+        <footer
+          class="d-flex flex-wrap justify-content-between align-items-center py-0 my-1"
+        >
+          <div class="col-md-4 d-flex align-items-center">
+            <a
+              href="#"
+              class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1"
+            >
+            </a>
+            <span class="mb-3 mb-md-0 text-body-secondary"
+              >&copy; 2023 Company, Inc</span
+            >
+          </div>
+        </footer>
+      </div>
+    </section>
+
+    <a class="scroll-to-top rounded" href="#page-top">
+      <i class="fa fa-chevron-up"></i>
+    </a>
+
+    <div id="news-template" class="card mb-2 border-0" style="display: none">
+      <div class="card-body">
+        <h5 class="card-title fw-bold">
+          <a href="" target="_blank"></a>
+        </h5>
+        <p class="card-text mb-1 lh-sm dscr"></p>
+        <p class="card-text dt">
+          <small class="text-muted"></small>
+        </p>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="{% static "js/jquery.easing.js" %}"></script>
+    <script src="{% static "js/style.js" %}"></script>
+    <script src="{% static "js/hm.js" %}"></script>
+
+  </body>
+</html>
