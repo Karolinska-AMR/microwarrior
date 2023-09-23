@@ -29,3 +29,10 @@ body {
 .fpass:hover {
     text-decoration: #2e6da4;
 }
+
+#chpass-form {
+    font-size: 1rem;
+}
+#chpass-form .errorlist{
+    color:#d9534f
+}
