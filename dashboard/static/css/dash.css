@@ -314,10 +314,8 @@ body {
         animation-name: growIn;
         -webkit-animation-duration: 200ms;
         animation-duration: 200ms;
-        -webkit-animation-timing-function: transform cubic-bezier(0.18, 1.25, 0.4, 1),
-        opacity cubic-bezier(0, 1, 0.4, 1);
-        animation-timing-function: transform cubic-bezier(0.18, 1.25, 0.4, 1),
-        opacity cubic-bezier(0, 1, 0.4, 1);
+        -webkit-animation-timing-function: transform cubic-bezier(0.18, 1.25, 0.4, 1),opacity cubic-bezier(0, 1, 0.4, 1);
+        animation-timing-function: transform cubic-bezier(0.18, 1.25, 0.4, 1),opacity cubic-bezier(0, 1, 0.4, 1);
     }
 
     .sidebar.toggled .nav-item .collapse .collapse-inner {
@@ -524,8 +522,8 @@ body {
 }
 
 .section-header {
-    font-size: 1;
-    font-family: "Poppins";
+    font-size: 1rem;
+    font-family: "Poppins", sans-serif;
     color: #16365f;
     font-weight: 700;
 }
@@ -544,4 +542,29 @@ body {
     color: #444;
     font-size: 1rem;
     text-align: center;
+}
+#import-card .message{
+     font-size: 0.85rem;
+}
+.m-fadeOut {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s linear 1000ms, opacity 1000ms;
+}
+.m-fadeIn {
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s linear 0s, opacity 500ms;
+}
+.m-hide {
+  display: none;
+}
+.m-show {
+  display: block;
+}
+.active-progress{
+  background:#236bd2 ;
+}
+#import-card .progress-sm{
+    height: 5px!important;
 }

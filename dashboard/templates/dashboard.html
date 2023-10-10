@@ -197,100 +197,134 @@
                                 </h5>
                             </div>
                             <div class="card-body">
-                                <div class="row bg-light-subtle">
-                                    <nav class="navbar navbar-expand py-0 my-0">
-                                        <ul class="navbar-nav me-auto mb-md-0">
-                                            <li class="nav-item">
-                                                <a
-                                                        class="nav-link pr-0"
-                                                        data-action="add-folder"
-                                                        href="#"
-                                                        title="Add folder"
-                                                >
-                                                    <i class="fa fa-fw fa-folder-open"></i>
-                                                    Add Folder
-                                                </a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a
-                                                        class="nav-link pr-0"
-                                                        data-action="add-files"
-                                                        href="#"
-                                                        title="Add files"
-                                                >
-                                                    <i class="fa fa-fw fa-file-alt"></i>
-                                                    Add Files
-                                                </a>
-                                            </li>
-                                            <div class="vr"></div>
-                                            <li class="nav-item">
-                                                <a
-                                                        class="nav-link"
-                                                        data-action="removeAll"
-                                                        href="#"
-                                                        title="Delete all"
-                                                >
-                                                    <i class="fa fa-fw fa-trash"></i>
-                                                    Delete All
-                                                </a>
-                                            </li>
-                                        </ul>
-                                        <ul class="navbar-nav ml-auto mb-md-0">
-                                            <li class="nav-item">
-                                                <a
-                                                        class="nav-link pr-0"
-                                                        data-action="submit"
-                                                        href="#"
-                                                        title="submit"
-                                                >
-                                                    <i class="fa fa-fw fa-paper-plane"></i>
-                                                    Submit
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </nav>
-                                </div>
-                                <div class="row my-1">
-                                    <div class="col-12">
-                                        <table
-                                                id="import-tbl"
-                                                class="table table-sm text-sm"
-                                                data-toggle="table"
-                                                data-icons-prefix="fa"
-                                                data-icons="icons"
-                                                data-pagination="true"
-                                                data-sortable="true"
-                                        >
-                                            <thead>
-                                            <tr>
-                                                <th data-field="rm"></th>
-                                                <th data-field="sample" data-sortable="true">
-                                                    Sample
-                                                </th>
-                                                <th
-                                                        data-field="collection_date"
-                                                        data-sortable="true"
-                                                        data-sorter="custom_sorter"
-                                                >
-                                                    Collection date
-                                                </th>
-                                                <th data-field="file1">Forward</th>
-                                                <th data-field="file2">Reverse</th>
-                                            </tr>
-                                            </thead>
-                                        </table>
+                                <div id="import-panel" class="m-fadeIn">
+                                    <div class="row bg-light-subtle">
+                                        <nav class="navbar navbar-expand py-0 my-0">
+                                            <ul class="navbar-nav me-auto mb-md-0">
+                                                <li class="nav-item">
+                                                    <a
+                                                            class="nav-link pr-0"
+                                                            data-action="add-folder"
+                                                            href="#"
+                                                            title="Add folder"
+                                                    >
+                                                        <i class="fa fa-fw fa-folder-open"></i>
+                                                        Add Folder
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a
+                                                            class="nav-link pr-0"
+                                                            data-action="add-files"
+                                                            href="#"
+                                                            title="Add files"
+                                                    >
+                                                        <i class="fa fa-fw fa-file-alt"></i>
+                                                        Add Files
+                                                    </a>
+                                                </li>
+                                                <div class="vr"></div>
+                                                <li class="nav-item">
+                                                    <a
+                                                            class="nav-link"
+                                                            data-action="removeAll"
+                                                            href="#"
+                                                            title="Delete all"
+                                                    >
+                                                        <i class="fa fa-fw fa-trash"></i>
+                                                        Delete All
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                            <ul class="navbar-nav ml-auto mb-md-0">
+                                                <li class="nav-item">
+                                                    <form>
+                                                        {% csrf_token %}
+                                                        <a type="submit"
+                                                           class="nav-link pr-0"
+                                                           id="submit-jobs"
+                                                           data-action="submit"
+                                                           href="#"
+                                                           title="submit"
+                                                        >
+                                                            <i class="fa fa-fw fa-paper-plane"></i>
+                                                            Submit
+                                                        </a>
+                                                        <input type="file" id="choose-dir" style="display: none"/>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                    <div class="row my-1">
+                                        <div class="col-12">
+                                            <table
+                                                    id="import-tbl"
+                                                    class="table table-sm text-sm"
+                                                    data-toggle="table"
+                                                    data-icons-prefix="fa"
+                                                    data-icons="icons"
+                                                    data-unique-id="sample"
+                                                    data-pagination="true"
+                                                    data-sortable="true"
+                                            >
+                                                <thead>
+                                                <tr>
+                                                    <th data-field="rm"></th>
+                                                    <th data-field="sample" data-sortable="true">
+                                                        Sample
+                                                    </th>
+                                                    <th
+                                                            data-field="collection_date"
+                                                            data-sortable="true"
+                                                            data-sorter="custom_sorter"
+                                                    >
+                                                        Collection date
+                                                    </th>
+                                                    <th data-field="file1">Forward</th>
+                                                    <th data-field="file2">Reverse</th>
+                                                </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div id='upload-status' class="d-flex flex-row justify-content-start my-2">
+                                            <div id="import-table-msg"
+                                                 class="message text-center mx-2">
+
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div
-                                            id="import-table-msg"
-                                            class="pt-2"
-                                            style="display: none"
-                                    ></div>
+                                <div id="upload-panel" class="m-hide m-fadeOut table-responsive">
+                                    <div class="row">
+                                        <div class="d-flex justify-content-center">
+                                            <table
+                                                    id="upload-tbl"
+                                                    class="table table-sm table-borderless text-sm"
+                                                    data-toggle="table"
+                                                    data-icons-prefix="fa"
+                                                    data-icons="icons"
+                                                    data-height="400"
+                                                    data-virtual-scroll="true"
+                                                    data-unique-id="filename">
+                                                <thead>
+                                                <tr>
+
+                                                    <th data-field="filename" data-width="400">
+                                                        File Name
+                                                    </th>
+                                                    <th data-field="progress" data-width="600">Status</th>
+                                                </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <input type="file" id="choose-dir" style="display: none"/>
+
                     </div>
                 </div>
                 <div class="row mb-3">

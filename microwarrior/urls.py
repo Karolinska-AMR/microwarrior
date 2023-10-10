@@ -23,4 +23,6 @@ urlpatterns = [
     path('auth', include('django.contrib.auth.urls')),
     path('auth', include('users.urls')),
     path('',include('dashboard.urls')),
+    path('iom/', include('iomanager.urls')),
+
 ]
