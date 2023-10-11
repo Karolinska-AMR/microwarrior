@@ -6,7 +6,7 @@ $(document).ready(function () {
 
     class Uploader {
         constructor(files) {
-            this.id = upload_handlers.generateRandomFolderName(8)
+            this.ticket = upload_handlers.generateRandomFolderName()
             this.files = files;
             this.max_length = 10 * 1024 * 1024; // 10 mb
             this.attempts = 5;
@@ -20,10 +20,13 @@ $(document).ready(function () {
         initFileUpload() {
             if (this.files.length > 0) {
                 let f = this.files[this.files.length - 1]
-                console.log(f)
                 this.file = f.file;
+
+                // load meta-data
                 this.sample = f.sample;
                 this.read = f.read;
+                this.cdate = f.cdate;
+
                 timer(1000).then(r => {
                     setup_progressbar(this.file.name);
                     this.upload_file(0, null);
@@ -53,7 +56,9 @@ $(document).ready(function () {
             var nextChunk = start + this.max_length + 1;
             var currentChunk = this.file.slice(start, nextChunk);
             var uploadedChunk = start + currentChunk.size
-            var error = Math.random() > 0.98;
+
+            //should be deleted, will keep it for future verification
+            var error = false;//Math.random() > 0.98;
 
             if (uploadedChunk >= this.file.size) {
                 end = 1;
@@ -61,10 +66,14 @@ $(document).ready(function () {
                 end = 0;
             }
             formData.append('file', currentChunk);
-            formData.append('filename', this.file.name);
+            formData.append('sample', this.sample);
+            formData.append('cdate', this.cdate);
+            formData.append('read', this.read);
             formData.append('end', end);
             formData.append('existingPath', existingPath);
             formData.append('nextSlice', nextChunk);
+
+
             formData.append('error', error);
 
             $.ajaxSetup({
@@ -93,7 +102,7 @@ $(document).ready(function () {
                     });
                     return xhr;
                 },
-                url: '/iom/upload/' + this.id,
+                url: '/iom/upload/' + this.ticket,
                 type: 'POST',
                 dataType: 'json',
                 cache: false,
@@ -119,11 +128,11 @@ $(document).ready(function () {
                         // upload complete
                         self.reset_attempts();
                         if (self.uploaded[self.sample] === undefined) {
-                            self.uploaded[self.sample] = {r: false, f: false}
+                            self.uploaded[self.sample] = {"1": false, "2": false}
                         }
                         self.uploaded[self.sample][self.read] = true;
-                        console.log(self.uploaded)
-                        if (self.uploaded[self.sample]["r"] && self.uploaded[self.sample]["f"]) {
+
+                        if (self.uploaded[self.sample]["1"] && self.uploaded[self.sample]["2"]) {
                             //remove record in the table
                             const import_table = document.querySelector("#import-tbl");
                             $(import_table).bootstrapTable('removeByUniqueId', self.sample);
@@ -530,13 +539,13 @@ $(document).ready(function () {
                 event.preventDefault();
 
                 let files = upload_handlers.get_uploading_files();
-                if(files.length>0) {
+                if (files.length > 0) {
                     prepare_upload(files)
                     let uploader = new Uploader(files)
                     uploader.upload();
-                }
-                else{
-                    import_handlers.show_msg("Kindly begin by importing Illumina files in a pair-end format ({*_1/*_2}.fastq.gz).","danger",1e4)
+                } else {
+                    import_handlers.show_msg("Kindly begin by importing Illumina files " +
+                        "in the pair-end format ({*_1/*_2}.fastq.gz).", "danger", 1e4)
                 }
 
             });
@@ -546,23 +555,34 @@ $(document).ready(function () {
 
             let files = []
             data.forEach((row) => {
-                if(!DUPLICATE_SAMPLES.includes(row.sample)) {
-                    files.unshift({file: row.fobj1, sample: row.sample, read: 'f'})
-                    files.unshift({file: row.fobj2, sample: row.sample, read: 'r'})
+                if (!DUPLICATE_SAMPLES.includes(row.sample)) {
+                    files.unshift({file: row.fobj1, sample: row.sample, cdate:row.v_collection_date, read: '1'})
+                    files.unshift({file: row.fobj2, sample: row.sample, cdate:row.v_collection_date,read: '2'})
                 }
             });
             return files;
         },
-        generateRandomFolderName: (length) => {
-            const charset = "abcdefghijklmnopqrstuvwxyz0123456789";
-            let folderName = "";
+        generateRandomFolderName: (length=4) => {
+            // Get the current date and time
+            const now = new Date();
 
+            // Extract year, month, day, hour, and minute
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hour = String(now.getHours()).padStart(2, '0');
+            const minute = String(now.getMinutes()).padStart(2, '0');
+
+            // Create the folder name
+            let now_str = `${year}${month}${day}${hour}${minute}`;
+            const charset = "abcdefghijklmnopqrstuvwxyz0123456789";
+            let rand_str = "";
             for (let i = 0; i < length; i++) {
                 const randomIndex = Math.floor(Math.random() * charset.length);
-                folderName += charset.charAt(randomIndex);
+                rand_str += charset.charAt(randomIndex);
             }
 
-            return "__" + folderName;
+            return `${now_str}${rand_str}`;
         }
     };
 
@@ -638,6 +658,5 @@ $(document).ready(function () {
 // Function calls
     import_handlers.connect_events();
     upload_handlers.connect_events();
-
 
 });

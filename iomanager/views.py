@@ -6,50 +6,62 @@ from django.contrib.auth.decorators import login_required
 
 
 @login_required
-def upload(request, id):
+def upload(request, ticket):
     if request.method == 'POST':
-        fdir = f"media/{id}/"
+        fdir = f"media/uploaded/{ticket}/"
         if not os.path.isdir(fdir):
-            os.mkdir(fdir)
+            os.makedirs(fdir,exist_ok=True)
 
         file = request.FILES['file'].read()
-        fileName = request.POST['filename']
+        sample = request.POST['sample']
+        collection_date = request.POST['cdate']
         existingPath = request.POST['existingPath']
         end = request.POST['end']
+        read = request.POST['read']
         nextSlice = request.POST['nextSlice']
 
-
-        if file == "" or fileName == "" or existingPath == "" or end == "" or nextSlice == "":
+        if file == "" or sample == "" or existingPath == "" or end == "" or nextSlice == "":
             res = JsonResponse({'data': 'Invalid Request'})
             return res
         else:
+            fileName = f"{sample}_{read}.fastq.gz"
+
             if existingPath == 'null':
+
                 path = fdir + fileName
+                existingPath = f"{ticket}/{fileName}"
+
                 with open(path, 'wb+') as destination:
                     destination.write(file)
-                FileFolder = File()
-                FileFolder.existingPath = f"{id}/{fileName}"
-                FileFolder.eof = end
-                FileFolder.name = fileName
-                FileFolder.save()
+                new_file = File()
+                new_file.existingPath = existingPath
+                new_file.eof = end
+                new_file.sample = sample
+                new_file.collection_date = collection_date
+                new_file.ticket = ticket
+
+                new_file.save()
                 if int(end):
-                    res = JsonResponse({'data': 'Uploaded Successfully', 'existingPath': fileName})
+                    res = JsonResponse({'data': 'Uploaded Successfully', 'existingPath': existingPath})
                 else:
-                    res = JsonResponse({'existingPath': fileName})
+                    res = JsonResponse({'existingPath': existingPath})
                 return res
 
             else:
+                # should be deleted Just for creating error in uploading files
                 if request.POST['error'] == 'true':
-                    __undo_copy(f"{id}/{fileName}")
+                    __undo_copy(f"{ticket}/{fileName}")
                     return JsonResponse({'status': 'Reverting!'}, status=500)
+                #-------------
+
                 path = fdir + fileName
                 try:
-                    model_id = File.objects.get(existingPath=f"{id}/{fileName}")
+                    model_id = File.objects.get(existingPath=existingPath)
                 except File.MultipleObjectsReturned:
-                    __undo_copy(f"{id}/{fileName}")
+                    __undo_copy(existingPath)
                     return JsonResponse({'status': 'Reverting!'}, status=500)
 
-                if model_id.name == fileName:
+                if model_id.existingPath == existingPath:
                     if not model_id.eof:
                         with open(path, 'ab+') as destination:
                             destination.write(file)
@@ -62,16 +74,14 @@ def upload(request, id):
                             res = JsonResponse({'existingPath': model_id.existingPath})
                         return res
                     else:
-                        res = JsonResponse({'data': 'EOF found. Invalid request'},status=400)
+                        res = JsonResponse({'data': 'EOF found. Invalid request'}, status=400)
                         return res
                 else:
-                    res = JsonResponse({'data': 'No such file exists in the existingPath'},status=400)
+                    res = JsonResponse({'data': 'No such file exists in the existingPath'}, status=400)
                     return res
     return redirect('dashboard')
 
 
-
 def __undo_copy(filename):
     File.objects.filter(existingPath=filename).delete()
-    os.remove(f"media/{filename}")
-
+    os.remove(f"media/uploaded/{filename}")
