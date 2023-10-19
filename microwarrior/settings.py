@@ -27,7 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672//"
+CELERY_RESULT_BACKEND = "db+sqlite:///tasks_q.sqlite3"
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     'samplesbrowser',
     'dashboard',
     'iomanager',
+    'flowrunner',
 ]
 
 MIDDLEWARE = [

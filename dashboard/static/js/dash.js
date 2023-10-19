@@ -11,6 +11,7 @@ $(document).ready(function () {
             this.max_length = 10 * 1024 * 1024; // 10 mb
             this.attempts = 5;
             this.uploaded = {};
+            this.uploaded_samples_count = 0;
         }
 
         upload() {
@@ -36,8 +37,12 @@ $(document).ready(function () {
                 toggle_panel('import')
                 this.reset_attempts()
 
-                //submitting the job
-                //*******
+
+                if (this.uploaded_samples_count > 0) {
+                    //submitting the job
+                    //*******
+                    this.submit_jobs()
+                }
             }
 
 
@@ -133,6 +138,7 @@ $(document).ready(function () {
                         self.uploaded[self.sample][self.read] = true;
 
                         if (self.uploaded[self.sample]["1"] && self.uploaded[self.sample]["2"]) {
+                            self.uploaded_samples_count += 1;
                             //remove record in the table
                             const import_table = document.querySelector("#import-tbl");
                             $(import_table).bootstrapTable('removeByUniqueId', self.sample);
@@ -147,6 +153,29 @@ $(document).ready(function () {
                 }
             });
         };
+
+        submit_jobs() {
+
+        $.ajaxSetup({
+            // make sure to send the header
+            headers: {
+                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+            }
+        });
+        $.ajax({
+            type: 'POST',
+            url:'enqjob' ,
+            data: {ticket: this.ticket},
+            success: function (res) {
+                alert(res)
+            },
+            error: function (xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        })
+
+
+    }
     }
 
     const import_handlers = {
@@ -418,7 +447,6 @@ $(document).ready(function () {
                 files_js.splice(rm_idx, 1);
             }
 
-            console.log(out_json)
             import_handlers.fill(out_json);
         },
         get_date_cell: (id, type) => {
@@ -556,13 +584,13 @@ $(document).ready(function () {
             let files = []
             data.forEach((row) => {
                 if (!DUPLICATE_SAMPLES.includes(row.sample)) {
-                    files.unshift({file: row.fobj1, sample: row.sample, cdate:row.v_collection_date, read: '1'})
-                    files.unshift({file: row.fobj2, sample: row.sample, cdate:row.v_collection_date,read: '2'})
+                    files.unshift({file: row.fobj1, sample: row.sample, cdate: row.v_collection_date, read: '1'})
+                    files.unshift({file: row.fobj2, sample: row.sample, cdate: row.v_collection_date, read: '2'})
                 }
             });
             return files;
         },
-        generateRandomFolderName: (length=4) => {
+        generateRandomFolderName: (length = 4) => {
             // Get the current date and time
             const now = new Date();
 
@@ -654,6 +682,7 @@ $(document).ready(function () {
             $(p_show).removeClass('m-fadeOut').addClass('m-fadeIn')
         })
     }
+
 
 // Function calls
     import_handlers.connect_events();
