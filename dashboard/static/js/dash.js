@@ -156,26 +156,26 @@ $(document).ready(function () {
 
         submit_jobs() {
 
-        $.ajaxSetup({
-            // make sure to send the header
-            headers: {
-                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
-            }
-        });
-        $.ajax({
-            type: 'POST',
-            url:'enqjob' ,
-            data: {ticket: this.ticket},
-            success: function (res) {
-                alert(res)
-            },
-            error: function (xhr, errmsg, err) {
-                console.log(xhr.status + ": " + xhr.responseText);
-            }
-        })
+            $.ajaxSetup({
+                // make sure to send the header
+                headers: {
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                url: 'enqjob',
+                data: {ticket: this.ticket},
+                success: function (res) {
+                    console.log(res)
+                },
+                error: function (xhr, errmsg, err) {
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            })
 
 
-    }
+        }
     }
 
     const import_handlers = {
@@ -577,6 +577,7 @@ $(document).ready(function () {
                 }
 
             });
+
         },
         get_uploading_files: () => {
             let data = $("#import-tbl").bootstrapTable("getData");
@@ -683,9 +684,46 @@ $(document).ready(function () {
         })
     }
 
+    function update_jobs(data) {
+        const status_icon = {"0":"text-success",'1':"text-danger",'-1':'blink'}
+        const tbl = document.querySelector("#jobs-tbl");
+        if (data.length === 0) {
+            return;
+        }
+        $(tbl).bootstrapTable("hideLoading");
+        let rec;
+        for (let i = 0; i < data.length; i++) {
+            rec = data[i];
+            rec.actions = `<a class="delete-row" href="#" data-sample="${rec.id}" title="Delete row" > <i class="fa fa-trash" aria-hidden="true"></i></a>`;
+            rec.status = `<a class="status" data-sample="${rec.id}" title="status" ><i class="fa fa-circle ${status_icon[rec.status]}"></i> </a>`;
+            $(tbl).bootstrapTable("insertRow", {index: 0, row: rec});
+        }
+
+    }
+
+    function fetch_tasks(id = "") {
+        $.ajaxSetup({
+            // make sure to send the header
+            headers: {
+                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+            }
+        });
+        $.ajax({
+            type: 'POST',
+            url: 'fetchjobs',
+            data: {id: id},
+            success: function (data) {
+                update_jobs(data['jobs']);
+            },
+            error: function (xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        })
+    }
 
 // Function calls
     import_handlers.connect_events();
     upload_handlers.connect_events();
+    fetch_tasks()
 
 });

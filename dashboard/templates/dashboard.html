@@ -335,7 +335,32 @@
                                     Jobs Queue
                                 </h5>
                             </div>
-                            <div class="card-body"></div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <table
+                                                id="jobs-tbl"
+                                                class="table table-sm table-borderless text-sm"
+                                                data-toggle="table"
+                                                data-icons-prefix="fa"
+                                                data-icons="icons"
+                                                data-virtual-scroll="true"
+                                                data-unique-id="task_id">
+                                            <thead>
+                                            <tr>
+                                                <th data-field="status"></th>
+                                                <th data-field="actions"></th>
+                                                <th data-field="task_id"></th>
+                                                <th data-field="ticket">Ticket</th>
+                                                <th data-field="submission_timestamp">Submission timestamp</th>
+                                                <th data-field="completion_timestamp">Completion timestamp</th>
+                                                <th data-field="submitter">Submitter</th>
+                                            </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
