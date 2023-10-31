@@ -1,15 +1,28 @@
 from __future__ import absolute_import, unicode_literals
 
 from subprocess import Popen
-
-from celery import shared_task
+from celery import Task
 from pathlib import Path
-import os, json
+from microwarrior.celery import app
+from .models import Task as djTask
+from datetime import datetime
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+class Task_handler(Task):
+    def on_success(self, retval, task_id, args, kwargs):
+        print(retval)
+        djTask.objects.filter(task_id=task_id).update(status=0,
+                                                      completion_timestamp=datetime.now(),
+                                                      logs=retval)
 
-@shared_task(name="spear_mtb")
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        djTask.objects.filter(task_id=task_id).update(status=1
+                                                      ,completion_timestamp=datetime.now(),
+                                                      logs=einfo)
+
+@app.task(base=Task_handler)
 def spear_mtb(ticket):
     print(BASE_DIR)
     workflow_dir = os.path.join(BASE_DIR, 'workflow')
