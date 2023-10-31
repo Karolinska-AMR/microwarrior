@@ -2,6 +2,9 @@ $(document).ready(function () {
     let IMPORTED_SAMPLES = [];
     let DUPLICATE_SAMPLES = [];
     let load_flag = false;
+    let isJobRunning = false;
+    let jobStatusInterval;
+    let interval = 1000, interval_step = 5000, interval_max=60 * 1000;
     const timer = (ms) => new Promise((res) => setTimeout(res, ms));
 
     class Uploader {
@@ -167,7 +170,15 @@ $(document).ready(function () {
                 url: 'enqjob',
                 data: {ticket: this.ticket},
                 success: function (res) {
-                    console.log(res)
+                    interval = 2000;
+
+                    if(!isJobRunning){
+                        console.log('timer is set!!')
+                        isJobRunning = true;
+                        jobStatusInterval = setInterval(fetch_tasks, interval);
+                    }
+                    fetch_tasks()
+
                 },
                 error: function (xhr, errmsg, err) {
                     console.log(xhr.status + ": " + xhr.responseText);
@@ -685,8 +696,12 @@ $(document).ready(function () {
     }
 
     function update_jobs(data) {
-        const status_icon = {"0":"text-success",'1':"text-danger",'-1':'blink'}
+
+        const status_icon = {"0": "text-success", '1': "text-danger", '-1': 'blink'}
         const tbl = document.querySelector("#jobs-tbl");
+        $(tbl).bootstrapTable("destroy");
+        $(tbl).bootstrapTable();
+
         if (data.length === 0) {
             return;
         }
@@ -701,7 +716,7 @@ $(document).ready(function () {
 
     }
 
-    function fetch_tasks(id = "") {
+    function fetch_tasks() {
         $.ajaxSetup({
             // make sure to send the header
             headers: {
@@ -711,15 +726,26 @@ $(document).ready(function () {
         $.ajax({
             type: 'POST',
             url: 'fetchjobs',
-            data: {id: id},
-            success: function (data) {
-                update_jobs(data['jobs']);
+            success: function (response) {
+
+                if (response.ongoing === 0) {
+                    clearInterval(jobStatusInterval);
+                    isJobRunning = false;
+                } else {
+                    interval = Math.min(interval+interval_step, interval_max);
+                    isJobRunning = true;
+                    clearInterval(jobStatusInterval);
+                    jobStatusInterval = setInterval(fetch_tasks, interval);
+
+                }
+                update_jobs(response['data']);
             },
             error: function (xhr, errmsg, err) {
                 console.log(xhr.status + ": " + xhr.responseText);
             }
         })
     }
+
 
 // Function calls
     import_handlers.connect_events();

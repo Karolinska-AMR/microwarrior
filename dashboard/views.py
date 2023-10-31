@@ -31,9 +31,9 @@ def get_jobs(request):
                                  Value(' '),
                                  F('user__last_name'), output_field=CharField())
                 )
-
+    ongoing_tasks = Task.objects.filter(status=-1).count()
     # json_data = json.dumps(list(task_bucket),cls=DjangoJSONEncoder)
-    return JsonResponse({'jobs': list(task_bucket)})
+    return JsonResponse({'data': list(task_bucket),'ongoing': ongoing_tasks})
 
 
 def enqueue_task(request):
