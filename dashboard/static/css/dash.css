@@ -592,3 +592,8 @@ body {
     animation: blinking 1s ease infinite;
     -webkit-animation: blinking 1s ease infinite;
 }
+#log-tbl td {
+    color: #444;
+    font-size: 0.8rem;
+    text-align: center;
+}

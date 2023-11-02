@@ -23,7 +23,7 @@ $(document).ready(function () {
         $(import_table).bootstrapTable("destroy");
         $(import_table).bootstrapTable({
             onResetView: function (e) {
-                import_onnect_cell_events();
+                import_connect_cell_events();
                 import_show_duplicate_rows(DUPLICATE_SAMPLES);
                 import_reset_form_cells();
             },
@@ -98,7 +98,7 @@ $(document).ready(function () {
         });
     }
 
-    function import_onnect_cell_events() {
+    function import_connect_cell_events() {
         // PASTE VALUES DOWN
         const paste_dates = document.querySelectorAll(
             "#import-tbl .paste-input-down"
@@ -345,7 +345,7 @@ $(document).ready(function () {
             this.files = files;
             this.max_length = 10 * 1024 * 1024; // 10 mb
             this.attempts = 5;
-            this.uploaded = {};
+            this.uploaded_files = {};
             this.uploaded_samples_count = 0;
         }
 
@@ -376,7 +376,7 @@ $(document).ready(function () {
                 if (this.uploaded_samples_count > 0) {
                     //submitting the job
                     //*******
-                    this.submit_jobs()
+                    this.submit_jobs(this.uploaded_samples_count)
                 }
             }
 
@@ -467,12 +467,13 @@ $(document).ready(function () {
                     } else {
                         // upload complete
                         self.reset_attempts();
-                        if (self.uploaded[self.sample] === undefined) {
-                            self.uploaded[self.sample] = {"1": false, "2": false}
-                        }
-                        self.uploaded[self.sample][self.read] = true;
 
-                        if (self.uploaded[self.sample]["1"] && self.uploaded[self.sample]["2"]) {
+                        if (self.uploaded_files[self.sample] === undefined) {
+                            self.uploaded_files[self.sample] = {"1": false, "2": false}
+                        }
+                        self.uploaded_files[self.sample][self.read] = true;
+
+                        if (self.uploaded_files[self.sample]["1"] && self.uploaded_files[self.sample]["2"]) {
                             self.uploaded_samples_count += 1;
                             //remove record in the table
                             const import_table = document.querySelector("#import-tbl");
@@ -481,7 +482,9 @@ $(document).ready(function () {
                             if (idx > -1) {
                                 IMPORTED_SAMPLES.splice(idx, 1);
                             }
+
                         }
+
                         self.files.pop();
                         self.initFileUpload()
                     }
@@ -489,7 +492,11 @@ $(document).ready(function () {
             });
         };
 
-        submit_jobs() {
+        submit_jobs(samples_count) {
+
+            var formData = new FormData();
+            formData.append('ticket', this.ticket)
+            formData.append('samples_count', samples_count.toString())
 
             $.ajaxSetup({
                 // make sure to send the header
@@ -498,26 +505,25 @@ $(document).ready(function () {
                 }
             });
             $.ajax({
-                type: 'POST',
+                type:'POST',
                 url: 'enqjob',
-                data: {ticket: this.ticket},
+                dataType: 'json',
+                cache: false,
+                processData: false,
+                contentType: false,
+                data: formData,
                 success: function (res) {
                     interval = 2000;
-
                     if (!isJobRunning) {
-
                         isJobRunning = true;
                         jobStatusInterval = setInterval(job_send_request, interval);
                     }
                     job_send_request()
-
                 },
                 error: function (xhr, errmsg, err) {
                     console.log('ERROR!!!');
                 }
-            })
-
-
+            });
         }
     }
 
@@ -591,8 +597,12 @@ $(document).ready(function () {
         const status_icon = {"0": "text-success", '1': "text-danger", '-1': 'blink'}
         const tbl = document.querySelector("#jobs-tbl");
         $(tbl).bootstrapTable("destroy");
-        $(tbl).bootstrapTable();
-        $(tbl).bootstrapTable('refreshOptions', {  classes: "table-sm table-striped"});
+        $(tbl).bootstrapTable({
+            onResetView: function (e) {
+                job_connect_cell_events();
+            }
+        });
+        $(tbl).bootstrapTable('refreshOptions', {classes: "table-sm table-striped"});
 
         if (data.length === 0) {
             return;
@@ -601,8 +611,69 @@ $(document).ready(function () {
         let rec;
         for (let i = 0; i < data.length; i++) {
             rec = data[i];
-            rec.actions = `<a class="abort-job text-danger" href="#" data-sample="${rec.id}" title="Abort" > <i class="fas fa-times"></i></a>`;
+            rec.actions = `<a class="job-log text-secondary" href="#" data-status="${rec.status}" data-ticket="${rec.ticket}" title="view logs" > <i class="fas fa-clipboard-list"></i></a>`;
             rec.status = `<a class="status" data-sample="${rec.id}" title="status" ><i class="fa fa-circle ${status_icon[rec.status]}"></i> </a>`;
+            $(tbl).bootstrapTable("insertRow", {index: 0, row: rec});
+        }
+
+
+    }
+
+    function job_connect_cell_events() {
+        // connect view logs events
+        const status_icon = {"0": "text-success", '1': "text-danger", '-1': 'blink'}
+        const tbl = document.querySelector("#jobs-tbl");
+
+        const log_btns = tbl.querySelectorAll(".job-log");
+        $(log_btns).each(function (i, it) {
+
+            it.addEventListener("click", function (event) {
+
+                let tkt = $(this).data('ticket');
+                let stat = $(this).data('status');
+                const mdl = document.getElementById("logmodal");
+
+                $(mdl).find('.modal-title').html(`<a class="status" title="status" ><i class="fa fa-circle ${status_icon[stat]}"></i></a>
+                                                                    <span class="text-muted"> Ticket log: <small>${tkt}</small></span>`)
+                $(mdl).modal('show');
+
+                timer(1000).then(r => {
+                    job_request_log(tkt);
+                });
+
+                event.preventDefault();
+            })
+
+        });
+    }
+
+    function job_request_log(ticket) {
+        $.ajax({
+            url: 'fetchlog',
+            type: 'GET',
+            data: {"ticket": ticket},
+            success: function (response) {
+                // Process the response data
+                console.log(response);
+                job_fill_log(response['data'])
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.error('Error:', textStatus, errorThrown);
+            }
+        });
+    }
+
+    function job_fill_log(data) {
+        const tbl = document.getElementById("log-tbl");
+        $(tbl).bootstrapTable('hideLoading')
+
+        let rec;
+        let success = `<span class="text-success"> <i class="fas fa-check"></i></span>`
+        let failed = `<span class="text-danger"> <i class="fas fa-times"></i></span>`
+        for (let i = 0; i < data.length; i++) {
+            rec = data[i];
+            rec.cryptic = rec.cryptic === '0' ? success : failed;
+            rec.tbprofiler = rec.tbprofiler === '0' ? success : failed;
             $(tbl).bootstrapTable("insertRow", {index: 0, row: rec});
         }
 
@@ -680,7 +751,21 @@ $(document).ready(function () {
         return `${now_str}${rand_str}`;
     }
 
-// Function calls
+    $('#logmodal').on('shown.bs.modal', function () {
+        console.log('loaded!!!')
+        const tbl = document.getElementById("log-tbl");
+        $(tbl).bootstrapTable('destroy');
+        $(tbl).bootstrapTable();
+        $(tbl).bootstrapTable('refreshOptions', {classes: "table-sm table-borderless"});
+        $(tbl).bootstrapTable('showLoading')
+
+    });
+    $('#logmodal').on('hidden.bs.modal', function () {
+        console.log('loaded!!!')
+        const tbl = document.getElementById("log-tbl");
+        $(tbl).bootstrapTable('removeAll');
+    });
+    // Function calls
     import_connect_events();
     upload_connect_events();
     job_send_request()

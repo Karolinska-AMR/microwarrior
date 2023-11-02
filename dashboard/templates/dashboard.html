@@ -345,13 +345,16 @@
                                                 data-icons-prefix="fa"
                                                 data-icons="icons"
                                                 data-virtual-scroll="true"
+                                                data-pagination="true"
+                                                data-search="true"
+                                                data-search-highlight="true"
                                                 data-unique-id="task_id">
                                             <thead>
                                             <tr>
                                                 <th data-field="status"></th>
                                                 <th data-field="actions"></th>
-                                                <th data-field="task_id"></th>
                                                 <th data-field="ticket">Ticket</th>
+                                                <th data-field="samples_count">Nr. isolates</th>
                                                 <th data-field="submission_timestamp">Submission timestamp</th>
                                                 <th data-field="completion_timestamp">Completion timestamp</th>
                                                 <th data-field="submitter">Submitter</th>
@@ -478,6 +481,7 @@
 <a class="scroll-to-top rounded" href="#page-top">
     <i class="fa fa-chevron-up"></i>
 </a>
+<!-- Modal -->
 <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="exampleModalLabel" style="display: none;"
      aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -493,6 +497,44 @@
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
                 <a class="btn btn-primary" href="{% url "logout" %}">Proceed</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="logmodal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modal title</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row my-1">
+                    <div class="col-12">
+                        <table
+                                id="log-tbl"
+                                class="table"
+                                data-toggle="table table-sm table-borderless"
+                                data-icons-prefix="fa"
+                                data-icons="icons"
+                                data-unique-id="sample"
+                                data-pagination="true"
+                                data-sortable="true"
+                        >
+                            <thead>
+                            <tr>
+                                <th data-field="sample" data-sortable="true">Sample</th>
+                                <th data-field="species" data-sortable="true">Species</th>
+                                <th data-field="cryptic">CRyPTIC</th>
+                                <th data-field="tbprofiler">TB-Profiler</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

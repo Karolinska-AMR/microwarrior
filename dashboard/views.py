@@ -1,12 +1,14 @@
+import time
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from flowrunner import tasks
 from flowrunner.models import Task
 from datetime import datetime, timedelta
-from django.db.models import F, CharField, Value
+from django.db.models import F, CharField, Value,Count
 from django.db.models.functions import Concat
-
+from iomanager.models import File
 
 def home(request):
     return render(request, 'home.html')
@@ -32,18 +34,31 @@ def get_jobs(request):
                                  F('user__last_name'), output_field=CharField())
                 )
     ongoing_tasks = Task.objects.filter(status=-1).count()
-    # json_data = json.dumps(list(task_bucket),cls=DjangoJSONEncoder)
     return JsonResponse({'data': list(task_bucket),'ongoing': ongoing_tasks})
 
+def get_log(request):
+    ticket = request.GET.get('ticket','')
+    task = Task.objects.get(ticket=ticket)
+    # if len(task.logs)>0: # completed send the log back
+    #     log = task.logs
+    # else: # fetch the samples from
 
+    pe_samples = File.objects.filter(ticket=ticket,eof=1).values('sample').annotate(pe=Count('id')).filter(pe=2)
+    log = []
+    for s in pe_samples:
+
+        log.append({"sample":s["sample"],"species":None,"cryptic":None,"tbprofiler":None})
+    return JsonResponse({'data': log})
 def enqueue_task(request):
     if request.method == 'POST':
-        res = tasks.spear_mtb.delay(request.POST['ticket'])
+        ticket = request.POST["ticket"]
+        count = request.POST["samples_count"]
+        res = tasks.fake_spear_mtb.delay(ticket)
         ts = Task(name="spear-mtb",
                   status=-1,
-                  ticket=request.POST["ticket"],
+                  ticket=ticket,
                   user=request.user,
-                  task_id=res.task_id)
+                  task_id=res.task_id,samples_count=count)
         ts.save()
         return JsonResponse({'task_id': res.task_id})
 
