@@ -46,7 +46,6 @@ def get_log(request):
     pe_samples = File.objects.filter(ticket=ticket,eof=1).values('sample').annotate(pe=Count('id')).filter(pe=2)
     log = []
     for s in pe_samples:
-
         log.append({"sample":s["sample"],"species":None,"cryptic":None,"tbprofiler":None})
     return JsonResponse({'data': log})
 def enqueue_task(request):
