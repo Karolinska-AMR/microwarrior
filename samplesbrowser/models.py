@@ -11,11 +11,8 @@ class Sample(models.Model):
     fraction = models.FloatField(default=0)
     passed_tbprofiler = models.BooleanField(default=False)
     passed_cryptic = models.BooleanField(default=False)
-    has_deletion = models.BooleanField(default=False)
-    is_mixed = models.BooleanField(default=False)
     # sensetive, pre-MDR, MDR, pre-XDR, XDR, Other
     category = models.CharField(max_length=100, null=True, blank=True)
-
 
 class Lineage(models.Model):
     sample = models.ForeignKey(Sample, on_delete=models.CASCADE)
@@ -23,6 +20,8 @@ class Lineage(models.Model):
     family = models.CharField(max_length=100)
     rd = models.CharField(max_length=100)
     spoligotype = models.CharField(max_length=100)
+    is_mixed = models.BooleanField(default=False)
+
 
 
 class Drug(models.Model):
@@ -57,4 +56,3 @@ class Mutation(models.Model):
 class UnverifiedMutation(models.Model):
     sample = models.ForeignKey(Sample, on_delete=models.CASCADE)
     variant = models.ForeignKey(Catalog, on_delete=models.CASCADE)
-    drug = models.ForeignKey(Drug, on_delete=models.CASCADE)
