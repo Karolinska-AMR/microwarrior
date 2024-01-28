@@ -5,7 +5,7 @@ from flowrunner.models import Task
 # Create your models here.
 class Sample(models.Model):
     sample = models.CharField(max_length=50)
-    task = models.ForeignKey(Task, on_delete=models.SET_NULL, blank=True, null=True)
+    task = models.ForeignKey(Task, on_delete=models.SET_NULL, blank=True, null=True,related_name='t_samples')
     collection_date = models.DateField(null=True, blank=True)
     species = models.CharField(max_length=100, null=True, blank=True)
     fraction = models.FloatField(default=0)
@@ -15,14 +15,12 @@ class Sample(models.Model):
     category = models.CharField(max_length=100, null=True, blank=True)
 
 class Lineage(models.Model):
-    sample = models.ForeignKey(Sample, on_delete=models.CASCADE)
+    sample = models.OneToOneField(Sample, on_delete=models.CASCADE, related_name="lineage")
     lin = models.CharField(max_length=100)
     family = models.CharField(max_length=100)
     rd = models.CharField(max_length=100)
     spoligotype = models.CharField(max_length=100)
     is_mixed = models.BooleanField(default=False)
-
-
 
 class Drug(models.Model):
     name = models.CharField(max_length=100)
@@ -35,7 +33,7 @@ class Catalog(models.Model):
     gene = models.CharField(max_length=100)
     variant = models.CharField(max_length=150)
     prediction = models.CharField(max_length=10)
-    drug = models.ForeignKey(Drug, on_delete=models.CASCADE)
+    drug = models.ForeignKey(Drug,on_delete=models.CASCADE,related_name='d_catalogs')
     grade = models.CharField(max_length=100,null=True, blank=True)
     present_solo_r = models.IntegerField(null=True, blank=True)
     present_solo_s = models.IntegerField(null=True, blank=True)
@@ -47,12 +45,12 @@ class Catalog(models.Model):
 
 
 class Mutation(models.Model):
-    sample = models.ForeignKey(Sample, on_delete=models.CASCADE)
+    sample = models.ForeignKey(Sample, on_delete=models.CASCADE,related_name='s_mutations')
     freq = models.FloatField(null=True, blank=True)
     depth = models.IntegerField(null=True, blank=True)
-    variant = models.ForeignKey(Catalog, on_delete=models.CASCADE)
+    variant = models.ForeignKey(Catalog,on_delete=models.CASCADE, related_name='cat_mutations')
 
 
 class UnverifiedMutation(models.Model):
-    sample = models.ForeignKey(Sample, on_delete=models.CASCADE)
-    variant = models.ForeignKey(Catalog, on_delete=models.CASCADE)
+    sample = models.ForeignKey(Sample,on_delete=models.CASCADE,related_name='s_umutations')
+    variant = models.ForeignKey(Catalog,on_delete=models.CASCADE,related_name='cat_umutations')
