@@ -1,0 +1,145 @@
+.viewbar {
+    bottom: 0;
+    background-color: #f3f3f3; /* Sidebar background color */
+    overflow-y: auto; /* Add scroll to the sidebar */
+    padding-top: 20px;
+    z-index: 1000;
+}
+
+.list-group-item {
+    cursor: pointer;
+}
+
+.list-group-item:hover {
+    background: #e9ecef;
+}
+
+.list-group-item:first-child {
+    border-radius: 0;
+}
+
+.list-group-item:last-child {
+    border-radius: 0;
+}
+
+.list-group-item.active {
+    background-color: #236BD1 !important;
+    color: #bdbdbd;
+    -webkit-text-stroke: 1px #fff;
+    text-shadow: 0px 1px 1px #23430C;
+}
+
+.list-group-item.active:hover {
+    background-color: #1d63c2 !important;
+    color: #fff;
+}
+
+.DS {
+    color: #000;
+    background-color: #4dd4ac;
+}
+.Mono{
+    color: #000;
+    background-color: #FDE767;
+}
+.Poly{
+    color: #000;
+    background-color: #FFB996;
+}
+.RR{
+    color: #000;
+    background-color: #FFA447;
+}
+.IR{
+     color: #000;
+    background-color: #FFCF9D;
+}
+.Pre-MDR {
+    color: #000;
+    background-color: #EA906C;
+}
+
+.MDR {
+    color: #000;
+    background-color: #e35d6a;
+}
+
+.Pre-XDR {
+    color: #fff;
+    background-color: #d63384;
+}
+
+.XDR {
+    color: #fff;
+    background-color: #8540f5;
+}
+
+.cat-other {
+    color: #000;
+    background-color: #dee2e6;
+}
+.cat-circle{
+    cursor: help;
+}
+.text-r {
+    color: #dc3545 !important;
+}
+
+.text-u {
+    color: #ffc107 !important;
+}
+
+.text-o {
+    color: #adb5bd !important;
+}
+.badge-success{
+    background-color: #33BBC5;
+    color: #fff;
+    border: 1px solid #3a3b45;
+}
+.badge-warning{
+    background-color: #FEFFAC;
+    color: #000;
+    border: 1px solid #3a3b45;
+}
+.badge-danger{
+    background-color: #FF9BD2;
+    color: #000;
+    border: 1px solid #3a3b45;
+}
+.text-outlined {
+   -webkit-text-stroke: 3px;
+}
+td {
+    white-space: nowrap;
+}
+.text-mutation{
+  font-size: 0.8rem;
+}
+.table-main th{
+    background-color: #343a40;
+    color: #fff!important;
+}
+.table-sub th{
+    background-color: #f8f9fa;
+    color: #000!important;
+    font-size: 0.9rem;
+}
+.table-sub{
+    font-size: 0.8rem;
+}
+.col-highlight {
+    background-color: #EEF5FF!important;
+    cursor: pointer;
+    font-size: 0.9rem!important;
+ }
+.col-highlight .cat-circle{
+    -webkit-text-stroke: 1px #3a3b45!important;
+}
+.col-highlight-header {
+    background-color: #EEF5FF!important;
+    cursor: pointer;
+    color: #000!important;
+    -webkit-text-stroke: 1px #3a3b45!important;
+
+}

@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}ResHub: Explorer{% endblock %}
+
+{% block cssblock %}
+    <link rel="stylesheet" href="{% static "css/bootstrap-datepicker3.min.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/dash.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/sambrow.css" %}"/>
+{% endblock %}
+
+{% block menubarcontent %}
+
+{% endblock %}
+
+{% block maincontent %}
+    <div class="container-fluid">
+
+
+        <div class="row g-1">
+            <!-- Main Content Column -->
+
+            <div class="col-lg-10 col-md-9 col-sm-8" style="visibility:hidden;">
+                <div id="empty_msg"><p class="text-center text-mutated"><i class="fas fa-info-circle"></i> Please select
+                    a
+                    sample from the view
+                    bar.</p></div>
+                <div id="content-main">
+                    <div id='lin_card' class="card shadow-sm mb-2">
+                        <div class="card-header text-uppercase py-2 bg-white">
+                            <i class="fa fa-tasks" aria-hidden="true"></i> Lineage Classification
+                        </div>
+                        <div class="card-body">
+                            <table id="lin-tbl" class="table table-sm text-sm text-center table-main"
+                                   data-search-align="left" data-toggle="table">
+                                <thead>
+                                <tr>
+                                    <th data-field="lineage">Lineage</th>
+                                    <th data-field="family">Family</th>
+                                    <th data-field="rd">RD</th>
+                                    <th data-field="spoligotype">Spoligotype</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id='pred_card' class="card shadow-sm mb-2">
+                        <div class="card-header text-uppercase py-2 bg-white">
+                            <i class="fa fa-tasks" aria-hidden="true"></i> Drug-resistance predictions
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <table id="prd-tbl" class="table table-sm text-sm text-center table-main"
+                                       data-toggle="table"
+                                       data-virtual-scroll="true"></table>
+                            </div>
+
+                            <div class="row" id="evidence_row" style="display: none;">
+                                <p class="mb-1 mt-2"><i class="fas fa-info-circle"></i> <span class="text-muted">The evidence is provided from the WHO catalogue.</span>
+                                </p>
+                                <table id="evd-tbl" class="table table-sm text-sm text-center table-sub"
+                                       data-toggle="table"
+                                       data-virtual-scroll="true">
+                                    <thead>
+                                    <tr>
+                                        <th data-field="pred_icon"></th>
+                                        <th data-field="drug">Drug</th>
+                                        <th data-field="mutation">Mutation</th>
+                                        <th data-field="effect">Effect</th>
+                                        <th data-field="grade">Grade</th>
+                                        <th data-field="present_solo_r">Present Solo R</th>
+                                        <th data-field="present_solo_s">Present Solo S</th>
+                                        <th data-field="present_r">Present R</th>
+                                        <th data-field="present_s">Present S</th>
+                                        <th data-field="absent_r">Absent R</th>
+                                        <th data-field="absent_s">Absent S</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Column -->
+            <div class="col-lg-2 col-md-3 col-sm-4">
+                <div id="viewbar" class="card viewbar bg-white shadow-sm">
+                    <div class="card-header text-uppercase py-2 bg-white">
+                        View Bar
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group bg-white" id="samples-list"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block modalcontent %}
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="exampleModalLabel" style="display: none;"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                </div>
+                <div class="modal-body">
+                    Your current session will be terminated.<br/>
+                    <small class="text-muted"> If you are in the process of uploading files, please ensure that your
+                        jobs
+                        have been fully submitted before proceeding with the logout.</small>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="{% url "logout" %}">Proceed</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block jscontent %}
+    <script src="{% static "js/sambrow.js" %}"></script>
+{% endblock %}
+

@@ -25,6 +25,7 @@ class Lineage(models.Model):
 class Drug(models.Model):
     name = models.CharField(max_length=100)
     abbr = models.CharField(max_length=10)
+    man_order = models.IntegerField(null=True, blank=True)
 
 
 class Catalog(models.Model):
@@ -54,3 +55,8 @@ class Mutation(models.Model):
 class UnverifiedMutation(models.Model):
     sample = models.ForeignKey(Sample,on_delete=models.CASCADE,related_name='s_umutations')
     variant = models.ForeignKey(Catalog,on_delete=models.CASCADE,related_name='cat_umutations')
+
+class Meta(models.Model):
+    name = models.CharField(max_length=150,null=True, blank=True)
+    type = models.CharField(max_length=150,null=True, blank=True)
+    man_order = models.IntegerField(null=True, blank=True)
