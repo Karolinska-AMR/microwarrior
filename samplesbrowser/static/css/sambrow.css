@@ -1,7 +1,7 @@
 .viewbar {
     bottom: 0;
-    background-color: #f3f3f3; /* Sidebar background color */
-    overflow-y: auto; /* Add scroll to the sidebar */
+    background-color: #f3f3f3;
+    overflow-y: auto;
     padding-top: 20px;
     z-index: 1000;
 }

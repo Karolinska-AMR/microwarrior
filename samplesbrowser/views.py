@@ -47,7 +47,7 @@ def fetch_mutations(request):
             id=id)
         catalogs = list(Catalog.objects.values_list('name').distinct())
         data = {"mutations": {c[0]: [] for c in catalogs},
-                "unverified_mutations": {}, "evidence": {}, "qc": {}, 'predictions': {}}
+                "unverified_mutations": [], "evidence": {}, "qc": {}, 'predictions': {}}
         ptr_mu = data["mutations"]
         ptr_ev = data["evidence"]
         for mu in sample.s_mutations.all():
@@ -88,11 +88,10 @@ def fetch_mutations(request):
             var = umu.variant
             if var.prediction in ['R', 'U']:
                 if var.name.startswith('WHO'):
-                    if var.drug.name not in ptr_umu:
-                        ptr_umu[var.drug.name] = []
-                    ptr_umu[var.drug.name].append({'id': umu.id,
-                                                   "gene": var.gene,
-                                                   "variant": var.variant,
+                    # if var.drug.name not in ptr_umu:
+                    #     ptr_umu[var.drug.name] = []
+                    ptr_umu.append({'id': umu.id,
+                                                   "mutation": f"{var.gene}@{var.variant}",
                                                    "drug": var.drug.name,
                                                    'present_solo_r': var.present_solo_r,
                                                    'present_solo_s': var.present_solo_s,

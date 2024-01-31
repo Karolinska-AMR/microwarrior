@@ -19,15 +19,15 @@
         <div class="row g-1">
             <!-- Main Content Column -->
 
-            <div class="col-lg-10 col-md-9 col-sm-8" style="visibility:hidden;">
+            <div class="col-lg-10 col-md-9 col-sm-8">
                 <div id="empty_msg"><p class="text-center text-mutated"><i class="fas fa-info-circle"></i> Please select
                     a
                     sample from the view
                     bar.</p></div>
-                <div id="content-main">
+                <div id="content-main" style="visibility:hidden;">
                     <div id='lin_card' class="card shadow-sm mb-2">
                         <div class="card-header text-uppercase py-2 bg-white">
-                            <i class="fa fa-tasks" aria-hidden="true"></i> Lineage Classification
+                            <i class="fas fa-sitemap"></i> Coll's Classification
                         </div>
                         <div class="card-body">
                             <table id="lin-tbl" class="table table-sm text-sm text-center table-main"
@@ -43,10 +43,9 @@
                             </table>
                         </div>
                     </div>
-
                     <div id='pred_card' class="card shadow-sm mb-2">
                         <div class="card-header text-uppercase py-2 bg-white">
-                            <i class="fa fa-tasks" aria-hidden="true"></i> Drug-resistance predictions
+                            <i class="fas fa-dna"></i> Drug-resistance predictions
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -80,16 +79,101 @@
                             </div>
                         </div>
                     </div>
+                    <div id='umu_card' class="card shadow-sm mb-2">
+                        <div class="card-header text-uppercase py-2 bg-white">
+                            <i class="fas fa-exclamation-triangle"></i> Unverified Mutations
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <table id="umu-tbl" class="table table-sm text-sm text-center table-main"
+                                       data-toggle="table"
+                                       data-virtual-scroll="true"
+                                       data-search="true"
+                                       data-search-align="left"
+                                       data-search-highlight="true"
+                                       data-pagination="true">
+                                    <thead>
+                                    <tr>
+                                        <th data-field="pred_icon"></th>
+                                        <th data-field="drug" data-sortable="true">Drug</th>
+                                        <th data-field="mutation" data-sortable="true">Mutation</th>
+                                        <th data-field="effect" data-sortable="true">Effect</th>
+                                        <th data-field="grade" data-sortable="true">Grade</th>
+                                        <th data-field="present_solo_r" data-sortable="true">Present Solo R</th>
+                                        <th data-field="present_solo_s" data-sortable="true">Present Solo S</th>
+                                        <th data-field="present_r" data-sortable="true">Present R</th>
+                                        <th data-field="present_s" data-sortable="true">Present S</th>
+                                        <th data-field="absent_r" data-sortable="true">Absent R</th>
+                                        <th data-field="absent_s" data-sortable="true">Absent S</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+
+
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Sidebar Column -->
             <div class="col-lg-2 col-md-3 col-sm-4">
                 <div id="viewbar" class="card viewbar bg-white shadow-sm">
-                    <div class="card-header text-uppercase py-2 bg-white">
+                    <div class="card-title text-center text-uppercase py-2 bg-white">
                         View Bar
                     </div>
                     <div class="card-body p-0">
+                        <div class="row bg-light-subtle">
+                            <div class="col-12">
+                                <nav class="navbar navbar-expand py-0 my-0">
+                                    <ul class="navbar-nav me-auto mb-md-0">
+                                        <li class="nav-item">
+                                            <a
+                                                    class="nav-link pr-0"
+                                                    data-action="add-sample"
+                                                    href="#"
+                                                    title="Search samples"
+                                                    data-toggle="modal" data-target="#searchModal"
+                                            >
+                                                <i class="fas fa-search-plus fa-lg"></i>
+
+                                            </a>
+                                        </li>
+                                        {#                                        <div class="vr"></div>#}
+                                        <li class="nav-item">
+                                            <a
+                                                    class="nav-link"
+                                                    data-action="removeAll"
+                                                    href="#"
+                                                    title="Delete all"
+                                            >
+                                                <i class="fas fa-download fa-lg"></i>
+
+
+                                            </a>
+                                        </li>
+                                    </ul>
+                                    <ul class="navbar-nav ml-auto mb-md-0">
+                                        <li class="nav-item">
+                                            <form>
+                                                {% csrf_token %}
+                                                <a type="submit"
+                                                   class="nav-link pr-0"
+                                                   id="submit-jobs"
+                                                   data-action="submit"
+                                                   href="#"
+                                                   title="submit"
+                                                >
+                                                    <i class="fa fa-fw fa-trash-alt fa-lg"></i>
+
+                                                </a>
+                                                <input type="file" id="choose-dir" style="display: none"/>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
                         <ul class="list-group bg-white" id="samples-list"></ul>
                     </div>
                 </div>
@@ -100,7 +184,96 @@
 {% endblock %}
 
 {% block modalcontent %}
-    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="exampleModalLabel" style="display: none;"
+    <div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog  modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="searchModalLabel"><i class="fas fa-search"></i> Search Samples</h5>
+                    <button type="button" class="btn btn-light close" data-dismiss="modal" aria-label="Close">
+                        <span class="text-danger" aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="searchForm">
+                        <div class="row">
+                            <div class="form-group col-6">
+                                <label for="sampleId">Sample ID</label>
+                                <input type="text" class="form-control" id="sampleId" placeholder="Sample ID">
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="weekNumber">Week Number</label>
+                                <input type="number" class="form-control" id="weekNumber" placeholder="Week Number">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-6">
+                                <label for="dateFrom">Date From</label>
+                                <input type="date" class="form-control" id="dateFrom">
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="dateTo">Date To</label>
+                                <input type="date" class="form-control" id="dateTo">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-6">
+                                <label for="lineages">Lineage</label>
+                                <input type="text" class="form-control" id="lineage" placeholder="Lineage">
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="mutation">Mutation</label>
+                                <input type="text" class="form-control" id="mutation" placeholder="Mutation">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-6">
+                                <label for="drug">Resistant to</label>
+                                <input type="text" class="form-control" id="drug" placeholder="Drug">
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="resistanceCategory">Resistance Category</label>
+                                <input type="text" class="form-control" id="resistanceCategory"
+                                       placeholder="Resistance Category">
+                            </div>
+                        </div>
+                        <div class="d-flex flex-row-reverse p-2">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-light" id="cls-form"><i class="fas fa-broom"></i> Clear</button>
+                                <button type="button" class="btn btn-primary" id="search-btn"><i class="fas fa-search"></i> Search</button>
+                            </div>
+                        </div>
+                        <hr class="m-0 p-1"/>
+                         <div class="d-flex justify-content-between">
+                             <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-light btn-sm" id="add-sel"><i class="fas fa-check"></i> Add selected</button>
+                                <button type="button" class="btn btn-light" id="del-all"><i class="fas fa-trash"></i> Delete all</button>
+                            </div>
+                                <button type="button" class="btn btn-primary btn-sm" id="add-all"><i class="fas fa-plus"></i> Add all</button>
+                        </div>
+                        <div class="row p-1">
+                            <div class="col-12">
+                                <table id="search-tbl" class="table table-sm text-sm text-center table-sub"
+                                       data-search-align="left" data-toggle="table">
+                                    <thead>
+                                    <tr>
+                                        <th data-field="state" data-checkbox="true"></th>
+                                        <th data-field="sample" data-sortable="True">Sample</th>
+                                        <th data-field="collection_date" data-sortable="True">Collection date</th>
+                                        <th data-field="lineage" data-sortable="True">Lineage</th>
+                                        <th data-field="category">Category</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="logoutModal" tabindex="-1" style="display: none;"
          aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">

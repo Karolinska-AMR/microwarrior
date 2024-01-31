@@ -4,8 +4,20 @@ $(document).ready(function () {
     let meta = {}
     var selected_drug_index;
     var selected_sample;
+
+    init();
     fetchSamples();
 
+    function init() {
+        console.log('init')
+        const umu_tbl = document.getElementById('umu-tbl');
+         $(umu_tbl).bootstrapTable('destroy');
+        $(umu_tbl).bootstrapTable({
+            formatNoMatches: function () {
+                return '<span class="text-dark">No unverified mutations found</span>';
+            }
+        });
+    }
 
     function fetchSamples() {
         var xhr = new XMLHttpRequest();
@@ -77,8 +89,8 @@ $(document).ready(function () {
             listItem.appendChild(categoryBadge);
 
             listItem.addEventListener('click', function () {
-                $("#content-main").css('visibility','visible')
-                $("#empty_msg").css('display','none')
+                $("#content-main").css('visibility', 'visible')
+                $("#empty_msg").css('display', 'none')
                 $('.list-group-item').removeClass('active');
                 $(this).addClass('active');
                 let sid = $(this).data('sid')
@@ -93,6 +105,8 @@ $(document).ready(function () {
             });
             // Append the list item to the list
             sampleList.appendChild(listItem);
+
+
         });
     }
 
@@ -131,21 +145,32 @@ $(document).ready(function () {
     }
 
     function update_page(sid) {
+         // Data shortcuts
         let data = repo[sid]
+
+        console.log(data)
+
+        let drug_cols = []
+        let preds = data['predictions']
+        let mutations = data['mutations']
+        let unverif_mutations = data['unverified_mutations']
+        let drugs = Object.keys(preds)
+
+        // reset some indexes and tables
         selected_drug_index = -1;
         selected_sample = sid;
         reset_evidence();
-        console.log(data)
-        // Lineage
+
+
+
+
+
+
+           // Lineage
         const lin_tbl = document.getElementById('lin-tbl')
         $(lin_tbl).bootstrapTable("removeAll");
         $(lin_tbl).bootstrapTable("insertRow", {index: 0, row: data.info.lineage})
 
-        // predictions
-        let drug_cols = []
-        let preds = data['predictions']
-        let mutations = data['mutations']
-        let drugs = Object.keys(preds)
         // Define some sort based on line of drug
         drugs.sort(function (a, b) {
             return meta.drugs.indexOf(a) - meta.drugs.indexOf(b);
@@ -238,6 +263,8 @@ $(document).ready(function () {
                 fill_evidence(drug);
             }
         });
+
+        fill_unverified_mu(unverif_mutations);
     }
 
     function fill_evidence(drug) {
@@ -255,6 +282,23 @@ $(document).ready(function () {
             let cl = r.pred ? color_mapper[r.pred] : 'text-o'
             r.pred_icon = `<span class="${cl}"><i class="fas fa-circle"></i></span>`
             $(evd_tbl).bootstrapTable("insertRow", {index: 0, row: r})
+        });
+
+
+    }
+    function fill_unverified_mu(mutations) {
+
+
+        if (!mutations) {
+           return
+        }
+        const umu_tbl = document.getElementById('umu-tbl')
+        $(umu_tbl).bootstrapTable("removeAll");
+        let color_mapper = {'R': 'text-r', 'U': 'text-u'}
+        mutations.forEach((r) => {
+            let cl = r.pred ? color_mapper[r.pred] : 'text-o'
+            r.pred_icon = `<span class="${cl}"><i class="fas fa-circle"></i></span>`
+            $(umu_tbl).bootstrapTable("insertRow", {index: 0, row: r})
         });
 
 
