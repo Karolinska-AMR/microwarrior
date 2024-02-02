@@ -34,7 +34,12 @@ def fetch_samples(request):
                                    "lineage": lineage_data,
                                    }
 
-    return JsonResponse({"data": data, "meta": get_meta()})
+    return JsonResponse(data)
+
+
+@login_required
+def fetch_meta(request):
+    return JsonResponse(get_meta())
 
 
 @login_required
@@ -73,7 +78,7 @@ def fetch_mutations(request):
                         ptr_ev[var.drug.name] = []
                     ptr_ev[var.drug.name].append({'id': mu.id,
                                                   "mutation": f"{var.gene}@{var.variant}",
-                                                  "drug":var.drug.name,
+                                                  "drug": var.drug.name,
                                                   'present_solo_r': var.present_solo_r,
                                                   'present_solo_s': var.present_solo_s,
                                                   'present_r': var.present_r,
@@ -91,17 +96,17 @@ def fetch_mutations(request):
                     # if var.drug.name not in ptr_umu:
                     #     ptr_umu[var.drug.name] = []
                     ptr_umu.append({'id': umu.id,
-                                                   "mutation": f"{var.gene}@{var.variant}",
-                                                   "drug": var.drug.name,
-                                                   'present_solo_r': var.present_solo_r,
-                                                   'present_solo_s': var.present_solo_s,
-                                                   'present_r': var.present_r,
-                                                   'present_s': var.present_s,
-                                                   'absent_r': var.absent_r,
-                                                   'absent_s': var.absent_s,
-                                                   'grade': var.grade,
-                                                   "pred": var.prediction,
-                                                   'effect': var.effect})
+                                    "mutation": f"{var.gene}@{var.variant}",
+                                    "drug": var.drug.name,
+                                    'present_solo_r': var.present_solo_r,
+                                    'present_solo_s': var.present_solo_s,
+                                    'present_r': var.present_r,
+                                    'present_s': var.present_s,
+                                    'absent_r': var.absent_r,
+                                    'absent_s': var.absent_s,
+                                    'grade': var.grade,
+                                    "pred": var.prediction,
+                                    'effect': var.effect})
         data['predictions'] = get_ensemble_prediction(id)
         sample_data[id] = data
     return JsonResponse(sample_data)
