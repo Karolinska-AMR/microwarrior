@@ -1,40 +1,121 @@
 $(document).ready(function () {
 
     let repo = {}
+    let search_repo = {}
     let meta = {}
     var selected_drug_index;
     var selected_sample;
 
     init();
-    fetchSamples();
+
 
     function init() {
-        console.log('init')
+
+        fetch_meta();
+
         const umu_tbl = document.getElementById('umu-tbl');
-         $(umu_tbl).bootstrapTable('destroy');
+        $(umu_tbl).bootstrapTable('destroy');
         $(umu_tbl).bootstrapTable({
             formatNoMatches: function () {
                 return '<span class="text-dark">No unverified mutations found</span>';
             }
         });
+
+        $("#search-btn").click(function () {
+            let formData = {
+                sampleId: $("#sampleId").val(),
+                weekNumber: $("#weekNumber").val(),
+                dateFrom: $("#dateFrom").val(),
+                dateTo: $("#dateTo").val(),
+                lineage: $("#lineage").val(),
+                mutation: $("#mutation").val(),
+                drug: $("#drug").val(),
+                resistanceCategory: $("#resistanceCategory").val()
+            };
+            let allFieldsEmpty = Object.values(formData).every(function (value) {
+                return value === null || value.trim() === '';
+            });
+
+            if (allFieldsEmpty) {
+                $("#alertPlaceholder").html(`<div id="search-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+                             <i class="fas fa-exclamation-circle "></i> Please fill in at least one field.
+                                 </div>`).show()
+
+                setTimeout(function () {
+                    const el = document.getElementById('search-alert')
+                    var bsAlert = new bootstrap.Alert(el);
+                    bsAlert.close();
+                }, 3000);
+
+            } else {
+                fetchSamples(formData);
+            }
+
+        });
+        $("#cls-form").click(function () {
+            document.getElementById('searchForm').reset();
+        });
+        $("#del-all").click(function () {
+            const search_tbl = document.getElementById('search-tbl');
+            $(search_tbl).bootstrapTable("removeAll");
+            search_repo = {}
+        });
+
+        $("#add-all").click(function () {
+            const search_tbl = document.getElementById('search-tbl');
+            const d = $(search_tbl).bootstrapTable("getData");
+            if (d.length > 0) {
+                $.extend(repo, search_repo);
+                clean_search();
+                update_viewbar();
+            }
+        });
+
+
+        $("#searchModal").on("hide.bs.modal", function (event) {
+            clean_search()
+        });
     }
 
-    function fetchSamples() {
+    function clean_search() {
+        const search_tbl = document.getElementById('search-tbl');
+        $(search_tbl).bootstrapTable("removeAll");
+        search_repo = {}
+        document.getElementById('searchForm').reset();
+    }
+
+    function fetch_meta() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/get-meta/', true);
+
+        xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                // Parse the response JSON
+                meta = JSON.parse(xhr.responseText);
+            } else {
+                console.error('Error fetching samples:', xhr.statusText);
+            }
+        };
+        xhr.onerror = function () {
+            console.error('Network error');
+        };
+
+        xhr.send();
+    }
+
+    function fetchSamples(params) {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', '/get-samples/', true);
 
         xhr.onload = function () {
             if (xhr.status >= 200 && xhr.status < 300) {
                 // Parse the response JSON
-                var data = JSON.parse(xhr.responseText);
-                // Update the HTML with the fetched samples
-                console.log(data)
-                meta = data.meta
-                $.extend(repo, data.data);
-                let infoArray = $.map(repo, function (value, key) {
+                search_repo = JSON.parse(xhr.responseText);
+
+                let infoArray = $.map(search_repo, function (value, key) {
                     return value.info;
                 });
-                update_viewbar(infoArray);
+                update_search_tbl(infoArray);
             } else {
                 console.error('Error fetching samples:', xhr.statusText);
             }
@@ -47,8 +128,20 @@ $(document).ready(function () {
         xhr.send();
     }
 
+    function update_search_tbl(data) {
+        const search_tbl = document.getElementById('search-tbl');
+        $(search_tbl).bootstrapTable("removeAll");
+        data.forEach((d) => {
+            $(search_tbl).bootstrapTable("insertRow", {index: 0, row: d})
+        });
+    }
 
-    function update_viewbar(data) {
+    function update_viewbar() {
+
+        let data = $.map(repo, function (value, key) {
+            return value.info;
+        });
+
         const sampleList = document.getElementById('samples-list');
         var listItems = sampleList.getElementsByClassName('list-group-item');
         var listItemsArray = Array.from(listItems);
@@ -145,7 +238,7 @@ $(document).ready(function () {
     }
 
     function update_page(sid) {
-         // Data shortcuts
+        // Data shortcuts
         let data = repo[sid]
 
         console.log(data)
@@ -162,11 +255,7 @@ $(document).ready(function () {
         reset_evidence();
 
 
-
-
-
-
-           // Lineage
+        // Lineage
         const lin_tbl = document.getElementById('lin-tbl')
         $(lin_tbl).bootstrapTable("removeAll");
         $(lin_tbl).bootstrapTable("insertRow", {index: 0, row: data.info.lineage})
@@ -286,11 +375,12 @@ $(document).ready(function () {
 
 
     }
+
     function fill_unverified_mu(mutations) {
 
 
         if (!mutations) {
-           return
+            return
         }
         const umu_tbl = document.getElementById('umu-tbl')
         $(umu_tbl).bootstrapTable("removeAll");

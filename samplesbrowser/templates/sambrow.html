@@ -190,11 +190,12 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="searchModalLabel"><i class="fas fa-search"></i> Search Samples</h5>
-                    <button type="button" class="btn btn-light close" data-dismiss="modal" aria-label="Close">
-                        <span class="text-danger" aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div id="alertPlaceholder" style="display: none;">
+
+                    </div>
                     <form id="searchForm">
                         <div class="row">
                             <div class="form-group col-6">
@@ -239,28 +240,42 @@
                         </div>
                         <div class="d-flex flex-row-reverse p-2">
                             <div class="btn-group btn-group-sm" role="group">
-                                <button type="button" class="btn btn-light" id="cls-form"><i class="fas fa-broom"></i> Clear</button>
-                                <button type="button" class="btn btn-primary" id="search-btn"><i class="fas fa-search"></i> Search</button>
+                                <button type="button" class="btn btn-light" id="cls-form"><i class="fas fa-broom"></i>
+                                    Clear
+                                </button>
+                                <button type="button" class="btn btn-primary" id="search-btn"><i
+                                        class="fas fa-search"></i> Search
+                                </button>
                             </div>
                         </div>
                         <hr class="m-0 p-1"/>
-                         <div class="d-flex justify-content-between">
-                             <div class="btn-group btn-group-sm" role="group">
-                                <button type="button" class="btn btn-light btn-sm" id="add-sel"><i class="fas fa-check"></i> Add selected</button>
-                                <button type="button" class="btn btn-light" id="del-all"><i class="fas fa-trash"></i> Delete all</button>
+                        <div class="d-flex justify-content-between">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-light btn-sm" id="add-sel"><i
+                                        class="fas fa-check"></i> Add selected
+                                </button>
+                                <button type="button" class="btn btn-light" id="del-all"><i class="fas fa-trash"></i>
+                                    Delete all
+                                </button>
                             </div>
-                                <button type="button" class="btn btn-primary btn-sm" id="add-all"><i class="fas fa-plus"></i> Add all</button>
+                            <button type="button" class="btn btn-primary btn-sm" id="add-all"><i
+                                    class="fas fa-plus"></i> Add all
+                            </button>
                         </div>
                         <div class="row p-1">
                             <div class="col-12">
                                 <table id="search-tbl" class="table table-sm text-sm text-center table-sub"
-                                       data-search-align="left" data-toggle="table">
+                                       data-search-align="left" data-toggle="table"
+                                       data-height="400"
+                                       data-click-to-select="true"
+                                       data-pagination="true"
+                                       data-page-size="10">
                                     <thead>
                                     <tr>
                                         <th data-field="state" data-checkbox="true"></th>
                                         <th data-field="sample" data-sortable="True">Sample</th>
                                         <th data-field="collection_date" data-sortable="True">Collection date</th>
-                                        <th data-field="lineage" data-sortable="True">Lineage</th>
+                                        <th data-field="lineage.lineage" data-sortable="True">Lineage</th>
                                         <th data-field="category">Category</th>
                                     </tr>
                                     </thead>
