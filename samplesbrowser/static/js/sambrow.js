@@ -37,15 +37,7 @@ $(document).ready(function () {
             });
 
             if (allFieldsEmpty) {
-                $("#alertPlaceholder").html(`<div id="search-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
-                             <i class="fas fa-exclamation-circle "></i> Please fill in at least one field.
-                                 </div>`).show()
-
-                setTimeout(function () {
-                    const el = document.getElementById('search-alert')
-                    var bsAlert = new bootstrap.Alert(el);
-                    bsAlert.close();
-                }, 3000);
+                search_alert('Please fill in at least one field.')
 
             } else {
                 fetchSamples(formData);
@@ -61,13 +53,38 @@ $(document).ready(function () {
             search_repo = {}
         });
 
-        $("#add-all").click(function () {
+        $("#import-all").click(function () {
             const search_tbl = document.getElementById('search-tbl');
             const d = $(search_tbl).bootstrapTable("getData");
             if (d.length > 0) {
                 $.extend(repo, search_repo);
                 clean_search();
                 update_viewbar();
+            } else {
+                search_alert("Please search and retrieve at least one sample.")
+            }
+        });
+
+        $("#import-sel").click(function () {
+            const search_tbl = document.getElementById('search-tbl');
+            const d = $(search_tbl).bootstrapTable("getData");
+            let rm_idx = [];
+            if (d.length > 0) {
+                $.each(d, function (idx, v) {
+                    if (v.state === true) {
+                        if (v.id in repo) {
+                            return;
+                        }
+                        repo[v.id] = search_repo[v.id];
+                        console.log(repo)
+                        rm_idx.push(idx)
+                    }
+                });
+                $(search_tbl).bootstrapTable("remove", {field: '$index', values: rm_idx});
+
+                update_viewbar();
+            } else {
+                search_alert("Please search and retrieve at least one sample.")
             }
         });
 
@@ -82,6 +99,18 @@ $(document).ready(function () {
         $(search_tbl).bootstrapTable("removeAll");
         search_repo = {}
         document.getElementById('searchForm').reset();
+    }
+
+    function search_alert(message) {
+        $("#alertPlaceholder").html(`<div id="search-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+                             <i class="fas fa-exclamation-circle "></i> ${message}
+                                 </div>`).show()
+
+        setTimeout(function () {
+            const el = document.getElementById('search-alert')
+            var bsAlert = new bootstrap.Alert(el);
+            bsAlert.close();
+        }, 3000);
     }
 
     function fetch_meta() {

@@ -120,8 +120,11 @@
             <div class="col-lg-2 col-md-3 col-sm-4">
                 <div id="viewbar" class="card viewbar bg-white shadow-sm">
                     <div class="card-title text-center text-uppercase py-2 bg-white">
-                        View Bar
+                        <i class="fas fa-stream"></i>
+                        View List
+                        <hr class="w-50 mx-auto">
                     </div>
+
                     <div class="card-body p-0">
                         <div class="row bg-light-subtle">
                             <div class="col-12">
@@ -204,7 +207,8 @@
                             </div>
                             <div class="form-group col-6">
                                 <label for="weekNumber">Week Number</label>
-                                <input type="number" class="form-control" id="weekNumber" placeholder="Week Number">
+                                <input type="week" class="form-control" id="weekNumber">
+
                             </div>
                         </div>
                         <div class="row">
@@ -252,14 +256,13 @@
                         <div class="d-flex justify-content-between">
                             <div class="btn-group btn-group-sm" role="group">
                                 <button type="button" class="btn btn-light btn-sm" id="add-sel"><i
-                                        class="fas fa-check"></i> Add selected
+                                        class="fas fa-check"></i> import selected
                                 </button>
                                 <button type="button" class="btn btn-light" id="del-all"><i class="fas fa-trash"></i>
                                     Delete all
                                 </button>
                             </div>
-                            <button type="button" class="btn btn-primary btn-sm" id="add-all"><i
-                                    class="fas fa-plus"></i> Add all
+                            <button type="button" class="btn btn-primary btn-sm" id="import-all"><i class="fas fa-arrow-circle-right"></i> import all
                             </button>
                         </div>
                         <div class="row p-1">
