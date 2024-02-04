@@ -19,7 +19,7 @@
         <div class="row g-1">
             <!-- Main Content Column -->
 
-            <div class="col-lg-10 col-md-9 col-sm-8">
+            <div class="col-lg-10 col-md-8 col-sm-7">
                 <div id="empty_msg"><p class="text-center text-mutated"><i class="fas fa-info-circle"></i> Please select
                     a
                     sample from the view
@@ -115,20 +115,14 @@
                     </div>
                 </div>
             </div>
-
             <!-- Sidebar Column -->
-            <div class="col-lg-2 col-md-3 col-sm-4">
-                <div id="viewbar" class="card viewbar bg-white shadow-sm">
+            <div class="col-lg-2 col-md-4 col-sm-5">
+                <div class="card bg-white shadow-sm">
                     <div class="card-title text-center text-uppercase py-2 bg-white">
                         <i class="fas fa-stream"></i>
                         View List
                         <hr class="w-50 mx-auto">
-                    </div>
-
-                    <div class="card-body p-0">
-                        <div class="row bg-light-subtle">
-                            <div class="col-12">
-                                <nav class="navbar navbar-expand py-0 my-0">
+                         <nav class="navbar navbar-expand py-0 my-0">
                                     <ul class="navbar-nav me-auto mb-md-0">
                                         <li class="nav-item">
                                             <a
@@ -175,12 +169,16 @@
                                         </li>
                                     </ul>
                                 </nav>
-                            </div>
+                    </div>
+
+                    <div class="card-body p-0">
+                        <div id="viewbar">
+                            <ul class="list-group bg-white" id="samples-list"></ul>
                         </div>
-                        <ul class="list-group bg-white" id="samples-list"></ul>
                     </div>
                 </div>
             </div>
+
         </div>
 
     </div>
@@ -255,14 +253,15 @@
                         <hr class="m-0 p-1"/>
                         <div class="d-flex justify-content-between">
                             <div class="btn-group btn-group-sm" role="group">
-                                <button type="button" class="btn btn-light btn-sm" id="add-sel"><i
+                                <button type="button" class="btn btn-light btn-sm" id="import-sel"><i
                                         class="fas fa-check"></i> import selected
                                 </button>
                                 <button type="button" class="btn btn-light" id="del-all"><i class="fas fa-trash"></i>
                                     Delete all
                                 </button>
                             </div>
-                            <button type="button" class="btn btn-primary btn-sm" id="import-all"><i class="fas fa-arrow-circle-right"></i> import all
+                            <button type="button" class="btn btn-primary btn-sm" id="import-all"><i
+                                    class="fas fa-arrow-circle-right"></i> import all
                             </button>
                         </div>
                         <div class="row p-1">

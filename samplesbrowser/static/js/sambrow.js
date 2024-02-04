@@ -12,6 +12,9 @@ $(document).ready(function () {
     function init() {
 
         fetch_meta();
+        adjust_viewbar();
+
+        $(window).resize(adjust_viewbar);
 
         const umu_tbl = document.getElementById('umu-tbl');
         $(umu_tbl).bootstrapTable('destroy');
@@ -23,14 +26,14 @@ $(document).ready(function () {
 
         $("#search-btn").click(function () {
             let formData = {
-                sampleId: $("#sampleId").val(),
-                weekNumber: $("#weekNumber").val(),
-                dateFrom: $("#dateFrom").val(),
-                dateTo: $("#dateTo").val(),
-                lineage: $("#lineage").val(),
-                mutation: $("#mutation").val(),
-                drug: $("#drug").val(),
-                resistanceCategory: $("#resistanceCategory").val()
+                sid: $("#sampleId").val(),
+                wn: $("#weekNumber").val(),
+                dtf: $("#dateFrom").val(),
+                dtt: $("#dateTo").val(),
+                lin: $("#lineage").val(),
+                rmu: $("#mutation").val(),
+                drg: $("#drug").val(),
+                rca: $("#resistanceCategory").val()
             };
             let allFieldsEmpty = Object.values(formData).every(function (value) {
                 return value === null || value.trim() === '';
@@ -40,6 +43,8 @@ $(document).ready(function () {
                 search_alert('Please fill in at least one field.')
 
             } else {
+                const search_tbl = document.getElementById('search-tbl');
+                $(search_tbl).bootstrapTable('showLoading')
                 fetchSamples(formData);
             }
 
@@ -94,6 +99,10 @@ $(document).ready(function () {
         });
     }
 
+    function adjust_viewbar(){
+      $('#viewbar').css('height', $(window).height()).css('max-height',$(window).height());
+    }
+
     function clean_search() {
         const search_tbl = document.getElementById('search-tbl');
         $(search_tbl).bootstrapTable("removeAll");
@@ -133,8 +142,11 @@ $(document).ready(function () {
     }
 
     function fetchSamples(params) {
+
+        let queryString = Object.entries(params).map(([k, v]) => `${k}=${v}`).join('&');
+        console.log(queryString)
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', '/get-samples/', true);
+        xhr.open('GET', '/get-samples/?' + queryString, true);
 
         xhr.onload = function () {
             if (xhr.status >= 200 && xhr.status < 300) {
@@ -144,9 +156,15 @@ $(document).ready(function () {
                 let infoArray = $.map(search_repo, function (value, key) {
                     return value.info;
                 });
+                const search_tbl = document.getElementById('search-tbl');
+                $(search_tbl).bootstrapTable('hideLoading');
+                document.getElementById('searchForm').reset();
                 update_search_tbl(infoArray);
             } else {
-                console.error('Error fetching samples:', xhr.statusText);
+                const search_tbl = document.getElementById('search-tbl');
+                $(search_tbl).bootstrapTable('hideLoading');
+                search_alert('Error fetching samples: ' + xhr.statusText)
+                // console.error('Error fetching samples:', xhr.statusText);
             }
         };
 

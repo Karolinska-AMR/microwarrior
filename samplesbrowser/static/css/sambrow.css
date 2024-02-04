@@ -1,9 +1,8 @@
-.viewbar {
-    bottom: 0;
-    background-color: #f3f3f3;
+#viewbar {
+    /*bottom: 0;*/
+    /*background-color: #f3f3f3;*/
     overflow-y: auto;
-    padding-top: 20px;
-    z-index: 1000;
+    /*padding-top: 20px;*/
 }
 
 .list-group-item {
