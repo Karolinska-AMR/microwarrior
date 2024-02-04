@@ -5,6 +5,8 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from itertools import chain
+from django.db.models import Q
+from django.db.models.functions import ExtractWeek, ExtractYear
 
 
 @login_required
@@ -16,9 +18,52 @@ def samplesbrowser(request):
 # TODO: use django-ratelimit to control the rate of request
 @login_required
 def fetch_samples(request):
-    samples = Sample.objects.select_related('lineage').all()
+    sample_id = request.GET.get('sid', None)
+    week_number = request.GET.get('wn', None)
+    date_from = request.GET.get('dtf', None)
+    date_to = request.GET.get('dtt', None)
+    lineage = request.GET.get('lin', None)
+    mutation = request.GET.get('rmu', None)
+    drug = request.GET.get('drg', None)
+    resistance_category = request.GET.get('rca', None)
+
+    queryset = Sample.objects.annotate(
+        extracted_week=ExtractWeek('collection_date'),
+        extracted_year=ExtractYear('collection_date')
+    )
+
+    query = Q()
+
+    if sample_id:
+        query &= Q(sample__icontains=sample_id)
+
+    if week_number:
+        y4, w = week_number.split('-')
+        w = int(w.strip('W'))
+        query &= Q(extracted_week=w, extracted_year=y4)
+
+    if date_from:
+        query &= Q(collection_date__gte=date_from)
+
+    if date_to:
+        query &= Q(collection_date__lte=date_to)
+
+    if lineage:
+        query &= Q(lineage__lin__icontains=lineage)
+
+    if mutation:
+        query &= Q(s_mutations__variant__variant__icontains=mutation)
+
+    if drug:
+        query &= Q(s_mutations__variant__drug__name__icontains=drug) & Q(s_mutations__variant__prediction='R')
+
+    if resistance_category:
+        query &= Q(category__icontains=resistance_category)
+
+    results = queryset.filter(query).distinct()
+
     data = {}
-    for sample in samples:
+    for sample in results:
         lineage = getattr(sample, 'lineage', None)
         lineage_data = {
             'lineage': lineage.lin,
