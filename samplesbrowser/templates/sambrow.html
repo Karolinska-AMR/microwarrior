@@ -26,7 +26,7 @@
                     bar.</p></div>
                 <div id="content-main" style="visibility:hidden;">
                     <div id='lin_card' class="card shadow-sm mb-2">
-                        <div class="card-header text-uppercase py-2 bg-white">
+                        <div class="card-header section-header text-uppercase py-2 bg-white">
                             <i class="fas fa-sitemap"></i> Coll's Classification
                         </div>
                         <div class="card-body">
@@ -44,8 +44,8 @@
                         </div>
                     </div>
                     <div id='pred_card' class="card shadow-sm mb-2">
-                        <div class="card-header text-uppercase py-2 bg-white">
-                            <i class="fas fa-dna"></i> Drug-resistance predictions
+                        <div class="card-header section-header text-uppercase py-2 bg-white">
+                            <i class="fas fa-dna"></i> Drug resistance predictions
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -80,7 +80,7 @@
                         </div>
                     </div>
                     <div id='umu_card' class="card shadow-sm mb-2">
-                        <div class="card-header text-uppercase py-2 bg-white">
+                        <div class="card-header section-header text-uppercase py-2 bg-white">
                             <i class="fas fa-exclamation-triangle"></i> Unverified Mutations
                         </div>
                         <div class="card-body">
@@ -118,57 +118,36 @@
             <!-- Sidebar Column -->
             <div class="col-lg-2 col-md-4 col-sm-5">
                 <div class="card bg-white shadow-sm">
-                    <div class="card-title text-center text-uppercase py-2 bg-white">
-                        <i class="fas fa-stream"></i>
-                        View List
-                        <hr class="w-50 mx-auto">
-                         <nav class="navbar navbar-expand py-0 my-0">
-                                    <ul class="navbar-nav me-auto mb-md-0">
-                                        <li class="nav-item">
-                                            <a
-                                                    class="nav-link pr-0"
-                                                    data-action="add-sample"
-                                                    href="#"
-                                                    title="Search samples"
-                                                    data-toggle="modal" data-target="#searchModal"
-                                            >
-                                                <i class="fas fa-search-plus fa-lg"></i>
+                    <div class="card-title section-header text-center text-uppercase p-0 m-0 bg-white border-4 border-bottom">
+                        <p class="pt-2"><i class="fas fa-stream"></i>
+                            View List</p>
+                        <hr class="w-75 mx-auto my-0">
+                        <nav class="navbar navbar-expand py-0 my-0">
+                            <ul class="navbar-nav me-auto mb-md-0">
+                                <li class="nav-item">
+                                    <a class="nav-link pr-0" href="#" title="Import sample" data-toggle="modal"
+                                       data-target="#searchModal">
+                                        <i class="fas fa-search-plus fa-lg"></i>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#" title="Export">
+                                        <i class="fas fa-download fa-lg"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                            <ul class="navbar-nav ml-auto mb-md-0">
+                                <li class="nav-item">
+                                    <form>
 
-                                            </a>
-                                        </li>
-                                        {#                                        <div class="vr"></div>#}
-                                        <li class="nav-item">
-                                            <a
-                                                    class="nav-link"
-                                                    data-action="removeAll"
-                                                    href="#"
-                                                    title="Delete all"
-                                            >
-                                                <i class="fas fa-download fa-lg"></i>
-
-
-                                            </a>
-                                        </li>
-                                    </ul>
-                                    <ul class="navbar-nav ml-auto mb-md-0">
-                                        <li class="nav-item">
-                                            <form>
-                                                {% csrf_token %}
-                                                <a type="submit"
-                                                   class="nav-link pr-0"
-                                                   id="submit-jobs"
-                                                   data-action="submit"
-                                                   href="#"
-                                                   title="submit"
-                                                >
-                                                    <i class="fa fa-fw fa-trash-alt fa-lg"></i>
-
-                                                </a>
-                                                <input type="file" id="choose-dir" style="display: none"/>
-                                            </form>
-                                        </li>
-                                    </ul>
-                                </nav>
+                                        <a class="nav-link pr-0" id="del-samples" href="#" title="Delete all">
+                                            <i class="fa fa-fw fa-trash-alt fa-lg"></i>
+                                        </a>
+                                        <input type="file" id="choose-dir" style="display: none"/>
+                                    </form>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
 
                     <div class="card-body p-0">

@@ -77,6 +77,8 @@ def fetch_samples(request):
                                    "collection_date": sample.collection_date,
                                    "category": sample.category,
                                    "lineage": lineage_data,
+                                    "pass_tbprofiler": sample.passed_tbprofiler,
+                                    "pass_cryptic":sample.passed_cryptic
                                    }
 
     return JsonResponse(data)

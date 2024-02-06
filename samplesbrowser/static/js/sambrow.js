@@ -99,8 +99,8 @@ $(document).ready(function () {
         });
     }
 
-    function adjust_viewbar(){
-      $('#viewbar').css('height', $(window).height()).css('max-height',$(window).height());
+    function adjust_viewbar() {
+        $('#viewbar').css('height', $(window).height()).css('max-height', $(window).height());
     }
 
     function clean_search() {
@@ -144,7 +144,7 @@ $(document).ready(function () {
     function fetchSamples(params) {
 
         let queryString = Object.entries(params).map(([k, v]) => `${k}=${v}`).join('&');
-        console.log(queryString)
+
         var xhr = new XMLHttpRequest();
         xhr.open('GET', '/get-samples/?' + queryString, true);
 
@@ -307,7 +307,7 @@ $(document).ready(function () {
         $(lin_tbl).bootstrapTable("removeAll");
         $(lin_tbl).bootstrapTable("insertRow", {index: 0, row: data.info.lineage})
 
-        // Define some sort based on line of drug
+        // Define same sort based on line of drug
         drugs.sort(function (a, b) {
             return meta.drugs.indexOf(a) - meta.drugs.indexOf(b);
         });
@@ -329,11 +329,12 @@ $(document).ready(function () {
 
 
         drugs.forEach((d) => {
+
             rows[0][d] = parse_prediction(preds[d])
             rows[1][d] = ''
             let idx = 2
             meta.catalogs.forEach((c) => {
-                rows[idx][d] = parse_cataloge(mutations[d][c])
+                rows[idx][d] = parse_cataloge(mutations[d], c)
                 idx++;
 
             });
@@ -424,8 +425,6 @@ $(document).ready(function () {
     }
 
     function fill_unverified_mu(mutations) {
-
-
         if (!mutations) {
             return
         }
@@ -437,8 +436,6 @@ $(document).ready(function () {
             r.pred_icon = `<span class="${cl}"><i class="fas fa-circle"></i></span>`
             $(umu_tbl).bootstrapTable("insertRow", {index: 0, row: r})
         });
-
-
     }
 
     function reset_evidence() {
@@ -454,15 +451,18 @@ $(document).ready(function () {
         header_icon.className = 'row';
         let flexContainer = document.createElement('div');
         flexContainer.className = 'd-flex justify-content-evenly';
-
+        let info = repo[selected_sample]["info"]
         // Iterate over the icons array and create each icon
         meta.catalogs.forEach(function (cat) {
+            let isErrorCondition = (!info["pass_cryptic"] && cat.startsWith("CRyPTIC")) ||
+                (!info["pass_tbprofiler"] && !cat.startsWith("CRyPTIC"));
+
             let pred_cat = pred[cat]
             let link = document.createElement('a');
             link.className = `cat-circle ${pred_cat ? color_mapper[pred_cat] : 'text-o'}`;
 
             link.setAttribute('title', cat);
-            link.innerHTML = `<i class="fas fa-circle"></i>`;
+            link.innerHTML = isErrorCondition ? `<i class="fas fa-question"></i>` : `<i class="fas fa-circle"></i>`;
             flexContainer.appendChild(link);
 
         });
@@ -489,9 +489,23 @@ $(document).ready(function () {
         return $(container).prop('outerHTML')
     }
 
-    function parse_cataloge(mutations) {
+    function parse_cataloge(mutations_drug, catalog) {
+        let mutations = mutations_drug[catalog]
+        let info = repo[selected_sample]["info"]
+
         if (!mutations) {
-            return `<span class="text-secondary">-</span>`
+
+
+            let isErrorCondition = (!info["pass_cryptic"] && catalog.startsWith("CRyPTIC")) ||
+                (!info["pass_tbprofiler"] && !catalog.startsWith("CRyPTIC"));
+
+            if (isErrorCondition) {
+                return `<span class="text-secondary" title="Could not assess this catalogue due to errors in the pipeline.">
+                           <i class="far fa-question-circle"></i>
+                        </span>`;
+            }
+            return `<span class="text-secondary">-</span>`;
+
         }
         mutations.sort(function (a, b) {
             return a - b;

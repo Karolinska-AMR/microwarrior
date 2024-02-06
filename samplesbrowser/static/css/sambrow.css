@@ -116,7 +116,7 @@ td {
   font-size: 0.8rem;
 }
 .table-main th{
-    background-color: #343a40;
+    background-color: #16365f;
     color: #fff!important;
 }
 .table-sub th{
@@ -133,12 +133,12 @@ td {
     font-size: 0.9rem!important;
  }
 .col-highlight .cat-circle{
-    -webkit-text-stroke: 1px #3a3b45!important;
+    -webkit-text-stroke: 1px #16365f!important;
 }
 .col-highlight-header {
     background-color: #EEF5FF!important;
     cursor: pointer;
-    color: #000!important;
-    -webkit-text-stroke: 1px #3a3b45!important;
+    color: #16365f!important;
+    -webkit-text-stroke: 1px #16365f!important;
 
 }
