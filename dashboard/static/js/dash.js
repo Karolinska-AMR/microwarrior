@@ -1,14 +1,28 @@
 $(document).ready(function () {
     let IMPORTED_SAMPLES = [];
     let DUPLICATE_SAMPLES = [];
+    let Overview_data;
     let load_flag = false;
     let isJobRunning = false;
     let jobStatusInterval;
     let interval = 1000, interval_step = 5000, interval_max = 60 * 1000;
     const timer = (ms) => new Promise((res) => setTimeout(res, ms));
 
+
+    function init() {
+        $(window).resize(function () {
+            plot_temporal_dist(Overview_data.samples)
+        });
+
+        request_overview_data();
+        generate_overview_stats();
+
+    }
+
+
     //IMPORT SECTION
     function import_connect_events() {
+
         const items = document.querySelectorAll("#import-card .dropdown-item");
         let attribs = [
             "webkitdirectory",
@@ -96,6 +110,7 @@ $(document).ready(function () {
         $(submit_btn).click(function () {
 
         });
+
     }
 
     function import_connect_cell_events() {
@@ -505,7 +520,7 @@ $(document).ready(function () {
                 }
             });
             $.ajax({
-                type:'POST',
+                type: 'POST',
                 url: 'enqjob',
                 dataType: 'json',
                 cache: false,
@@ -752,7 +767,6 @@ $(document).ready(function () {
     }
 
     $('#logmodal').on('shown.bs.modal', function () {
-        console.log('loaded!!!')
         const tbl = document.getElementById("log-tbl");
         $(tbl).bootstrapTable('destroy');
         $(tbl).bootstrapTable();
@@ -765,9 +779,153 @@ $(document).ready(function () {
         const tbl = document.getElementById("log-tbl");
         $(tbl).bootstrapTable('removeAll');
     });
-    // Function calls
+
+    function generate_overview_stats() {
+        let categories = [
+            {title: "Total Analyzed", id: "stat-total", class: "primary", icon: "fa-vials"},
+            {title: "Drug Susceptible", id: "stat-ds", class: "ds", icon: "fa-pills"},
+            {title: "Mono resistance", id: "stat-mono", class: "mono", icon: "fa-prescription-bottle"},
+            {title: "Poly-drug resistance", id: "stat-poly", class: "poly", icon: "fa-prescription-bottle-alt"},
+            {title: "MDR isolates", id: "stat-mdr", class: "mdr", icon: "fa-skull-crossbones"},
+            {title: "Pre-XDR isolates", id: "stat-prexdr", class: "prexdr", icon: "fa-exclamation-triangle"},
+            {title: "XDR isolates", id: "stat-xdr", class: "xdr", icon: "fa-biohazard"},
+            {title: "other", id: "stat-other", class: "other", icon: "fa-question-circle"},
+        ];
+
+        const container = document.getElementById('header-container')
+        categories.forEach(function (category) {
+            let card = `<div class="card border-2 border-left-${category.class} shadow-sm h-100 py-1 mx-1">
+               <div class="card-body">
+                  <div class="row align-items-center">
+                        <div class="font-weight-bold text-uppercase text-${category.class} mb-1">
+                    ${category.title}</div>
+                        <div class="h5 mb-0 text-center font-weight-bold" id="${category.id}">0</div>
+                  </div>
+               </div>
+            </div>`
+            $(container).append(card);
+        });
+
+    }
+
+    function plot_temporal_dist(data) {
+
+        if (!data) return
+
+        d3.select("#temporal-plot").selectAll('*').remove()
+        let c = d3.select('#temporal-card');
+        let cw = parseFloat(c.style('width')), ch = Math.max(200, parseFloat(c.style('height')));
+
+        const margin = {top: 10, right: 40, bottom: 20, left: 30},
+            width = cw - margin.left - margin.right,
+            height = ch - margin.top - margin.bottom;
+
+        const svg = d3.select("#temporal-plot")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        data.forEach((d) => {
+            d.value = Math.floor(Math.random() * 10) + 1;
+            d.date = new Date(d.date);
+        });
+
+        const xExtent = d3.extent(data, d => d.date);
+        xExtent[0] = new Date(xExtent[0].getTime() - 10 * 24 * 60 * 60 * 1000);
+        xExtent[1] = new Date(xExtent[1].getTime() + 10 * 24 * 60 * 60 * 1000);
+
+        const x = d3.scaleTime().domain(xExtent).range([0, width]).nice();
+        const xAxis = svg.append("g").attr('class', 'axis x-axis').attr('transform', `translate(0,${height})`).call(d3.axisBottom(x));
+
+        const y = d3.scaleLinear().domain([0, d3.max(data, d => d.value)]).range([height, 0]).nice();
+        const yAxis = d3.axisLeft(y).tickValues([]);
+        //svg.append('g').attr('class', 'axis y-axis').call(yAxis);
+
+        const brush = d3.brushX().extent([[0, -margin.top], [width, height + margin.top]]).on("end", brushended);
+        const scatter = svg.append('g').attr("clip-path", "url(#clip)");
+        scatter.append("g").attr("class", "brush").call(brush);
+
+        scatter.selectAll('.point')
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr('class', d => `point bg-${d.cat.toLowerCase()}`)
+            .attr("cx", d => x(d.date))
+            .attr("cy", d => y(d.value))
+            .attr("r", 5);
+        scatter.selectAll('.point')
+            .on('mouseover', function (event, d) {
+                var tooltip = d3.select("#tooltip");
+                tooltip.transition().duration(200).style('opacity', .9);
+                tooltip.html(`<p class="p-0 m-1 text-white"><small>Sample</small>: ${d.sample}
+                              <br><small>Category</small>: ${d.cat.toUpperCase()}</p>`)
+                    .style('left', (event.pageX + 5) + 'px')
+                    .style('top', (event.pageY - 28) + 'px');
+            })
+            .on('mouseout', function (d) {
+                var tooltip = d3.select("#tooltip");
+                tooltip.transition().duration(500).style('opacity', 0);
+            });
+
+
+        let idleTimeout;
+
+        function idled() {
+            idleTimeout = null;
+        }
+
+        function brushended(event) {
+            const selection = event.selection;
+            if (!selection) {
+                if (!idleTimeout) return idleTimeout = setTimeout(idled, 350);
+                x.domain([xExtent[0], xExtent[1]]);
+            } else {
+                const [x0, x1] = selection.map(x.invert);
+                x.domain([x0, x1]);
+                scatter.select(".brush").call(brush.move, null);
+            }
+            xAxis.transition().duration(1000).call(d3.axisBottom(x));
+            svg.selectAll("circle").transition().duration(1000).attr('cx', d => x(d.date));
+        }
+    }
+
+    function fill_stats(data) {
+        console.log(data)
+        $.each(data, function (k, v) {
+            console.log(k)
+            const el = document.getElementById(`stat-${k}`)
+            $(el).text(v)
+        })
+    }
+
+    function request_overview_data() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/fetch-overview/', true);
+
+        xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                // Parse the response JSON
+                data = JSON.parse(xhr.responseText);
+                Overview_data = data;
+                plot_temporal_dist(data.samples)
+                fill_stats(data.stats)
+            } else {
+                console.error('Error fetching samples:', xhr.statusText);
+            }
+        };
+        xhr.onerror = function () {
+            console.error('Network error');
+        };
+
+        xhr.send();
+    }
+
+// Function calls
+    init();
     import_connect_events();
     upload_connect_events();
     job_send_request()
 
-});
+})
+;

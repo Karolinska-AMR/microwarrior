@@ -1,380 +1,247 @@
-
-{% extends "base.html" %}
-{% load static %}
-{% block title %}ResHub: Dashboard{% endblock %}
-
-{% block cssblock %}
+{% extends "base.html" %} {% load static %} {% block title %}ResHub: Dashboard{% endblock %} {% block cssblock %}
     <link rel="stylesheet" href="{% static "css/bootstrap-datepicker3.min.css" %}"/>
-    <link rel="stylesheet" href="{% static "css/dash.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/dash.css" %}"/> {% endblock %} {% block menubarcontent %}
+    <li class="nav-item">
+        <a class="nav-link" aria-current="page" href="#">
+            <i class="fas fa-file-import"></i> Submit Jobs </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" aria-disabled="true" href="#">
+            <i class="fas fa-bars fa-rotate-90"></i> Jobs Queue </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" aria-disabled="true" href="#updates">
+            <i class="fas fa-chart-pie"></i> Overview </a>
+    </li>
 {% endblock %}
-
-{% block menubarcontent %}
-   <li class="nav-item">
-       <a class="nav-link" aria-current="page" href="#">
-           <i class="fas fa-file-import"></i>
-           Submit Jobs</a >
-   </li>
-   <li class="nav-item">
-       <a class="nav-link" aria-disabled="true" href="#"
-       ><i class="fas fa-bars fa-rotate-90"></i> Jobs Queue</a
-       >
-   </li>
-   <li class="nav-item">
-       <a class="nav-link" aria-disabled="true" href="#updates"
-       ><i class="fas fa-chart-pie"></i> Overview</a
-       >
-   </li>
-{% endblock %}
-
 {% block maincontent %}
- <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-12">
-                        <div id="import-card" class="card shadow-sm h-100 py-2 mx-2">
-                            <div class="card-header py-2">
-                                <h5 class="text-center text-uppercase section-header">
-                                    New Submission
-                                </h5>
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-12">
+                <div id="import-card" class="card shadow-sm h-100 py-2 mx-2">
+                    <div class="card-header py-2">
+                        <h5 class="text-center text-uppercase section-header"> New Submission </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="import-panel" class="m-fadeIn">
+                            <div class="row bg-light-subtle">
+                                <nav class="navbar navbar-expand py-0 my-0">
+                                    <ul class="navbar-nav me-auto mb-md-0">
+                                        <li class="nav-item">
+                                            <a class="nav-link pr-0" data-action="add-folder" href="#"
+                                               title="Add folder">
+                                                <i class="fa fa-fw fa-folder-open"></i> Add Folder </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link pr-0" data-action="add-files" href="#" title="Add files">
+                                                <i class="fa fa-fw fa-file-alt"></i> Add Files </a>
+                                        </li>
+                                        <div class="vr"></div>
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-action="removeAll" href="#" title="Delete all">
+                                                <i class="fa fa-fw fa-trash"></i> Delete All </a>
+                                        </li>
+                                    </ul>
+                                    <ul class="navbar-nav ml-auto mb-md-0">
+                                        <li class="nav-item">
+                                            <form> {% csrf_token %} <a type="submit" class="nav-link pr-0"
+                                                                       id="submit-jobs" data-action="submit" href="#"
+                                                                       title="submit">
+                                                <i class="fa fa-fw fa-paper-plane"></i> Submit </a>
+                                                <input type="file" id="choose-dir" style="display: none"/>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </nav>
                             </div>
-                            <div class="card-body">
-                                <div id="import-panel" class="m-fadeIn">
-                                    <div class="row bg-light-subtle">
-                                        <nav class="navbar navbar-expand py-0 my-0">
-                                            <ul class="navbar-nav me-auto mb-md-0">
-                                                <li class="nav-item">
-                                                    <a
-                                                            class="nav-link pr-0"
-                                                            data-action="add-folder"
-                                                            href="#"
-                                                            title="Add folder"
-                                                    >
-                                                        <i class="fa fa-fw fa-folder-open"></i>
-                                                        Add Folder
-                                                    </a>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <a
-                                                            class="nav-link pr-0"
-                                                            data-action="add-files"
-                                                            href="#"
-                                                            title="Add files"
-                                                    >
-                                                        <i class="fa fa-fw fa-file-alt"></i>
-                                                        Add Files
-                                                    </a>
-                                                </li>
-                                                <div class="vr"></div>
-                                                <li class="nav-item">
-                                                    <a
-                                                            class="nav-link"
-                                                            data-action="removeAll"
-                                                            href="#"
-                                                            title="Delete all"
-                                                    >
-                                                        <i class="fa fa-fw fa-trash"></i>
-                                                        Delete All
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                            <ul class="navbar-nav ml-auto mb-md-0">
-                                                <li class="nav-item">
-                                                    <form>
-                                                        {% csrf_token %}
-                                                        <a type="submit"
-                                                           class="nav-link pr-0"
-                                                           id="submit-jobs"
-                                                           data-action="submit"
-                                                           href="#"
-                                                           title="submit"
-                                                        >
-                                                            <i class="fa fa-fw fa-paper-plane"></i>
-                                                            Submit
-                                                        </a>
-                                                        <input type="file" id="choose-dir" style="display: none"/>
-                                                    </form>
-                                                </li>
-                                            </ul>
-                                        </nav>
-                                    </div>
-                                    <div class="row my-1">
-                                        <div class="col-12">
-                                            <table
-                                                    id="import-tbl"
-                                                    class="table table-sm text-sm"
-                                                    data-toggle="table"
-                                                    data-icons-prefix="fa"
-                                                    data-icons="icons"
-                                                    data-unique-id="sample"
-                                                    data-pagination="true"
-                                                    data-sortable="true"
-                                            >
-                                                <thead>
-                                                <tr>
-                                                    <th data-field="rm"></th>
-                                                    <th data-field="sample" data-sortable="true">
-                                                        Sample
-                                                    </th>
-                                                    <th
-                                                            data-field="collection_date"
-                                                            data-sortable="true"
-                                                            data-sorter="custom_sorter"
-                                                    >
-                                                        Collection date
-                                                    </th>
-                                                    <th data-field="file1">Forward</th>
-                                                    <th data-field="file2">Reverse</th>
-                                                </tr>
-                                                </thead>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div id='upload-status' class="d-flex flex-row justify-content-start my-2">
-                                            <div id="import-table-msg"
-                                                 class="message text-center mx-2">
-
-                                            </div>
-                                        </div>
-                                    </div>
+                            <div class="row my-1">
+                                <div class="col-12">
+                                    <table id="import-tbl" class="table table-sm text-sm" data-toggle="table"
+                                           data-icons-prefix="fa" data-icons="icons" data-unique-id="sample"
+                                           data-pagination="true" data-sortable="true">
+                                        <thead>
+                                        <tr>
+                                            <th data-field="rm"></th>
+                                            <th data-field="sample" data-sortable="true"> Sample</th>
+                                            <th data-field="collection_date" data-sortable="true"
+                                                data-sorter="custom_sorter"> Collection date
+                                            </th>
+                                            <th data-field="file1">Forward</th>
+                                            <th data-field="file2">Reverse</th>
+                                        </tr>
+                                        </thead>
+                                    </table>
                                 </div>
-                                <div id="upload-panel" class="m-hide m-fadeOut table-responsive">
-                                    <div class="row">
-                                        <div class="d-flex justify-content-center">
-                                            <table
-                                                    id="upload-tbl"
-                                                    class="table table-sm table-borderless text-sm"
-                                                    data-toggle="table"
-                                                    data-icons-prefix="fa"
-                                                    data-icons="icons"
-                                                    data-height="400"
-                                                    data-virtual-scroll="true"
-                                                    data-unique-id="filename">
-                                                <thead>
-                                                <tr>
-
-                                                    <th data-field="filename" data-width="400">
-                                                        File Name
-                                                    </th>
-                                                    <th data-field="progress" data-width="600">Status</th>
-                                                </tr>
-                                                </thead>
-                                            </table>
-                                        </div>
-                                    </div>
+                            </div>
+                            <div class="row">
+                                <div id='upload-status' class="d-flex flex-row justify-content-start my-2">
+                                    <div id="import-table-msg" class="message text-center mx-2"></div>
                                 </div>
                             </div>
                         </div>
-
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <div id="jobsq" class="card shadow-sm h-100 py-2 mx-2">
-                            <div class="card-header py-2">
-                                <h5 class="text-center text-uppercase section-header">
-                                    Jobs Queue
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <table
-                                                id="jobs-tbl"
-                                                class="table"
-                                                data-toggle="table"
-                                                data-icons-prefix="fa"
-                                                data-icons="icons"
-                                                data-virtual-scroll="true"
-                                                data-pagination="true"
-                                                data-search="true"
-                                                data-search-highlight="true"
-                                                data-unique-id="task_id">
-                                            <thead>
-                                            <tr>
-                                                <th data-field="status"></th>
-                                                <th data-field="actions"></th>
-                                                <th data-field="ticket">Ticket</th>
-                                                <th data-field="samples_count">Nr. isolates</th>
-                                                <th data-field="submission_timestamp">Submission timestamp</th>
-                                                <th data-field="completion_timestamp">Completion timestamp</th>
-                                                <th data-field="submitter">Submitter</th>
-                                            </tr>
-                                            </thead>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mt-4" id="overview">
-                    <div class="col-12">
-                        <h4 class="text-secondary text-uppercase text-center mb-0">
-                            Overview
-                        </h4>
-                        <h6 class="text-center text-muted text-uppercase mb-4">
-                            Previous submissions
-                        </h6>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div
-                                class="card border-2 border-left-primary shadow-sm h-100 py-2 mx-2"
-                        >
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div
-                                                class="font-weight-bold text-uppercase text-primary mb-1"
-                                        >
-                                            Total analyzed isolates
-                                        </div>
-                                        <div class="h5 mb-0 text-center font-weight-bold">
-                                            150
-                                        </div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-list-alt fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div
-                                class="card border-2 border-left-sensetive shadow-sm h-100 py-2 mx-2"
-                        >
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div
-                                                class="font-weight-bold text-uppercase text-success mb-1"
-                                        >
-                                            Sensetive isolates
-                                        </div>
-                                        <div class="h5 mb-0 text-center font-weight-bold">
-                                            135
-                                        </div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="far fa-check-circle fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div
-                                class="card border-2 border-left-mdr shadow-sm h-100 py-2 mx-2"
-                        >
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div
-                                                class="font-weight-bold text-uppercase mb-1 text-danger"
-                                        >
-                                            MDR/RR isolates
-                                        </div>
-                                        <div class="h5 mb-0 text-center font-weight-bold">
-                                            35
-                                        </div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-exclamation fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div
-                                class="card border-2 border-left-xdr shadow-sm h-100 py-2 mx-2"
-                        >
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div
-                                                class="font-weight-bold text-uppercase text-xdr mb-1"
-                                        >
-                                            XDR isolates
-                                        </div>
-                                        <div class="h5 mb-0 text-center font-weight-bold">
-                                            5
-                                        </div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-biohazard fa-2x text-gray-300"></i>
-                                    </div>
+                        <div id="upload-panel" class="m-hide m-fadeOut table-responsive">
+                            <div class="row">
+                                <div class="d-flex justify-content-center">
+                                    <table id="upload-tbl" class="table table-sm table-borderless text-sm"
+                                           data-toggle="table" data-icons-prefix="fa" data-icons="icons"
+                                           data-height="400" data-virtual-scroll="true" data-unique-id="filename">
+                                        <thead>
+                                        <tr>
+                                            <th data-field="filename" data-width="400"> File Name</th>
+                                            <th data-field="progress" data-width="600">Status</th>
+                                        </tr>
+                                        </thead>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-12">
+                <div id="jobsq" class="card shadow-sm h-100 py-2 mx-2">
+                    <div class="card-header py-2">
+                        <h5 class="text-center text-uppercase section-header"> Jobs Queue </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <table id="jobs-tbl" class="table" data-toggle="table" data-icons-prefix="fa"
+                                       data-icons="icons" data-virtual-scroll="true" data-pagination="true"
+                                       data-search="true" data-search-highlight="true" data-unique-id="task_id">
+                                    <thead>
+                                    <tr>
+                                        <th data-field="status"></th>
+                                        <th data-field="actions"></th>
+                                        <th data-field="ticket">Ticket</th>
+                                        <th data-field="samples_count">Nr. isolates</th>
+                                        <th data-field="submission_timestamp">Submission timestamp</th>
+                                        <th data-field="completion_timestamp">Completion timestamp</th>
+                                        <th data-field="submitter">Submitter</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4" id="overview">
+            <div class="col-12">
+                <h4 class="text-secondary text-uppercase text-center mb-0"> Overview </h4>
+                <h6 class="text-center text-muted text-uppercase mb-4"> Previous submissions </h6>
+            </div>
+        </div>
+        <div class="row my-2">
+            <div id='header-container' class="d-flex justify-content-center"></div>
+        </div>
+        <div class="row my-3">
+            <div class="col-lg-7 col-md-6 col-sm-12">
+                <div class="card" id="temporal-card">
+                    <div class="card-header py-2">
+                        <span class="section-header"><i class="fas fa-chart-line fa-lg"></i> Temporal Distribution of Isolates Based on Sequencing Dates</span>
+                    </div>
+                    <div class="card-body p-1">
+                        <svg id="temporal-plot"></svg>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 col-md-6 col-sm-12">
+                <div class="card">
+                    <div class="card-header py-2">
+                        <span class="section-header"><i class="fas fa-chart-pie fa-lg"></i> Lineage Distribution</span>
+                    </div>
+                    <div class="card-body">
+                        <svg id="lineage-plot"></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row my-3">
+            <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="card">
+                    <div class="card-header py-2">
+                        <span class="section-header text-capitalize"><i class="fas fa-chart-bar fa-lg"></i> Top abundant
+                            Resistance mutations</span>
+                    </div>
+                    <div class="card-body">
+                        <svg id="top-rmu-plot"></svg>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="card">
+                    <div class="card-header py-2">
+                        <span class="section-header text-capitalize"><i class="fas fa-chart-bar fa-lg"></i> Top abundant Uncertain mutations</span>
+                    </div>
+                    <div class="card-body">
+                        <svg id="top-umu-plot"></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block modalcontent %}
-<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="exampleModalLabel" style="display: none;"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-            </div>
-            <div class="modal-body">
-                Your current session will be terminated.<br/>
-                <small class="text-muted"> If you are in the process of uploading files, please ensure that your jobs
-                    have been fully submitted before proceeding with the logout.</small>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-primary" href="{% url "logout" %}">Proceed</a>
-            </div>
-        </div>
-    </div>
-</div>
+    <div id="tooltip" class="bg-secondary border rounded border-1 border-secondary"
+         style="position: absolute; opacity: 0; pointer-events: none;">
 
-<div class="modal fade" id="logmodal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Modal title</h5>
-            </div>
-            <div class="modal-body">
-                <div class="row my-1">
-                    <div class="col-12">
-                        <table
-                                id="log-tbl"
-                                class="table"
-                                data-toggle="table table-sm table-borderless"
-                                data-icons-prefix="fa"
-                                data-icons="icons"
-                                data-unique-id="sample"
-                                data-pagination="true"
-                                data-sortable="true"
-                        >
-                            <thead>
-                            <tr>
-                                <th data-field="sample" data-sortable="true">Sample</th>
-                                <th data-field="species" data-sortable="true">Species</th>
-                                <th data-field="cryptic">CRyPTIC</th>
-                                <th data-field="tbprofiler">TB-Profiler</th>
-                            </tr>
-                            </thead>
-                        </table>
-                    </div>
+    </div>
+
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="exampleModalLabel" style="display: none;"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                </div>
+                <div class="modal-body"> Your current session will be terminated. <br/>
+                    <small class="text-muted"> If you are in the process of uploading files, please ensure that your
+                        jobs have been fully submitted before proceeding with the logout.</small>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="{% url "logout" %}">Proceed</a>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
         </div>
     </div>
-</div>
-{% endblock %}
+    <div class="modal fade" id="logmodal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row my-1">
+                        <div class="col-12">
+                            <table id="log-tbl" class="table" data-toggle="table table-sm table-borderless"
+                                   data-icons-prefix="fa" data-icons="icons" data-unique-id="sample"
+                                   data-pagination="true" data-sortable="true">
+                                <thead>
+                                <tr>
+                                    <th data-field="sample" data-sortable="true">Sample</th>
+                                    <th data-field="species" data-sortable="true">Species</th>
+                                    <th data-field="cryptic">CRyPTIC</th>
+                                    <th data-field="tbprofiler">TB-Profiler</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
 
+    </div> {% endblock %}
 {% block jscontent %}
-<script src="{% static "js/dash.js" %}"></script>
+    <script src="https://d3js.org/d3.v7.js"></script>
+    <script src="{% static "js/dash.js" %}"></script>
 {% endblock %}
-

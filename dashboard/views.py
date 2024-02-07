@@ -6,9 +6,12 @@ from django.http import JsonResponse
 from flowrunner import tasks
 from flowrunner.models import Task
 from datetime import datetime, timedelta
-from django.db.models import F, CharField, Value,Count
+from django.db.models import F, CharField, Value, Count
 from django.db.models.functions import Concat
 from iomanager.models import File
+
+from samplesbrowser.models import Sample
+
 
 def home(request):
     return render(request, 'home.html')
@@ -20,6 +23,7 @@ def dashboard(request):
     return render(request, 'dashboard.html', {"name": fname})
 
 
+@login_required
 def get_jobs(request):
     end_date = datetime.now()
     start_date = end_date - timedelta(days=30)
@@ -34,20 +38,25 @@ def get_jobs(request):
                                  F('user__last_name'), output_field=CharField())
                 )
     ongoing_tasks = Task.objects.filter(status=-1).count()
-    return JsonResponse({'data': list(task_bucket),'ongoing': ongoing_tasks})
+    return JsonResponse({'data': list(task_bucket), 'ongoing': ongoing_tasks})
 
+
+@login_required
 def get_log(request):
-    ticket = request.GET.get('ticket','')
+    ticket = request.GET.get('ticket', '')
     task = Task.objects.get(ticket=ticket)
     # if len(task.logs)>0: # completed send the log back
     #     log = task.logs
     # else: # fetch the samples from
 
-    pe_samples = File.objects.filter(ticket=ticket,eof=1).values('sample').annotate(pe=Count('id')).filter(pe=2)
+    pe_samples = File.objects.filter(ticket=ticket, eof=1).values('sample').annotate(pe=Count('id')).filter(pe=2)
     log = []
     for s in pe_samples:
-        log.append({"sample":s["sample"],"species":None,"cryptic":None,"tbprofiler":None})
+        log.append({"sample": s["sample"], "species": None, "cryptic": None, "tbprofiler": None})
     return JsonResponse({'data': log})
+
+
+@login_required
 def enqueue_task(request):
     if request.method == 'POST':
         ticket = request.POST["ticket"]
@@ -57,8 +66,29 @@ def enqueue_task(request):
                   status=-1,
                   ticket=ticket,
                   user=request.user,
-                  task_id=res.task_id,samples_count=count)
+                  task_id=res.task_id, samples_count=count)
         ts.save()
         return JsonResponse({'task_id': res.task_id})
 
     return redirect('dashboard')
+
+
+@login_required
+def get_overview(request):
+    samples = Sample.objects.all()
+    data = {}
+    samlist = []
+    cat_stat = {"total": 0}
+    for sample in samples:
+        cat = sample.category.lower()
+        if cat not in cat_stat:
+            cat_stat[cat] = 0
+        cat_stat[cat] += 1
+        cat_stat['total'] += 1
+        samlist.append({"sample": sample.sample, "date": sample.collection_date, "cat": cat})
+
+    # TODO: fetch lineages
+    # TODO: fetch abundant R
+    # TODO: fetch abundant U
+
+    return JsonResponse({"stats": cat_stat, "samples": samlist})

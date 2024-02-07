@@ -38,6 +38,10 @@ body {
     line-height: 46px;
 }
 
+.navbar {
+    z-index: 1001;
+}
+
 .sidebar {
     width: 6.5rem;
     min-height: 100vh;
@@ -485,26 +489,102 @@ body {
     color: rgba(255, 255, 255, 0.5);
 }
 
-.border-left-sensetive {
-    border-left: .25rem solid #28a745 !important;
+.border-left-ds {
+    border-left: .25rem solid #4dd4ac !important;
+}
+
+.border-left-mono {
+    border-left: .25rem solid #FDE767 !important;
+}
+
+.border-left-ploy {
+    border-left: .25rem solid #FFB996 !important;
 }
 
 .border-left-mdr {
-    border-left: .25rem solid #dc3545 !important;
+    border-left: .25rem solid #e35d6a !important;
+}
+
+.border-left-prexdr {
+    border-left: .25rem solid #d63384 !important;
 }
 
 .border-left-xdr {
     border-left: .25rem solid #9F0D7F !important;
 }
 
+.border-left-other {
+    border-left: .25rem solid #BED1CF !important;
+}
+
 .border-left-primary {
     border-left: .25rem solid #007bff !important;
+}
+
+.text-ds {
+
+    color: #4dd4ac;
+}
+
+.text-mono {
+
+    color: #f5d42b;
+}
+
+.text-poly {
+
+    color: #FFB996;
+}
+
+.text-mdr {
+
+    color: #e35d6a;
+}
+
+.text-prexdr {
+
+    color: #d63384;
 }
 
 .text-xdr {
     color: #9F0D7F !important;
 }
 
+.text-other {
+    color: #BED1CF !important;
+}
+.bg-ds {
+
+    fill: #4dd4ac;
+}
+
+.bg-mono {
+
+    fill: #f5d42b;
+}
+
+.bg-poly {
+
+    fill: #FFB996;
+}
+
+.bg-mdr {
+
+    fill: #e35d6a;
+}
+
+.bg-prexdr {
+
+    fill: #d63384;
+}
+
+.bg-xdr {
+    fill: #9F0D7F;
+}
+
+.bg-other {
+    fill: #BED1CF;
+}
 .text-gray-300 {
     color: #dddfeb !important;
 }
@@ -514,6 +594,25 @@ body {
     margin-bottom: 0;
     background-color: #fff;
     border-bottom: 1px solid #e3e6f0;
+}
+
+.axis {
+    color: #636363;
+}
+
+.x-axis {
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.point {
+    stroke: #000;
+    opacity: 0.8;
+    cursor:pointer;
+}
+
+.brush {
+    background-color: #91cbe8 !important;
 }
 
 #import-card a {
@@ -577,21 +676,34 @@ body {
 }
 
 @keyframes blinking {
-    0%{ color: #ffc107}
-    50%{color: #fff}
-    100% {color:#ffc107}
-}
-@-webkit-keyframes blinking {
-    0%{ color: #ffc107}
-    50%{color: rgba(255, 193, 7, 0.38)
+    0% {
+        color: #ffc107
     }
-    100% {color:#ffc107}
+    50% {
+        color: #fff
+    }
+    100% {
+        color: #ffc107
+    }
+}
+
+@-webkit-keyframes blinking {
+    0% {
+        color: #ffc107
+    }
+    50% {
+        color: rgba(255, 193, 7, 0.38)
+    }
+    100% {
+        color: #ffc107
+    }
 }
 
 .blink {
     animation: blinking 1s ease infinite;
     -webkit-animation: blinking 1s ease infinite;
 }
+
 #log-tbl td {
     color: #444;
     font-size: 0.8rem;
