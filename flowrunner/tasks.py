@@ -124,11 +124,16 @@ def save_report(report_json,task):
                 sid = transaction.savepoint()
                 # Create Sample
                 sample, created = Sample.objects.get_or_create(sample=sample_data['seqid'],
-                                                               defaults={"task_id":task.id})
+                                                               defaults={"task_id":task.id,
+                                                                         "category": sample_data["category"],
+                                                                         "passed_tbprofiler":sample_data["tbprofiler"],
+                                                                         "passed_cryptic":sample_data["cryptic"],
+                                                                         "genome_depth":sample_data["genome_median_depth"],
+                                                                         "mapped_reads": sample_data["num_mapped_reads"],
+                                                                         "mapped_reads_pct": sample_data["pct_mapped_reads"]
+                                                                         })
 
                 # TODO: Collect sample info such as collection_date from iomanager_file
-                # TODO: Calculate the category of the sample MDR, pre-MDR, etc.
-                # TODO: Specify whether both pipeline have been successfully run.
 
                 # Create Lineage
                 Lineage.objects.create(
