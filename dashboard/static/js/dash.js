@@ -898,7 +898,190 @@ $(document).ready(function () {
             $(el).text(v)
         })
     }
+    function getSunburst(tag, data, allowedDepth) {
 
+        var margin = {
+            top: 0,
+            right: 10,
+            bottom: 20,
+            left: 15
+        };
+        var width = 195,
+            height = 195;
+        const maxRadius = (Math.min(width, height) / 2) - 5;
+
+        const formatNumber = d3.format(',d');
+
+        const x = d3.scaleLinear()
+            .range([0, 2 * Math.PI])
+            .clamp(true);
+
+        const y = d3.scaleSqrt()
+            .range([maxRadius * 0.05, maxRadius]);
+
+
+        const color = d3.scaleOrdinal($.merge(d3.schemeSpectral[11], d3.schemeBrBG[11]));
+
+        const partition = d3.partition();
+
+        const arc = d3.arc()
+            .startAngle(d => x(d.x0))
+            .endAngle(d => x(d.x1))
+            .innerRadius(d => Math.max(0, y(d.y0)))
+            .outerRadius(d => Math.max(0, y(d.y1)));
+
+        const middleArcLine = d => {
+            const halfPi = Math.PI / 2;
+            const angles = [x(d.x0) - halfPi, x(d.x1) - halfPi];
+            const r = Math.max(0, (y(d.y0) + y(d.y1)) / 2);
+
+            const middleAngle = (angles[1] + angles[0]) / 2;
+            const invertDirection = middleAngle > 0 && middleAngle < Math.PI; // On lower quadrants write text ccw
+            if (invertDirection) {
+                angles.reverse();
+            }
+            const path = d3.path();
+            path.arc(0, 0, r, angles[0], angles[1], invertDirection);
+            return path.toString();
+        };
+        const textFits = d => {
+            const CHAR_SPACE = 2;
+            const deltaAngle = x(d.x1) - x(d.x0);
+            const r = Math.max(0, (y(d.y0) + y(d.y1)) / 2);
+            const perimeter = r * deltaAngle;
+            return d.data.name.length * CHAR_SPACE < perimeter;
+        };
+
+        const svg = d3.select(tag).attr('viewBox', [-width / 2.0, -height / 2.0, width + 5, height - 1]).on('click', () => focusOn()); // Reset zoom on canvas click
+
+        var root = d3.hierarchy(data);
+        root.sum(d => d.size);
+
+        const slice = svg.selectAll('g.slice')
+            .data(partition(root).descendants());
+
+        slice.exit().remove();
+
+        const newSlice = slice.enter().filter(function (d) {
+            return (d.data.name !== "N/A") && (d.depth <= allowedDepth);
+        })
+            .append('g').attr('class', 'slice')
+            .on('click', d => {
+                d3.event.stopPropagation();
+                focusOn(d);
+            });
+        // Tooltip for the slice
+        newSlice.append('title')
+            .text(d => d.data.name + '\n' + formatNumber(d.value));
+
+        newSlice.append('path')
+            .attr('class', 'main-arc')
+            .style('fill', d => color(d.data.name))//(d.children ? d : d.parent)
+            .attr('d', arc);
+
+        newSlice.append('path')
+            .attr('class', 'hidden-arc')
+            .attr('id', (_, i) => 'hiddenArc' + i)
+            .attr('d', middleArcLine);
+
+        const text = newSlice.append('text')
+            .attr('display', d => textFits(d) ? null : 'none');
+
+        // Add white contour
+        text.append('textPath')
+            .attr('startOffset', '50%')
+            .attr('xlink:href', (_, i) => '#hiddenArc' + i)
+            .text(d => d.data.name)
+            .style('fill', 'none')
+            .style('stroke', '#f0f0f0')
+            .style('stroke-width', 2)
+            .style('stroke-linejoin', 'round');
+
+        text.append('textPath')
+            .attr('startOffset', '50%')
+            .attr('xlink:href', (_, i) => '#hiddenArc' + i)
+            .text(d => d.data.name);
+
+
+        function focusOn(d = {x0: 0, x1: 1, y0: 0, y1: 1}) {
+            // Reset to top-level if no data point specified
+            var lblHierarchyArr = [];
+            updateCategory(svg, lblHierarchyArr);
+
+            const transition = svg.transition()
+                .duration(750)
+                .tween('scale', () => {
+                    const xd = d3.interpolate(x.domain(), [d.x0, d.x1]),
+                        yd = d3.interpolate(y.domain(), [d.y0, 1]);
+                    return t => {
+                        x.domain(xd(t));
+                        y.domain(yd(t));
+                    };
+                });
+
+            transition.selectAll('path.main-arc')
+                .attrTween('d', d => () => arc(d));
+
+            transition.selectAll('path.hidden-arc')
+                .attrTween('d', d => () => middleArcLine(d));
+
+            transition.selectAll('text')
+                .attrTween('display', d => () => textFits(d) ? null : 'none');
+
+
+            lblHierarchyArr = moveStackToFront(d, lblHierarchyArr);
+            updateCategory(svg, lblHierarchyArr);
+            lblHierarchyArr = []
+
+            //
+            function moveStackToFront(elD, arr) {
+                //Check for undefined
+                if (typeof elD.data !== 'undefined') {
+                    arr.unshift(elD.data.name);
+                }
+                svg.selectAll('.slice').filter(d => d === elD)
+                    .each(function (d) {
+                        this.parentNode.appendChild(this);
+                        if (d.parent) {
+                            arr = moveStackToFront(d.parent, arr);
+                        }
+
+                    })
+                return arr;
+            }
+        }
+
+        function updateCategory(svg, lblArr) {
+            var charSpace = 4,
+                bias = 0;
+            svg.selectAll('.taxlbl').remove();
+            if (lblArr.length < 2) {
+                return;
+            }
+            $.each(lblArr, function (idx, val) {
+                if (idx === 0) {
+                    return true;
+                }
+                var gt = svg.append("g")
+                    .style('fill', '#dddddd')
+                    .style('stroke', '#212529')
+                    .style('stroke-width', 0.5)
+                    .append("text").attr("class", "taxlbl")
+                    .attr("y", (-height / 2.0) + bias + 10)
+                    .attr("x", -2 * width / 3.0);
+                if (idx === lblArr.length - 1) {
+                    gt.transition().duration(1000)
+                        .attr("x", -width / 2)
+                        .text(val);
+                } else {
+                    gt.attr("x", -width / 2)
+                        .text(val);
+                }
+
+                bias += 5;
+            });
+        }
+    }
     function request_overview_data() {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', '/fetch-overview/', true);

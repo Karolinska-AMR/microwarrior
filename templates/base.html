@@ -73,21 +73,21 @@
         <hr class="sidebar-divider"/>
 
         <li class="nav-item">
-            <a class="nav-link" href="{% url "dashboard" %}" data-message="project-workspace-cmp">
+            <a class="nav-link" href="{% url "dashboard" %}">
                 <i class="fas fa-tachometer-alt"></i>
                 <span>Dashboard</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" data-message="sample-cmp" href="#">
+            <a class="nav-link" href="{% url "samplesbrowser" %}">
                 <i class="fas fa-fw fa-search"></i>
                 <span>Samples Explorer</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="#" data-message="project-workspace-cmp">
+            <a class="nav-link" href="#">
                 <i class="fas fa-book"></i>
                 <span>Catalogues</span>
             </a>
@@ -114,7 +114,7 @@
     <div id="content-wrapper" class="d-flex flex-column">
         <div id="content">
             <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-             <div class="container-fluid">
+                <div class="container-fluid">
                     <button
                             class="navbar-toggler"
                             type="button"
@@ -181,8 +181,12 @@
             {% block maincontent %}{% endblock %}
         </div>
     </div>
-
 </div>
+    <footer class="text-center text-lg-start my-3 border-top border-secondary">
+           <div class="text-center p-3 bg-light text-dark">
+            </div>
+    </footer>
+
 {% block modalcontent %}{% endblock %}
 <a class="scroll-to-top rounded" href="#page-top">
     <i class="fa fa-chevron-up"></i>
@@ -206,7 +210,7 @@
 <script src="{% static "js/jquery.easing.js" %}"></script>
 <script src="{% static "js/style.js" %}"></script>
 
-{% block jscontent%}{% endblock %}
+{% block jscontent %}{% endblock %}
 
 </body>
 </html>
