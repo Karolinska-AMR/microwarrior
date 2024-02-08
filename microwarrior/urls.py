@@ -24,5 +24,6 @@ urlpatterns = [
     path('auth', include('users.urls')),
     path('',include('dashboard.urls')),
     path('iom/', include('iomanager.urls')),
+    path('',include('samplesbrowser.urls')),
 
 ]

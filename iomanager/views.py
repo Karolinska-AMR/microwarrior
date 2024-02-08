@@ -48,11 +48,11 @@ def upload(request, ticket):
                 return res
 
             else:
-                # should be deleted Just for creating error in uploading files
-                if request.POST['error'] == 'true':
-                    __undo_copy(f"{ticket}/{fileName}")
-                    return JsonResponse({'status': 'Reverting!'}, status=500)
-                #-------------
+                # # should be deleted Just for creating error in uploading files
+                # if request.POST['error'] == 'true':
+                #     __undo_copy(f"{ticket}/{fileName}")
+                #     return JsonResponse({'status': 'Reverting!'}, status=500)
+                # #-------------
 
                 path = fdir + fileName
                 try:

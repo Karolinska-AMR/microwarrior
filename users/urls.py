@@ -3,6 +3,7 @@ from . import views
 
 
 urlpatterns = [
+
     path('login_user', views.login_user, name="login"),
     path('logout_user', views.logout_user, name='logout'),
     path('change_password', views.PasswordsChangeView.as_view(template_name="change-password.html"),
