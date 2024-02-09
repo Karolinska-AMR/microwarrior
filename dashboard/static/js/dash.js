@@ -816,12 +816,13 @@ $(document).ready(function () {
         let c = d3.select('#temporal-card');
         let cw = parseFloat(c.style('width')), ch = Math.max(200, parseFloat(c.style('height')));
 
-        const margin = {top: 10, right: 40, bottom: 20, left: 30},
+        const margin = {top: 10, right: 40, bottom: 40, left: 30},
             width = cw - margin.left - margin.right,
             height = ch - margin.top - margin.bottom;
 
         const svg = d3.select("#temporal-plot")
-            .attr("width", width + margin.left + margin.right)
+           //.attr('viewBox', [0, 0, width, height])
+             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -891,14 +892,14 @@ $(document).ready(function () {
     }
 
     function fill_stats(data) {
-        console.log(data)
+
         $.each(data, function (k, v) {
-            console.log(k)
             const el = document.getElementById(`stat-${k}`)
             $(el).text(v)
         })
     }
-    function getSunburst(tag, data, allowedDepth) {
+
+    function getSunburst(data, allowedDepth) {
 
         var margin = {
             top: 0,
@@ -906,8 +907,8 @@ $(document).ready(function () {
             bottom: 20,
             left: 15
         };
-        var width = 195,
-            height = 195;
+        var width = 200,
+            height = 200;
         const maxRadius = (Math.min(width, height) / 2) - 5;
 
         const formatNumber = d3.format(',d');
@@ -952,11 +953,13 @@ $(document).ready(function () {
             return d.data.name.length * CHAR_SPACE < perimeter;
         };
 
-        const svg = d3.select(tag).attr('viewBox', [-width / 2.0, -height / 2.0, width + 5, height - 1]).on('click', () => focusOn()); // Reset zoom on canvas click
+        const svg = d3.select("#lineage-plot")
+            .attr('viewBox', [-width / 2.0, -height / 2.0, width + 5, height - 1])
+            .on('click', () => focusOn()); // Reset zoom on canvas click
 
         var root = d3.hierarchy(data);
-        root.sum(d => d.size);
-
+        root.sum(d => d.value);
+        console.log(root)
         const slice = svg.selectAll('g.slice')
             .data(partition(root).descendants());
 
@@ -966,8 +969,8 @@ $(document).ready(function () {
             return (d.data.name !== "N/A") && (d.depth <= allowedDepth);
         })
             .append('g').attr('class', 'slice')
-            .on('click', d => {
-                d3.event.stopPropagation();
+            .on('click', (event, d) => {
+                event.stopPropagation();
                 focusOn(d);
             });
         // Tooltip for the slice
@@ -1054,8 +1057,8 @@ $(document).ready(function () {
         function updateCategory(svg, lblArr) {
             var charSpace = 4,
                 bias = 0;
-            svg.selectAll('.taxlbl').remove();
-            if (lblArr.length < 2) {
+            svg.selectAll('.side-label').remove();
+            if (lblArr.length < 1) {
                 return;
             }
             $.each(lblArr, function (idx, val) {
@@ -1066,7 +1069,7 @@ $(document).ready(function () {
                     .style('fill', '#dddddd')
                     .style('stroke', '#212529')
                     .style('stroke-width', 0.5)
-                    .append("text").attr("class", "taxlbl")
+                    .append("text").attr("class", "side-label")
                     .attr("y", (-height / 2.0) + bias + 10)
                     .attr("x", -2 * width / 3.0);
                 if (idx === lblArr.length - 1) {
@@ -1078,10 +1081,11 @@ $(document).ready(function () {
                         .text(val);
                 }
 
-                bias += 5;
+                bias += 10;
             });
         }
     }
+
     function request_overview_data() {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', '/fetch-overview/', true);
@@ -1091,8 +1095,10 @@ $(document).ready(function () {
                 // Parse the response JSON
                 data = JSON.parse(xhr.responseText);
                 Overview_data = data;
+                console.log(Overview_data)
                 plot_temporal_dist(data.samples)
                 fill_stats(data.stats)
+                getSunburst(data.lineages, 4)
             } else {
                 console.error('Error fetching samples:', xhr.statusText);
             }
@@ -1104,7 +1110,7 @@ $(document).ready(function () {
         xhr.send();
     }
 
-// Function calls
+    // Function calls
     init();
     import_connect_events();
     upload_connect_events();

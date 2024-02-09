@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% load static %} {% block title %}ResHub: Dashboard{% endblock %} {% block cssblock %}
+{% extends "base.html" %} {% load static %} {% load pipeline %} {% block title %}ResHub: Dashboard{% endblock %} {% block cssblock %}
     <link rel="stylesheet" href="{% static "css/bootstrap-datepicker3.min.css" %}"/>
     <link rel="stylesheet" href="{% static "css/dash.css" %}"/> {% endblock %} {% block menubarcontent %}
     <li class="nav-item">
@@ -139,7 +139,7 @@
             <div id='header-container' class="d-flex justify-content-center"></div>
         </div>
         <div class="row my-3">
-            <div class="col-lg-7 col-md-6 col-sm-12">
+            <div class="col-12">
                 <div class="card" id="temporal-card">
                     <div class="card-header py-2">
                         <span class="section-header"><i class="fas fa-chart-line fa-lg"></i> Temporal Distribution of Isolates Based on Sequencing Dates</span>
@@ -149,7 +149,10 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-5 col-md-6 col-sm-12">
+
+        </div>
+        <div class="row my-3">
+            <div class="col-lg-4 col-md-4 col-sm-12">
                 <div class="card">
                     <div class="card-header py-2">
                         <span class="section-header"><i class="fas fa-chart-pie fa-lg"></i> Lineage Distribution</span>
@@ -159,9 +162,7 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row my-3">
-            <div class="col-lg-6 col-md-6 col-sm-12">
+            <div class="col-lg-4 col-md-4 col-sm-12">
                 <div class="card">
                     <div class="card-header py-2">
                         <span class="section-header text-capitalize"><i class="fas fa-chart-bar fa-lg"></i> Top abundant
@@ -172,7 +173,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6 col-md-6 col-sm-12">
+            <div class="col-lg-4 col-md-4 col-sm-12">
                 <div class="card">
                     <div class="card-header py-2">
                         <span class="section-header text-capitalize"><i class="fas fa-chart-bar fa-lg"></i> Top abundant Uncertain mutations</span>
@@ -242,6 +243,8 @@
 
     </div> {% endblock %}
 {% block jscontent %}
-    <script src="https://d3js.org/d3.v7.js"></script>
-    <script src="{% static "js/dash.js" %}"></script>
+
+    {% javascript 'dashboard_js' %}
+{#    <script src="{% static "js/dash.js" %}"></script>#}
+
 {% endblock %}

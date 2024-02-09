@@ -10,7 +10,7 @@ from django.db.models import F, CharField, Value, Count
 from django.db.models.functions import Concat
 from iomanager.models import File
 
-from samplesbrowser.models import Sample
+from samplesbrowser.models import Sample, Lineage
 
 
 def home(request):
@@ -76,7 +76,7 @@ def enqueue_task(request):
 @login_required
 def get_overview(request):
     samples = Sample.objects.all()
-    data = {}
+
     samlist = []
     cat_stat = {"total": 0}
     for sample in samples:
@@ -87,8 +87,44 @@ def get_overview(request):
         cat_stat['total'] += 1
         samlist.append({"sample": sample.sample, "date": sample.collection_date, "cat": cat})
 
-    # TODO: fetch lineages
+    lineages = Lineage.objects.all()
+    names = [l.lin for l in lineages]
+    hlin = build_hierarchy(names)
     # TODO: fetch abundant R
     # TODO: fetch abundant U
 
-    return JsonResponse({"stats": cat_stat, "samples": samlist})
+    return JsonResponse({"stats": cat_stat, "samples": samlist, "lineages": hlin})
+
+
+def build_hierarchy(items):
+    def add_or_get_node(hierarchy, name):
+        for node in hierarchy:
+            if node['name'] == name:
+                return node
+        new_node = {'name': name, 'children': []}
+        hierarchy.append(new_node)
+        return new_node
+
+    def set_leaf_counts(hierarchy, lineage, index, max_index):
+        if index == max_index:  # If it's a leaf node
+            for node in hierarchy:
+                if node['name'] == lineage:
+                    if 'value' in node:
+                        node['value'] += 1
+                    else:
+                        node['value'] = 1
+                    return
+            hierarchy.append({'name': lineage, 'value': 1})
+            return
+
+        next_name = '.'.join(lineage.split('.')[:index + 1])
+        next_node = add_or_get_node(hierarchy, next_name)
+        set_leaf_counts(next_node['children'], lineage, index + 1, max_index)
+
+    root = []
+
+    for item in items:
+        levels = item.split('.')
+        set_leaf_counts(root, item, 0, len(levels) - 1)
+
+    return {"name":"","children":root}

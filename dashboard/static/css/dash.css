@@ -553,6 +553,7 @@ body {
 .text-other {
     color: #BED1CF !important;
 }
+
 .bg-ds {
 
     fill: #4dd4ac;
@@ -585,6 +586,7 @@ body {
 .bg-other {
     fill: #BED1CF;
 }
+
 .text-gray-300 {
     color: #dddfeb !important;
 }
@@ -608,7 +610,7 @@ body {
 .point {
     stroke: #000;
     opacity: 0.8;
-    cursor:pointer;
+    cursor: pointer;
 }
 
 .brush {
@@ -708,4 +710,42 @@ body {
     color: #444;
     font-size: 0.8rem;
     text-align: center;
+}
+
+.toolTip {
+    position: absolute;
+    display: none;
+    min-width: 80px;
+    height: auto;
+    background: none repeat scroll 0 0 #ffffe0;
+    border: 1px solid #737373;
+    opacity: 0.9;
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+}
+
+.slice {
+    cursor: pointer;
+}
+
+.slice .main-arc {
+    stroke: #fff;
+    stroke-width: 1px;
+}
+
+.slice .hidden-arc {
+    fill: none;
+}
+
+.slice text {
+    font-size: .4rem;
+    pointer-events: none;
+    dominant-baseline: middle;
+    text-anchor: middle;
+    font-weight: 600;
+}
+
+.side-label {
+    font-size: 8px;
 }
