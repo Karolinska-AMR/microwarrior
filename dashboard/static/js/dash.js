@@ -16,9 +16,9 @@ $(document).ready(function () {
 
         $('.drug-select').on('change', function () {
             let selectedValue = $(this).val();
-            let group = $(this).attr('data-group')
+            let group = $(this).attr('data-group');
             if (Overview_data) {
-                plot_mutations(group, selectedValue)
+                plot_mutations(group, selectedValue);
             }
 
         });
@@ -179,7 +179,7 @@ $(document).ready(function () {
         for (let i = 0; i < dlen; i++) {
             rr = data[i];
             if (IMPORTED_SAMPLES.includes(rr.sample)) {
-                tmp += 1
+                tmp += 1;
                 continue;
             }
             IMPORTED_SAMPLES.push(rr.sample);
@@ -217,12 +217,12 @@ $(document).ready(function () {
 
 
         let files_js = filtered_files.map(function (f) {
-            let sm = f.name.split(".")[0].replace(/_[1|2]$/, "")
-            let pp = sm.split('_')
+            let sm = f.name.split(".")[0].replace(/_[1|2]$/, "");
+            let pp = sm.split('_');
             const y = '20' + pp[0].substring(0, 2);
             const m = pp[0].substring(2, 4);
             const d = pp[0].substring(4, 6);
-            let dt_str = `${y}-${m}-${d}`
+            let dt_str = `${y}-${m}-${d}`;
             let dt = dt_str, sample = pp[1];
             if (!isValidDate(dt_str)) {
                 dt = "";
@@ -328,7 +328,7 @@ $(document).ready(function () {
 
     function import_show_msg(msg, type, auto_hide = true, delay = 3000) {
         let icon, text;
-        let msg_el = document.getElementById("import-table-msg")
+        let msg_el = document.getElementById("import-table-msg");
         if (type === "danger") {
             icon = "fa-exclamation-triangle";
             text = "text-danger";
@@ -337,7 +337,7 @@ $(document).ready(function () {
             text = "text-info";
         }
         $(msg_el).removeClass("text-info")
-            .removeClass("text-danger")
+            .removeClass("text-danger");
 
         $(msg_el).addClass(text);
         $(msg_el).html(`<i class="fa fa-fw ${icon}"></i> ${msg}`);
@@ -365,7 +365,7 @@ $(document).ready(function () {
     // UPLOAD SECTION
     class Uploader {
         constructor(files) {
-            this.ticket = util_get_random()
+            this.ticket = util_get_random();
             this.files = files;
             this.max_length = 10 * 1024 * 1024; // 10 mb
             this.attempts = 5;
@@ -379,7 +379,7 @@ $(document).ready(function () {
 
         initFileUpload() {
             if (this.files.length > 0) {
-                let f = this.files[this.files.length - 1]
+                let f = this.files[this.files.length - 1];
                 this.file = f.file;
 
                 // load meta-data
@@ -393,14 +393,14 @@ $(document).ready(function () {
                 });
             } else {
                 upload_setup_progressbar();
-                util_toggle_panel('import')
-                this.reset_attempts()
+                util_toggle_panel('import');
+                this.reset_attempts();
 
 
                 if (this.uploaded_samples_count > 0) {
                     //submitting the job
                     //*******
-                    this.submit_jobs(this.uploaded_samples_count)
+                    this.submit_jobs(this.uploaded_samples_count);
                 }
             }
 
@@ -419,7 +419,7 @@ $(document).ready(function () {
             var formData = new FormData();
             var nextChunk = start + this.max_length + 1;
             var currentChunk = this.file.slice(start, nextChunk);
-            var uploadedChunk = start + currentChunk.size
+            var uploadedChunk = start + currentChunk.size;
 
             //should be deleted, will keep it for future verification
             var error = false;//Math.random() > 0.98;
@@ -457,10 +457,10 @@ $(document).ready(function () {
                             } else {
                                 var percent = Math.round((uploadedChunk / self.file.size) * 100);
                             }
-                            let prog = document.getElementsByClassName("active-progress")
-                            $(prog).parent().removeClass('invisible')
-                            $(prog).css('width', percent + '%')
-                            $(prog).text(percent + '%')
+                            let prog = document.getElementsByClassName("active-progress");
+                            $(prog).parent().removeClass('invisible');
+                            $(prog).css('width', percent + '%');
+                            $(prog).text(percent + '%');
 
                         }
                     });
@@ -475,25 +475,25 @@ $(document).ready(function () {
                 data: formData,
                 error: function (xhr) {
                     let prog = document.getElementsByClassName("active-progress");
-                    $(prog).removeClass('bg-success').addClass('bg-danger')
-                    self.attempts -= 1
+                    $(prog).removeClass('bg-success').addClass('bg-danger');
+                    self.attempts -= 1;
                     if (self.attempts < 0) {
                         self.files.pop();
                         self.reset_attempts();
                     }
-                    self.initFileUpload()
+                    self.initFileUpload();
                 },
                 success: function (res) {
                     if (nextChunk < self.file.size) {
                         // upload file in chunks
-                        existingPath = res.existingPath
+                        existingPath = res.existingPath;
                         self.upload_file(nextChunk, existingPath);
                     } else {
                         // upload complete
                         self.reset_attempts();
 
                         if (self.uploaded_files[self.sample] === undefined) {
-                            self.uploaded_files[self.sample] = {"1": false, "2": false}
+                            self.uploaded_files[self.sample] = {"1": false, "2": false};
                         }
                         self.uploaded_files[self.sample][self.read] = true;
 
@@ -510,7 +510,7 @@ $(document).ready(function () {
                         }
 
                         self.files.pop();
-                        self.initFileUpload()
+                        self.initFileUpload();
                     }
                 }
             });
@@ -519,8 +519,8 @@ $(document).ready(function () {
         submit_jobs(samples_count) {
 
             var formData = new FormData();
-            formData.append('ticket', this.ticket)
-            formData.append('samples_count', samples_count.toString())
+            formData.append('ticket', this.ticket);
+            formData.append('samples_count', samples_count.toString());
 
             $.ajaxSetup({
                 // make sure to send the header
@@ -542,7 +542,7 @@ $(document).ready(function () {
                         isJobRunning = true;
                         jobStatusInterval = setInterval(job_send_request, interval);
                     }
-                    job_send_request()
+                    job_send_request();
                 },
                 error: function (xhr, errmsg, err) {
                     console.log('ERROR!!!');
@@ -555,14 +555,14 @@ $(document).ready(function () {
         $("#submit-jobs").on('click', function (event) {
             event.preventDefault();
 
-            let files = upload_get_files()
+            let files = upload_get_files();
             if (files.length > 0) {
-                upload_setup_table(files)
-                let uploader = new Uploader(files)
+                upload_setup_table(files);
+                let uploader = new Uploader(files);
                 uploader.upload();
             } else {
                 import_show_msg("Kindly begin by importing Illumina files " +
-                    "in the pair-end format ({*_1/*_2}.fastq.gz).", "danger", 1e4)
+                    "in the pair-end format ({*_1/*_2}.fastq.gz).", "danger", 1e4);
             }
 
         });
@@ -572,11 +572,11 @@ $(document).ready(function () {
     function upload_get_files() {
         let data = $("#import-tbl").bootstrapTable("getData");
 
-        let files = []
+        let files = [];
         data.forEach((row) => {
             if (!DUPLICATE_SAMPLES.includes(row.sample)) {
-                files.unshift({file: row.fobj1, sample: row.sample, cdate: row.v_collection_date, read: '1'})
-                files.unshift({file: row.fobj2, sample: row.sample, cdate: row.v_collection_date, read: '2'})
+                files.unshift({file: row.fobj1, sample: row.sample, cdate: row.v_collection_date, read: '1'});
+                files.unshift({file: row.fobj2, sample: row.sample, cdate: row.v_collection_date, read: '2'});
             }
         });
         return files;
@@ -594,7 +594,7 @@ $(document).ready(function () {
             $(td).next().find(".progress-bar")
                 .addClass('active-progress')
                 .removeClass("bg-success")
-                .removeClass("bg-danger")
+                .removeClass("bg-danger");
 
         }
     }
@@ -602,11 +602,11 @@ $(document).ready(function () {
     function upload_setup_table(files) {
 
         util_toggle_panel('upload');
-        let upload_tbl = document.getElementById("upload-tbl")
+        let upload_tbl = document.getElementById("upload-tbl");
         let progress_bar = `<div class="progress invisible">
                                         <div class="progress-bar" role="progressbar" style="width: 0%;" 
                                         aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-                                   </div>`
+                                   </div>`;
         $(upload_tbl).bootstrapTable("removeAll");
         files.forEach((fj) => {
             $(upload_tbl).bootstrapTable("insertRow", {
@@ -618,7 +618,7 @@ $(document).ready(function () {
 
     function job_update_table(data) {
 
-        const status_icon = {"0": "text-success", '1': "text-danger", '-1': 'blink'}
+        const status_icon = {"0": "text-success", '1': "text-danger", '-1': 'blink'};
         const tbl = document.querySelector("#jobs-tbl");
         $(tbl).bootstrapTable("destroy");
         $(tbl).bootstrapTable({
@@ -645,7 +645,7 @@ $(document).ready(function () {
 
     function job_connect_cell_events() {
         // connect view logs events
-        const status_icon = {"0": "text-success", '1': "text-danger", '-1': 'blink'}
+        const status_icon = {"0": "text-success", '1': "text-danger", '-1': 'blink'};
         const tbl = document.querySelector("#jobs-tbl");
 
         const log_btns = tbl.querySelectorAll(".job-log");
@@ -658,7 +658,7 @@ $(document).ready(function () {
                 const mdl = document.getElementById("logmodal");
 
                 $(mdl).find('.modal-title').html(`<a class="status" title="status" ><i class="fa fa-circle ${status_icon[stat]}"></i></a>
-                                                                    <span class="text-muted"> Ticket log: <small>${tkt}</small></span>`)
+                                                                    <span class="text-muted"> Ticket log: <small>${tkt}</small></span>`);
                 $(mdl).modal('show');
 
                 timer(1000).then(r => {
@@ -666,7 +666,7 @@ $(document).ready(function () {
                 });
 
                 event.preventDefault();
-            })
+            });
 
         });
     }
@@ -679,7 +679,7 @@ $(document).ready(function () {
             success: function (response) {
                 // Process the response data
                 console.log(response);
-                job_fill_log(response['data'])
+                job_fill_log(response['data']);
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.error('Error:', textStatus, errorThrown);
@@ -689,11 +689,11 @@ $(document).ready(function () {
 
     function job_fill_log(data) {
         const tbl = document.getElementById("log-tbl");
-        $(tbl).bootstrapTable('hideLoading')
+        $(tbl).bootstrapTable('hideLoading');
 
         let rec;
-        let success = `<span class="text-success"> <i class="fas fa-check"></i></span>`
-        let failed = `<span class="text-danger"> <i class="fas fa-times"></i></span>`
+        let success = `<span class="text-success"> <i class="fas fa-check"></i></span>`;
+        let failed = `<span class="text-danger"> <i class="fas fa-times"></i></span>`;
         for (let i = 0; i < data.length; i++) {
             rec = data[i];
             rec.cryptic = rec.cryptic === '0' ? success : failed;
@@ -730,26 +730,26 @@ $(document).ready(function () {
             error: function (xhr, errmsg, err) {
                 console.log(xhr.status + ": " + xhr.responseText);
             }
-        })
+        });
     }
 
     // UTILITY SECTION
     function util_toggle_panel(mode) {
         let p_hide, p_show;
         if (mode === "upload") {
-            p_hide = document.getElementById("import-panel")
-            p_show = document.getElementById("upload-panel")
+            p_hide = document.getElementById("import-panel");
+            p_show = document.getElementById("upload-panel");
 
         } else {
-            p_show = document.getElementById("import-panel")
-            p_hide = document.getElementById("upload-panel")
+            p_show = document.getElementById("import-panel");
+            p_hide = document.getElementById("upload-panel");
         }
-        $(p_hide).removeClass('m-fadeIn').addClass('m-fadeOut')
-        $(p_show).removeClass('m-hide').addClass('m-show')
+        $(p_hide).removeClass('m-fadeIn').addClass('m-fadeOut');
+        $(p_show).removeClass('m-hide').addClass('m-show');
         timer(500).then(r => {
-            $(p_hide).removeClass('m-show').addClass('m-hide')
-            $(p_show).removeClass('m-fadeOut').addClass('m-fadeIn')
-        })
+            $(p_hide).removeClass('m-show').addClass('m-hide');
+            $(p_show).removeClass('m-fadeOut').addClass('m-fadeIn');
+        });
     }
 
     function util_get_random(length = 4) {
@@ -780,12 +780,11 @@ $(document).ready(function () {
         $(tbl).bootstrapTable('destroy');
         $(tbl).bootstrapTable();
         $(tbl).bootstrapTable('refreshOptions', {classes: "table-sm table-borderless"});
-        $(tbl).bootstrapTable('showLoading')
+        $(tbl).bootstrapTable('showLoading');
 
     });
     $('#logmodal').on('hidden.bs.modal', function () {
-        console.log('loaded!!!')
-        const tbl = document.getElementById("log-tbl");
+         const tbl = document.getElementById("log-tbl");
         $(tbl).bootstrapTable('removeAll');
     });
 
@@ -801,7 +800,7 @@ $(document).ready(function () {
             {title: "other", id: "stat-other", class: "other", icon: "fa-question-circle"},
         ];
 
-        const container = document.getElementById('header-container')
+        const container = document.getElementById('header-container');
         categories.forEach(function (category) {
             let card = `<div class="card border-2 border-left-${category.class} shadow-sm h-100 py-1 mx-1">
                <div class="card-body">
@@ -811,7 +810,7 @@ $(document).ready(function () {
                         <div class="h5 mb-0 text-center font-weight-bold" id="${category.id}">0</div>
                   </div>
                </div>
-            </div>`
+            </div>`;
             $(container).append(card);
         });
 
@@ -819,9 +818,9 @@ $(document).ready(function () {
 
     function plot_temporal_dist(data) {
 
-        if (!data) return
+        if (!data) return;
 
-        d3.select("#temporal-plot").selectAll('*').remove()
+        d3.select("#temporal-plot").selectAll('*').remove();
         let c = d3.select('#temporal-card');
         let cw = parseFloat(c.style('width')), ch = Math.min(200, parseFloat(c.style('height')));
 
@@ -838,11 +837,11 @@ $(document).ready(function () {
         var prvdt = '';
         var prvidx = 5;
         var step = 0.5;
-        var cnt = 1
+        var cnt = 1;
         data.sort((a, b) => (a.date > b.date) ? 1 : (a.date < b.date) ? -1 : 0);
         data.forEach((d) => {
             if (d.date.toString() === prvdt) {
-                prvidx = prvidx + step
+                prvidx = prvidx + step;
             } else {
                 prvidx = 5;
                 step = 1;
@@ -921,9 +920,9 @@ $(document).ready(function () {
     function fill_stats(data) {
 
         $.each(data, function (k, v) {
-            const el = document.getElementById(`stat-${k}`)
-            $(el).text(v)
-        })
+            const el = document.getElementById(`stat-${k}`);
+            $(el).text(v);
+        });
     }
 
     function plot_lineages(data, allowedDepth) {
@@ -980,7 +979,7 @@ $(document).ready(function () {
 
         var root = d3.hierarchy(data);
         root.sum(d => d.value);
-        console.log(root)
+
         const slice = svg.selectAll('g.slice')
             .data(partition(root).descendants());
 
@@ -1003,7 +1002,7 @@ $(document).ready(function () {
             .style('fill', d => color(d.data.name))//(d.children ? d : d.parent)
             .attr('d', arc)
             .on('mouseover', function (event, d) {
-                let name = d.data.name.length===0? 'All' : d.data.name
+                let name = d.data.name.length===0? 'All' : d.data.name;
                 var tooltip = d3.select("#tooltip");
                 tooltip.transition().duration(200).style('opacity', .9);
                 tooltip.html(`<p class="p-0 m-1 text-white "><span class="text-break text-center">${name}</span>
@@ -1015,7 +1014,7 @@ $(document).ready(function () {
                 var tooltip = d3.select("#tooltip");
                 tooltip.transition().duration(500).style('opacity', 0);
             });
-        ;
+
 
         newSlice.append('path')
             .attr('class', 'hidden-arc')
@@ -1069,7 +1068,7 @@ $(document).ready(function () {
 
             lblHierarchyArr = moveStackToFront(d, lblHierarchyArr);
             updateCategory(svg, lblHierarchyArr);
-            lblHierarchyArr = []
+            lblHierarchyArr = [];
 
             //
             function moveStackToFront(elD, arr) {
@@ -1084,7 +1083,7 @@ $(document).ready(function () {
                             arr = moveStackToFront(d.parent, arr);
                         }
 
-                    })
+                    });
                 return arr;
             }
         }
@@ -1122,13 +1121,13 @@ $(document).ready(function () {
     }
 
     function plot_mutations(pred, drug) {
-        let mutations = Overview_data['mutations']
+        let mutations = Overview_data.mutations;
         let svg_tag = pred === 'R' ? '#top-rmu-plot' : '#top-umu-plot';
         let bar_color = pred === 'R' ? '#dc3545' : '#ffc107';
-        d3.select(svg_tag).selectAll('*').remove()
+        d3.select(svg_tag).selectAll('*').remove();
 
         if (!mutations[pred][drug]) return;
-        let data = mutations[pred][drug]
+        let data = mutations[pred][drug];
         const margin = {top: 20, right: 30, bottom: 90, left: 40},
             width = 500 - margin.left - margin.right,
             height = 450 - margin.top - margin.bottom;
@@ -1193,20 +1192,20 @@ $(document).ready(function () {
             .attr("y", d => y(d.frequency))
             .attr("height", d => height - y(d.frequency))
             .delay((d, i) => {
-                return i * 100
-            })
+                return i * 100;
+            });
 
         function break_label(label) {
             if (label.length > 15) {
                 label = label.substring(0, 12) + '...';
             }
-            return label
+            return label;
         }
     }
 
     function setup_drugs_dropdowns(data) {
         function fill(groups, tag) {
-            const select_ele = document.getElementById(tag)
+            const select_ele = document.getElementById(tag);
             $.each(groups, function (drug, _) {
                 $(select_ele).append(`<option value="${drug}"> ${drug} </option>`);
             });
@@ -1230,11 +1229,11 @@ $(document).ready(function () {
                 // Parse the response JSON
                 data = JSON.parse(xhr.responseText);
                 Overview_data = data;
-                console.log(Overview_data)
-                plot_temporal_dist(data.samples)
-                fill_stats(data.stats)
-                plot_lineages(data.lineages, 4)
-                setup_drugs_dropdowns(data.mutations)
+                console.log(Overview_data);
+                plot_temporal_dist(data.samples);
+                fill_stats(data.stats);
+                plot_lineages(data.lineages, 4);
+                setup_drugs_dropdowns(data.mutations);
             } else {
                 console.error('Error fetching samples:', xhr.statusText);
             }
@@ -1250,7 +1249,7 @@ $(document).ready(function () {
     init();
     import_connect_events();
     upload_connect_events();
-    job_send_request()
+    job_send_request();
 
 })
 ;
