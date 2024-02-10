@@ -10,8 +10,17 @@ $(document).ready(function () {
 
 
     function init() {
-        $(window).resize(function () {
-            plot_temporal_dist(Overview_data.samples)
+        // $(window).resize(function () {
+        //     plot_temporal_dist(Overview_data.samples)
+        // });
+
+        $('.drug-select').on('change', function () {
+            let selectedValue = $(this).val();
+            let group = $(this).attr('data-group')
+            if (Overview_data) {
+                plot_mutations(group, selectedValue)
+            }
+
         });
 
         request_overview_data();
@@ -814,22 +823,40 @@ $(document).ready(function () {
 
         d3.select("#temporal-plot").selectAll('*').remove()
         let c = d3.select('#temporal-card');
-        let cw = parseFloat(c.style('width')), ch = Math.max(200, parseFloat(c.style('height')));
+        let cw = parseFloat(c.style('width')), ch = Math.min(200, parseFloat(c.style('height')));
 
         const margin = {top: 10, right: 40, bottom: 40, left: 30},
             width = cw - margin.left - margin.right,
             height = ch - margin.top - margin.bottom;
 
         const svg = d3.select("#temporal-plot")
-           //.attr('viewBox', [0, 0, width, height])
-             .attr("width", width + margin.left + margin.right)
+            //.attr('viewBox', [0, 0, width, height])
+            .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
-
+        var prvdt = '';
+        var prvidx = 5;
+        var step = 0.5;
+        var cnt = 1
+        data.sort((a, b) => (a.date > b.date) ? 1 : (a.date < b.date) ? -1 : 0);
         data.forEach((d) => {
-            d.value = Math.floor(Math.random() * 10) + 1;
+            if (d.date.toString() === prvdt) {
+                prvidx = prvidx + step
+            } else {
+                prvidx = 5;
+                step = 1;
+                cnt = 1;
+            }
+            if (prvidx > 10) {
+                step = 1 + (cnt*.2);
+                prvidx = 0.5+(cnt*.2);
+                cnt +=1;
+            }
+            prvdt = d.date;
+            d.value = prvidx;
             d.date = new Date(d.date);
+            d.date = new Date(d.date.getTime() + Math.min(1, Math.abs(Math.random())) * 18 * 3600 * 1000);
         });
 
         const xExtent = d3.extent(data, d => d.date);
@@ -852,7 +879,7 @@ $(document).ready(function () {
             .enter()
             .append("circle")
             .attr('class', d => `point bg-${d.cat.toLowerCase()}`)
-            .attr("cx", d => x(d.date))
+            .attr("cx", d => x(d.date) )
             .attr("cy", d => y(d.value))
             .attr("r", 5);
         scatter.selectAll('.point')
@@ -899,15 +926,9 @@ $(document).ready(function () {
         })
     }
 
-    function getSunburst(data, allowedDepth) {
+    function plot_lineages(data, allowedDepth) {
 
-        var margin = {
-            top: 0,
-            right: 10,
-            bottom: 20,
-            left: 15
-        };
-        var width = 200,
+        let width = 200,
             height = 200;
         const maxRadius = (Math.min(width, height) / 2) - 5;
 
@@ -974,13 +995,27 @@ $(document).ready(function () {
                 focusOn(d);
             });
         // Tooltip for the slice
-        newSlice.append('title')
-            .text(d => d.data.name + '\n' + formatNumber(d.value));
+        // newSlice.append('title')
+        //     .text(d => d.data.name + '\n' + formatNumber(d.value));
 
         newSlice.append('path')
             .attr('class', 'main-arc')
             .style('fill', d => color(d.data.name))//(d.children ? d : d.parent)
-            .attr('d', arc);
+            .attr('d', arc)
+            .on('mouseover', function (event, d) {
+                let name = d.data.name.length===0? 'All' : d.data.name
+                var tooltip = d3.select("#tooltip");
+                tooltip.transition().duration(200).style('opacity', .9);
+                tooltip.html(`<p class="p-0 m-1 text-white "><span class="text-break text-center">${name}</span>
+                              <br><small>Frequency</small>: ${formatNumber(d.value)} </p>`)
+                    .style('left', (event.pageX + 5) + 'px')
+                    .style('top', (event.pageY - 28) + 'px');
+            })
+            .on('mouseout', function (d) {
+                var tooltip = d3.select("#tooltip");
+                tooltip.transition().duration(500).style('opacity', 0);
+            });
+        ;
 
         newSlice.append('path')
             .attr('class', 'hidden-arc')
@@ -1086,6 +1121,106 @@ $(document).ready(function () {
         }
     }
 
+    function plot_mutations(pred, drug) {
+        let mutations = Overview_data['mutations']
+        let svg_tag = pred === 'R' ? '#top-rmu-plot' : '#top-umu-plot';
+        let bar_color = pred === 'R' ? '#dc3545' : '#ffc107';
+        d3.select(svg_tag).selectAll('*').remove()
+
+        if (!mutations[pred][drug]) return;
+        let data = mutations[pred][drug]
+        const margin = {top: 20, right: 30, bottom: 90, left: 40},
+            width = 500 - margin.left - margin.right,
+            height = 450 - margin.top - margin.bottom;
+
+        // append the svg object to the body of the page
+        const svg = d3.select(svg_tag)
+            // .attr("width", width + margin.left + margin.right)
+            // .attr("height", height + margin.top + margin.bottom)
+            .attr('viewBox', [0, 0, width + margin.left + margin.right, height + margin.top + margin.bottom])
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+
+        // X axis
+        const x = d3.scaleBand()
+            .range([0, width])
+            .domain(data.map(d => d.mutation))
+            .padding(0.2);
+        svg.append("g")
+            .attr("transform", `translate(0,${height})`)
+            .attr('class', 'axis x-axis')
+            .call(d3.axisBottom(x).tickFormat(break_label))
+            .selectAll("text")
+            .attr("transform", "translate(-10,0)rotate(-45)")
+            .style("text-anchor", "end");
+
+        // Add Y axis
+        const y = d3.scaleLinear()
+            .domain([0, 1])
+            .range([height, 0]);
+        svg.append("g").attr('class', 'axis y-axis')
+            .call(d3.axisLeft(y).tickFormat(d3.format("~%")));
+
+        // Bars
+        svg.selectAll("mybar")
+            .data(data)
+            .join("rect")
+            .attr("x", d => x(d.mutation))
+            .attr("width", x.bandwidth())
+            .attr("fill", bar_color)
+            // no bar at the beginning thus:
+            .attr("height", d => height - y(0)) // always equal to 0
+            .attr("y", d => y(0))
+            .style('cursor', 'pointer')
+            .on('mouseover', function (event, d) {
+                var tooltip = d3.select("#tooltip");
+                tooltip.transition().duration(200).style('opacity', .9);
+                tooltip.html(`<p class="p-0 m-1 text-white "><small>Mutation</small>: <span class="text-break">${d.mutation}</span>
+                              <br><small>Frequency</small>: ${d.frequency * 100.0}%</p>`)
+                    .style('left', (event.pageX + 5) + 'px')
+                    .style('top', (event.pageY - 28) + 'px');
+            })
+            .on('mouseout', function (d) {
+                var tooltip = d3.select("#tooltip");
+                tooltip.transition().duration(500).style('opacity', 0);
+            });
+
+        // Animation
+        svg.selectAll("rect")
+            .transition()
+            .duration(800)
+            .attr("y", d => y(d.frequency))
+            .attr("height", d => height - y(d.frequency))
+            .delay((d, i) => {
+                return i * 100
+            })
+
+        function break_label(label) {
+            if (label.length > 15) {
+                label = label.substring(0, 12) + '...';
+            }
+            return label
+        }
+    }
+
+    function setup_drugs_dropdowns(data) {
+        function fill(groups, tag) {
+            const select_ele = document.getElementById(tag)
+            $.each(groups, function (drug, _) {
+                $(select_ele).append(`<option value="${drug}"> ${drug} </option>`);
+            });
+        }
+
+        fill(data.R, 'rmu-select');
+        fill(data.U, 'umu-select');
+
+        $(".drug-select").each(function () {
+            $(this).trigger('change');
+        });
+
+    }
+
     function request_overview_data() {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', '/fetch-overview/', true);
@@ -1098,7 +1233,8 @@ $(document).ready(function () {
                 console.log(Overview_data)
                 plot_temporal_dist(data.samples)
                 fill_stats(data.stats)
-                getSunburst(data.lineages, 4)
+                plot_lineages(data.lineages, 4)
+                setup_drugs_dropdowns(data.mutations)
             } else {
                 console.error('Error fetching samples:', xhr.statusText);
             }

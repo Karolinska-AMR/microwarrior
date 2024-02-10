@@ -600,11 +600,9 @@ body {
 
 .axis {
     color: #636363;
-}
-
-.x-axis {
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     font-weight: 700;
+
 }
 
 .point {
@@ -739,7 +737,7 @@ body {
 }
 
 .slice text {
-    font-size: .4rem;
+    font-size: .3rem;
     pointer-events: none;
     dominant-baseline: middle;
     text-anchor: middle;
@@ -747,5 +745,5 @@ body {
 }
 
 .side-label {
-    font-size: 8px;
+    font-size: 6px;
 }

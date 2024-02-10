@@ -9,8 +9,8 @@ from datetime import datetime, timedelta
 from django.db.models import F, CharField, Value, Count
 from django.db.models.functions import Concat
 from iomanager.models import File
-
-from samplesbrowser.models import Sample, Lineage
+from django.db.models import Sum, F
+from samplesbrowser.models import Sample, Lineage, Mutation, Drug
 
 
 def home(request):
@@ -90,10 +90,51 @@ def get_overview(request):
     lineages = Lineage.objects.all()
     names = [l.lin for l in lineages]
     hlin = build_hierarchy(names)
-    # TODO: fetch abundant R
-    # TODO: fetch abundant U
 
-    return JsonResponse({"stats": cat_stat, "samples": samlist, "lineages": hlin})
+    top_mu = fetch_abundant_mutations(10)
+
+    return JsonResponse({"stats": cat_stat, "samples": samlist, "lineages": hlin,'mutations':top_mu})
+
+
+def fetch_abundant_mutations(size=10):
+
+    # A dictionary to hold the top mutations for each drug and prediction value
+    top_mutations_grouped = {'R': {}, 'U': {}}
+    # Fetch all drugs
+    drugs = Drug.objects.all()
+    for prediction_value in ['R', 'U']:
+        for drug in drugs:
+            # Calculate the total frequency of mutations for this drug and prediction value
+            total_freq = Mutation.objects.filter(
+                variant__drug=drug,
+                variant__prediction=prediction_value,
+                variant__name='WHO-UCN-2023.5'
+            ).aggregate(total=Sum('freq'))['total'] or 1
+
+            # Fetch top 10 mutations for the current drug and prediction value
+            top_mutations = Mutation.objects.filter(
+                variant__drug=drug,
+                variant__prediction=prediction_value,
+                variant__name='WHO-UCN-2023.5'
+            ).values(
+                'variant__gene', 'variant__variant'
+            ).annotate(
+                freq_sum=Sum('freq')
+            ).annotate(
+                freq_percentage=F('freq_sum') / total_freq
+            ).order_by('-freq_sum')[:size]
+
+            # Format the results as a list of dictionaries
+            formatted_mutations = [
+                {'mutation': f"{mutation['variant__gene']}@{mutation['variant__variant']}",
+                 'frequency': round(mutation['freq_percentage'],2)}
+                for mutation in top_mutations
+            ]
+            if(len(formatted_mutations)>0):
+                top_mutations_grouped[prediction_value][drug.name] = formatted_mutations
+
+
+    return top_mutations_grouped
 
 
 def build_hierarchy(items):
@@ -127,4 +168,4 @@ def build_hierarchy(items):
         levels = item.split('.')
         set_leaf_counts(root, item, 0, len(levels) - 1)
 
-    return {"name":"","children":root}
+    return {"name": "", "children": root}
