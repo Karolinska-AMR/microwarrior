@@ -3,100 +3,51 @@ from __future__ import absolute_import, unicode_literals
 import glob
 import subprocess
 from celery import Task
-from pathlib import Path
 from microwarrior.celery import app
 from .models import Task as djTask
 from datetime import datetime
-import os, time
+import os
 from glob import glob
 import json
 from samplesbrowser.models import Sample, Lineage, Catalog, Mutation, UnverifiedMutation
 from django.db import transaction
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-working_dir = os.path.join(BASE_DIR, 'media/wf')
-results_dir = os.path.join(working_dir, 'out')
+from django.conf import settings
+from iomanager.models import File
 
 
 class Task_handler(Task):
     def on_success(self, retval, task_id, args, kwargs):
-        djTask.objects.filter(task_id=task_id).update(status=0,
-                                                      completion_timestamp=datetime.now(),
-                                                      logs=retval)
+        djTask.objects.filter(task_id=task_id) \
+            .update(status=0, completion_timestamp=datetime.now(), logs=retval)
+
         tsk = djTask.objects.get(task_id=task_id)
-        json_file = glob(os.path.join(results_dir, f'*{tsk.ticket}*.json'))
+
+        json_file = glob(os.path.join(settings.ARCHIVE_ROOT, f'reports/{tsk.ticket}.json'))
+
         if len(json_file) > 0:
-            save_report(json_file[0],tsk)
+            save_report(json_file[0], tsk)
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         djTask.objects.filter(task_id=task_id).update(status=1
-                                                      ,completion_timestamp=datetime.now(),
+                                                      , completion_timestamp=datetime.now(),
                                                       logs=einfo)
 
 
 @app.task(base=Task_handler)
 def spear_mtb(ticket):
-    print(BASE_DIR)
-    workflow_dir = os.path.join(BASE_DIR, 'workflow')
-    working_dir = os.path.join(BASE_DIR, 'media/wf')
-    results_dir = os.path.join(working_dir, 'out')
-    input_dir = os.path.join(BASE_DIR, 'media/uploaded/', ticket)
-    trace_file = f"{ticket}.txt"
+    runner = [os.path.join(settings.WORKFLOW_ROOT, 'spear-mtb.sh'),
+              "-w", settings.WORKING_ROOT,
+              "-c", os.path.join(settings.WORKFLOW_ROOT, 'main.config'),
+              "-a", settings.ASSETS_ROOT,
+              "-t", ticket,
+              "-f", 'local',
+              "-o", settings.ARCHIVE_ROOT,
+              "-v", settings.RAWSEQ_ROOT,
+              os.path.join(settings.MEDIA_ROOT, ticket)]
 
-    os.makedirs(working_dir, exist_ok=True)
-    os.makedirs(results_dir, exist_ok=True)
-
-    command = ["cd", working_dir,
-               "; nextflow run",
-               os.path.join(workflow_dir, 'main.nf'), "-profile local",
-               "-w", os.path.join(working_dir, 'tmp'),
-               "--input_dir", input_dir,
-               "--out_dir", results_dir,
-               "-with-trace", trace_file
-               ]
-    time.sleep(10)
-    subprocess.Popen(' '.join(command), shell=True).wait()
-    log_json = trace_to_json(os.path.join(working_dir, trace_file))
+    subprocess.run(' '.join(runner), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    log_json = trace_to_json(os.path.join(settings.ARCHIVE_ROOT, f'traces/{ticket}.txt'))
     return log_json
-
-
-@app.task(base=Task_handler)
-def fake_spear_mtb(ticket):
-    f = glob(os.path.join(results_dir,'*summary.json'))
-    subprocess.Popen(f"cp {f[0]} {results_dir}/{ticket}.json",
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.PIPE,
-                           shell=True)
-    time.sleep(5)
-    return {}
-    # working_dir = os.path.join(BASE_DIR, 'media/wf')
-    # results_dir = os.path.join(working_dir, 'out_sim')
-    # input_dir = os.path.join(BASE_DIR, 'media/uploaded/', ticket)
-    # tmp_dir = os.path.join(working_dir, 'tmp')
-    #
-    # _tmp = os.path.join(tmp_dir, ticket)
-    #
-    # os.makedirs(working_dir, exist_ok=True)
-    # os.makedirs(results_dir, exist_ok=True)
-    # os.makedirs(_tmp, exist_ok=True)
-    #
-    # # get samples
-    # for ff in glob.glob(os.path.join(input_dir, '*_1.fastq.gz')):
-    #     sample = os.path.basename(ff).split('_1')[0]
-    #     subprocess.Popen(f"cd {results_dir}; cp {f'{sample}.*'} {_tmp}", shell=True).wait()
-    #
-    # res = subprocess.Popen(f"python {working_dir}/report.py --in_dir {_tmp} --out_dir {_tmp} --prefix {ticket}",
-    #                        stdout=subprocess.PIPE,
-    #                        stderr=subprocess.PIPE, shell=True)
-    # stdout, stderr = res.communicate()
-    # if res.returncode != 0:
-    #     print("Standard Output:")
-    #     print(stdout.decode())
-    #     print("Standard Error:")
-    #     print(stderr.decode())
-    #     raise subprocess.CalledProcessError(res.returncode, "Integrating results failed")
-    #
-    # return {}
 
 
 def trace_to_json(trace_txt):
@@ -113,7 +64,7 @@ def trace_to_json(trace_txt):
     return data
 
 
-def save_report(report_json,task):
+def save_report(report_json, task):
     # Load JSON data
     with open(report_json) as json_file:
         data = json.load(json_file)
@@ -122,19 +73,21 @@ def save_report(report_json,task):
         for seqid, sample_data in data.items():
             try:
                 sid = transaction.savepoint()
+
+                pe_file = File.objects.filter(ticket=task.ticket, sample=sample_data['seqid']).first()
+
                 # Create Sample
-                sample, created = Sample.objects.get_or_create(sample=sample_data['seqid'],
-                                                               defaults={"task_id":task.id,
-                                                                         "category": sample_data["category"],
-                                                                         "passed_tbprofiler":sample_data["tbprofiler"],
-                                                                         "passed_cryptic":sample_data["cryptic"],
-                                                                         "genome_depth":sample_data["genome_median_depth"],
-                                                                         "mapped_reads": sample_data["num_mapped_reads"],
-                                                                         "mapped_reads_pct": sample_data["pct_mapped_reads"]
-                                                                         })
-
-                # TODO: Collect sample info such as collection_date from iomanager_file
-
+                sample, created = Sample.objects.get_or_create(
+                    sample=sample_data['seqid'],
+                    defaults={"task_id": task.id,
+                              "collection_date": pe_file.collection_date,
+                              "category": sample_data["category"],
+                              "passed_tbprofiler": sample_data["tbprofiler"],
+                              "passed_cryptic": sample_data["cryptic"],
+                              "genome_depth": sample_data["genome_median_depth"],
+                              "mapped_reads": sample_data["num_mapped_reads"],
+                              "mapped_reads_pct": sample_data["pct_mapped_reads"]
+                              })
                 # Create Lineage
                 Lineage.objects.create(
                     sample=sample,
@@ -142,7 +95,7 @@ def save_report(report_json,task):
                     family=sample_data['lineage']['family'],
                     rd=sample_data['lineage']['rd'],
                     spoligotype=sample_data['lineage']['spoligotype'],
-                    is_mixed= sample_data['lineage']['is_mixed'])
+                    is_mixed=sample_data['lineage']['is_mixed'])
 
                 # Create Mutations
                 for variant in sample_data['variants']:
@@ -153,7 +106,7 @@ def save_report(report_json,task):
                         variant=variant['variant'])
 
                     for entry in catalog_entries:
-                       # assign Mutation
+                        # assign Mutation
                         Mutation.objects.create(
                             sample=sample,
                             variant=entry,
@@ -174,7 +127,7 @@ def save_report(report_json,task):
                             variant=entry)
 
             except Exception as e:
-               print(f"Error occurred: {e}, rolling back this sample creation.")
-               transaction.savepoint_rollback(sid)
+                print(f"Error occurred: {e}, rolling back this sample creation.")
+                transaction.savepoint_rollback(sid)
             else:
                 transaction.savepoint_commit(sid)
