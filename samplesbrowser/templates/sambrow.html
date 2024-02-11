@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
+{% load pipeline %}
 {% block title %}ResHub: Explorer{% endblock %}
 
 {% block cssblock %}
-    <link rel="stylesheet" href="{% static "css/bootstrap-datepicker3.min.css" %}"/>
     <link rel="stylesheet" href="{% static "css/dash.css" %}"/>
     <link rel="stylesheet" href="{% static "css/sambrow.css" %}"/>
 {% endblock %}
@@ -125,8 +125,8 @@
                         <nav class="navbar navbar-expand py-0 my-0">
                             <ul class="navbar-nav me-auto mb-md-0">
                                 <li class="nav-item">
-                                    <a class="nav-link pr-0" href="#" title="Import sample" data-toggle="modal"
-                                       data-target="#searchModal">
+                                    <a class="nav-link pr-0" href="#" title="Import sample" data-bs-toggle="modal"
+                                       data-bs-target="#searchModal">
                                         <i class="fas fa-search-plus fa-lg"></i>
                                     </a>
                                 </li>
@@ -292,6 +292,6 @@
 {% endblock %}
 
 {% block jscontent %}
-    <script src="{% static "js/sambrow.js" %}"></script>
+      {% javascript 'sambrow_js' %}
 {% endblock %}
 

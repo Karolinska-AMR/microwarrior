@@ -1,8 +1,8 @@
 $(document).ready(function () {
 
-    let repo = {}
-    let search_repo = {}
-    let meta = {}
+    let repo = {};
+    let search_repo = {};
+    let meta = {};
     var selected_drug_index;
     var selected_sample;
 
@@ -40,11 +40,11 @@ $(document).ready(function () {
             });
 
             if (allFieldsEmpty) {
-                search_alert('Please fill in at least one field.')
+                search_alert('Please fill in at least one field.');
 
             } else {
                 const search_tbl = document.getElementById('search-tbl');
-                $(search_tbl).bootstrapTable('showLoading')
+                $(search_tbl).bootstrapTable('showLoading');
                 fetchSamples(formData);
             }
 
@@ -55,7 +55,7 @@ $(document).ready(function () {
         $("#del-all").click(function () {
             const search_tbl = document.getElementById('search-tbl');
             $(search_tbl).bootstrapTable("removeAll");
-            search_repo = {}
+            search_repo = {};
         });
 
         $("#import-all").click(function () {
@@ -66,7 +66,7 @@ $(document).ready(function () {
                 clean_search();
                 update_viewbar();
             } else {
-                search_alert("Please search and retrieve at least one sample.")
+                search_alert("Please search and retrieve at least one sample.");
             }
         });
 
@@ -81,21 +81,20 @@ $(document).ready(function () {
                             return;
                         }
                         repo[v.id] = search_repo[v.id];
-                        console.log(repo)
-                        rm_idx.push(idx)
+                        rm_idx.push(idx);
                     }
                 });
                 $(search_tbl).bootstrapTable("remove", {field: '$index', values: rm_idx});
 
                 update_viewbar();
             } else {
-                search_alert("Please search and retrieve at least one sample.")
+                search_alert("Please search and retrieve at least one sample.");
             }
         });
 
 
         $("#searchModal").on("hide.bs.modal", function (event) {
-            clean_search()
+            clean_search();
         });
     }
 
@@ -106,17 +105,17 @@ $(document).ready(function () {
     function clean_search() {
         const search_tbl = document.getElementById('search-tbl');
         $(search_tbl).bootstrapTable("removeAll");
-        search_repo = {}
+        search_repo = {};
         document.getElementById('searchForm').reset();
     }
 
     function search_alert(message) {
         $("#alertPlaceholder").html(`<div id="search-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
                              <i class="fas fa-exclamation-circle "></i> ${message}
-                                 </div>`).show()
+                                 </div>`).show();
 
         setTimeout(function () {
-            const el = document.getElementById('search-alert')
+            const el = document.getElementById('search-alert');
             var bsAlert = new bootstrap.Alert(el);
             bsAlert.close();
         }, 3000);
@@ -163,7 +162,7 @@ $(document).ready(function () {
             } else {
                 const search_tbl = document.getElementById('search-tbl');
                 $(search_tbl).bootstrapTable('hideLoading');
-                search_alert('Error fetching samples: ' + xhr.statusText)
+                search_alert('Error fetching samples: ' + xhr.statusText);
                 // console.error('Error fetching samples:', xhr.statusText);
             }
         };
@@ -179,7 +178,7 @@ $(document).ready(function () {
         const search_tbl = document.getElementById('search-tbl');
         $(search_tbl).bootstrapTable("removeAll");
         data.forEach((d) => {
-            $(search_tbl).bootstrapTable("insertRow", {index: 0, row: d})
+            $(search_tbl).bootstrapTable("insertRow", {index: 0, row: d});
         });
     }
 
@@ -218,8 +217,8 @@ $(document).ready(function () {
             sampleDiv.appendChild(sampleLineage);
 
             // Category badge
-            bg = d.category ? d.category : 'cat-other'
-            bg = bg === "other" ? 'cat-other' : bg
+            bg = d.category ? d.category : 'cat-other';
+            bg = bg === "other" ? 'cat-other' : bg;
             const categoryBadge = document.createElement('span');
             categoryBadge.className = `badge ${bg}`;
             categoryBadge.textContent = d.category;
@@ -229,11 +228,11 @@ $(document).ready(function () {
             listItem.appendChild(categoryBadge);
 
             listItem.addEventListener('click', function () {
-                $("#content-main").css('visibility', 'visible')
-                $("#empty_msg").css('display', 'none')
+                $("#content-main").css('visibility', 'visible');
+                $("#empty_msg").css('display', 'none');
                 $('.list-group-item').removeClass('active');
                 $(this).addClass('active');
-                let sid = $(this).data('sid')
+                let sid = $(this).data('sid');
 
                 if (!repo[sid].dcheck) {
                     fetch_mutations(sid);
@@ -286,15 +285,13 @@ $(document).ready(function () {
 
     function update_page(sid) {
         // Data shortcuts
-        let data = repo[sid]
+        let data = repo[sid];
 
-        console.log(data)
-
-        let drug_cols = []
-        let preds = data['predictions']
-        let mutations = data['mutations']
-        let unverif_mutations = data['unverified_mutations']
-        let drugs = Object.keys(preds)
+        let drug_cols = [];
+        let preds = data['predictions'];
+        let mutations = data['mutations'];
+        let unverif_mutations = data['unverified_mutations'];
+        let drugs = Object.keys(preds);
 
         // reset some indexes and tables
         selected_drug_index = -1;
@@ -303,9 +300,9 @@ $(document).ready(function () {
 
 
         // Lineage
-        const lin_tbl = document.getElementById('lin-tbl')
+        const lin_tbl = document.getElementById('lin-tbl');
         $(lin_tbl).bootstrapTable("removeAll");
-        $(lin_tbl).bootstrapTable("insertRow", {index: 0, row: data.info.lineage})
+        $(lin_tbl).bootstrapTable("insertRow", {index: 0, row: data.info.lineage});
 
         // Define same sort based on line of drug
         drugs.sort(function (a, b) {
@@ -318,45 +315,45 @@ $(document).ready(function () {
                 title: v.charAt(0).toUpperCase() + v.slice(1),
             });
         });
-        const prd_tbl = document.getElementById('prd-tbl')
+        const prd_tbl = document.getElementById('prd-tbl');
         $(prd_tbl).bootstrapTable("destroy");
         $(prd_tbl).bootstrapTable({columns: drug_cols});
 
         let rows = [{cat: "<span class=''>Predictions</span>"}, {cat: ""}];
         meta.catalogs.forEach((d) => {
-            rows.push({'cat': d})
+            rows.push({'cat': d});
         });
 
 
         drugs.forEach((d) => {
 
-            rows[0][d] = parse_prediction(preds[d])
-            rows[1][d] = ''
-            let idx = 2
+            rows[0][d] = parse_prediction(preds[d]);
+            rows[1][d] = '';
+            let idx = 2;
             meta.catalogs.forEach((c) => {
-                rows[idx][d] = parse_cataloge(mutations[d], c)
+                rows[idx][d] = parse_cataloge(mutations[d], c);
                 idx++;
 
             });
         });
         rows.reverse().forEach((r) => {
-            $(prd_tbl).bootstrapTable("insertRow", {index: 0, row: r})
-        })
+            $(prd_tbl).bootstrapTable("insertRow", {index: 0, row: r});
+        });
 
-        let tbl_rows = prd_tbl.querySelectorAll('tr')
-        let idx = 0
+        let tbl_rows = prd_tbl.querySelectorAll('tr');
+        let idx = 0;
         tbl_rows.forEach((r) => {
             if (idx === 2) {
-                r.classList.add('table-secondary')
+                r.classList.add('table-secondary');
             }
             if (idx > 2) {
-                r.classList.add('table-light')
+                r.classList.add('table-light');
             }
             idx++;
-        })
+        });
 
         function select_column(index, class_names = "") {
-            if (index === 0) return
+            if (index === 0) return;
             $('#prd-tbl tr').each(function () {
                 if ($(this).data('index') !== 1) {
                     $(this).find('th').eq(index).addClass(`col-highlight-header ${class_names}`);
@@ -366,7 +363,7 @@ $(document).ready(function () {
         }
 
         function deselect_column(index, class_names = "") {
-            if (index === 0) return
+            if (index === 0) return;
             $('#prd-tbl tr').each(function () {
                 $(this).find('th').eq(index).removeClass(`col-highlight-header ${class_names}`);
                 $(this).find('td').eq(index).removeClass(`col-highlight ${class_names}`);
@@ -406,19 +403,19 @@ $(document).ready(function () {
 
     function fill_evidence(drug) {
 
-        let evidence = repo[selected_sample]['evidence'][drug]
+        let evidence = repo[selected_sample]['evidence'][drug];
         if (!evidence) {
-            reset_evidence()
-            return
+            reset_evidence();
+            return;
         }
-        $("#evidence_row").css("display", "block")
-        const evd_tbl = document.getElementById('evd-tbl')
+        $("#evidence_row").css("display", "block");
+        const evd_tbl = document.getElementById('evd-tbl');
         $(evd_tbl).bootstrapTable("removeAll");
-        let color_mapper = {'R': 'text-r', 'U': 'text-u'}
+        let color_mapper = {'R': 'text-r', 'U': 'text-u'};
         evidence.forEach((r) => {
-            let cl = r.pred ? color_mapper[r.pred] : 'text-o'
-            r.pred_icon = `<span class="${cl}"><i class="fas fa-circle"></i></span>`
-            $(evd_tbl).bootstrapTable("insertRow", {index: 0, row: r})
+            let cl = r.pred ? color_mapper[r.pred] : 'text-o';
+            r.pred_icon = `<span class="${cl}"><i class="fas fa-circle"></i></span>`;
+            $(evd_tbl).bootstrapTable("insertRow", {index: 0, row: r});
         });
 
 
@@ -426,38 +423,38 @@ $(document).ready(function () {
 
     function fill_unverified_mu(mutations) {
         if (!mutations) {
-            return
+            return;
         }
-        const umu_tbl = document.getElementById('umu-tbl')
+        const umu_tbl = document.getElementById('umu-tbl');
         $(umu_tbl).bootstrapTable("removeAll");
-        let color_mapper = {'R': 'text-r', 'U': 'text-u'}
+        let color_mapper = {'R': 'text-r', 'U': 'text-u'};
         mutations.forEach((r) => {
-            let cl = r.pred ? color_mapper[r.pred] : 'text-o'
-            r.pred_icon = `<span class="${cl}"><i class="fas fa-circle"></i></span>`
-            $(umu_tbl).bootstrapTable("insertRow", {index: 0, row: r})
+            let cl = r.pred ? color_mapper[r.pred] : 'text-o';
+            r.pred_icon = `<span class="${cl}"><i class="fas fa-circle"></i></span>`;
+            $(umu_tbl).bootstrapTable("insertRow", {index: 0, row: r});
         });
     }
 
     function reset_evidence() {
-        $("#evidence_row").css("display", "none")
-        const evd_tbl = document.getElementById('evd-tbl')
+        $("#evidence_row").css("display", "none");
+        const evd_tbl = document.getElementById('evd-tbl');
         $(evd_tbl).bootstrapTable("removeAll");
     }
 
     function parse_prediction(pred) {
 
-        let color_mapper = {'R': 'text-r', 'U': 'text-u'}
+        let color_mapper = {'R': 'text-r', 'U': 'text-u'};
         let header_icon = document.createElement('div');
         header_icon.className = 'row';
         let flexContainer = document.createElement('div');
         flexContainer.className = 'd-flex justify-content-evenly';
-        let info = repo[selected_sample]["info"]
+        let info = repo[selected_sample]["info"];
         // Iterate over the icons array and create each icon
         meta.catalogs.forEach(function (cat) {
             let isErrorCondition = (!info["pass_cryptic"] && cat.startsWith("CRyPTIC")) ||
                 (!info["pass_tbprofiler"] && !cat.startsWith("CRyPTIC"));
 
-            let pred_cat = pred[cat]
+            let pred_cat = pred[cat];
             let link = document.createElement('a');
             link.className = `cat-circle ${pred_cat ? color_mapper[pred_cat] : 'text-o'}`;
 
@@ -473,12 +470,12 @@ $(document).ready(function () {
         // Create the second row with the text final prediction
         let row2 = document.createElement('div');
         row2.className = 'row';
-        let pf = pred['final_pred']
+        let pf = pred['final_pred'];
         let text_color = pf ? color_mapper[pf] : 'text-o';
-        row2.innerHTML = `<span class="text-center text-outlined ${text_color}">${pf}</span>`
+        row2.innerHTML = `<span class="text-center text-outlined ${text_color}">${pf}</span>`;
 
-        let hr = document.createElement('hr')
-        hr.className = 'p-0 m-0'
+        let hr = document.createElement('hr');
+        hr.className = 'p-0 m-0';
 
         // Append the rows to the container
         var container = document.createElement('div');
@@ -486,12 +483,12 @@ $(document).ready(function () {
         container.appendChild(hr);
         container.appendChild(header_icon);
 
-        return $(container).prop('outerHTML')
+        return $(container).prop('outerHTML');
     }
 
     function parse_cataloge(mutations_drug, catalog) {
-        let mutations = mutations_drug[catalog]
-        let info = repo[selected_sample]["info"]
+        let mutations = mutations_drug[catalog];
+        let info = repo[selected_sample]["info"];
 
         if (!mutations) {
 
@@ -510,28 +507,28 @@ $(document).ready(function () {
         mutations.sort(function (a, b) {
             return a - b;
         });
-        let mu_tags = []
+        let mu_tags = [];
         mutations.forEach((mu) => {
                 let cl = mu.pred === "R" ? "text-r" : "text-u";
                 if (mu.format === 'GARC1') {
-                    mu_tags.push(`<p class='${cl} text-mutation m-0 p-0'>${mu.variant}</p>`)
+                    mu_tags.push(`<p class='${cl} text-mutation m-0 p-0'>${mu.variant}</p>`);
                 } else {
                     let bg_cl;
                     if (mu.freq >= 0.8) {
-                        bg_cl = "badge-success"
+                        bg_cl = "badge-success";
                     } else if (mu.freq >= 0.5) {
-                        bg_cl = "badge-warning"
+                        bg_cl = "badge-warning";
                     } else {
-                        bg_cl = "badge-danger"
+                        bg_cl = "badge-danger";
                     }
                     let badge = `<span class="badge rounded-pill opacity-75 ${bg_cl}" title="Depth: ${mu.depth}">${mu.freq} <span class="visually-hidden">Frequency</span></span>`;
-                    mu_tags.push(`<p class='text-mutation ${cl} small text-mutated m-0 p-0'>${mu.gene}@${mu.variant} ${badge}</p>`)
+                    mu_tags.push(`<p class='text-mutation ${cl} small text-mutated m-0 p-0'>${mu.gene}@${mu.variant} ${badge}</p>`);
                 }
             }
         )
         ;
 
-        return mu_tags.join("")
+        return mu_tags.join("");
 
     }
 

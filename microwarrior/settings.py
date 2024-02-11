@@ -12,23 +12,38 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+import environ
+import shutil
+
+env = environ.Env()
+environ.Env.read_env()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'change-me'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1", "reshub.ki.se", 'localhost', 'reshub.labmed.ki.se']
 
-CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672//"
-CELERY_RESULT_BACKEND = "db+sqlite:///tasks_q.sqlite3"
+# HTTPS and SSL
+# SECURE_HSTS_SECONDS = 300
+# SECURE_SSL_REDIRECT = True
+# SECURE_HSTS_PRELOAD = True
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
+# CSRF
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
+
+CELERY_BROKER_URL = env('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND')
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'pipeline',
     'users',
     'samplesbrowser',
     'dashboard',
@@ -76,7 +92,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'microwarrior.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -86,7 +101,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -106,32 +120,186 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = '/dashboard/'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
-
-STATIC_URL = 'static/'
+STATIC_ROOT = '/var/www/static'
+# STATIC_ROOT = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR,'dashboard/static'),
+    os.path.join(BASE_DIR, 'dashboard/static'),
     os.path.join(BASE_DIR, 'samplesbrowser/static'),
-    )
+)
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'pipeline.finders.PipelineFinder',
+)
+
+PIPELINE = {
+    'JAVASCRIPT': {
+        'base_js': {
+            'output_filename': 'js/base.min.js',
+            'source_filenames': (
+                'js/jquery-3.7.1.min.js',
+                'js/fw.all.min.js',
+                'js/bootstrap.bundle.min.js',
+                'js/bootstrap-datepicker.min.js',
+                'js/bootstrap-table.min.js',
+                'js/query.easing.js',
+                'js/style.js',
+            ),
+        },
+        'home_js': {
+            'output_filename': 'js/hm.min.js',
+            'source_filenames': (
+                'js/jquery-3.7.1.min.js',
+                'js/bootstrap.bundle.min.js',
+                'js/query.easing.js',
+                'js/style.js',
+                'js/hm.js',
+            )
+
+        },
+        'dashboard_js': {
+            'output_filename': 'js/dash.min.js',
+            'source_filenames': (
+                'js/d3.v7.min.js',
+                'js/dash.js',
+            ),
+        },
+        'sambrow_js': {
+            'output_filename': 'js/sambrow.min.js',
+            'source_filenames': (
+                'js/d3.v7.min.js',
+                'js/sambrow.js',
+            ),
+        },
+        'user_js': {
+            'output_filename': 'js/user.min.js',
+            'source_filenames': (
+                'js/jquery-3.7.1.min.js',
+                'js/bootstrap.bundle.min.js',
+            ),
+        }
+    },
+    # 'STYLESHEETS': {
+    #     'base_css': {
+    #         'source_filenames': (
+    #             'css/font.css',
+    #             'css/fw.all.min.css',
+    #             'css/bootstrap.min.css',
+    #             'css/bootstrap-table.min.css'
+    #             'css/bootstrap-datepicker3.min.css'
+    #         ),
+    #         'output_filename': 'css/base.min.css',
+    #         'extra_context': {
+    #             'media': 'screen,projection',
+    #         },
+    #     },
+    #     'home_css': {
+    #         'source_filenames': (
+    #             'css/font.css',
+    #             'css/fw.all.min.css',
+    #             'css/bootstrap.min.css',
+    #             'css/home.css',
+    #         ),
+    #         'output_filename': 'css/home.min.css',
+    #         'extra_context': {
+    #             'media': 'screen,projection',
+    #         },
+    #     },
+    #     'dashboard_css': {
+    #         'source_filenames': (
+    #             'css/dash.css',
+    #         ),
+    #         'output_filename': 'css/dash.min.css',
+    #         'extra_context': {
+    #             'media': 'screen,projection',
+    #         },
+    #     },
+    #     'sambrow_css': {
+    #         'source_filenames': (
+    #             'css/sambrow.css',
+    #         ),
+    #         'output_filename': 'css/sambrow.min.css',
+    #         'extra_context': {
+    #             'media': 'screen,projection',
+    #         },
+    #     },
+    #     'user_css': {
+    #         'source_filenames': (
+    #             'css/font.css',
+    #             'css/fw.all.min.css',
+    #             'css/bootstrap.min.css',
+    #             'css/auth.css'
+    #         ),
+    #         'output_filename': 'css/user.min.css',
+    #         'extra_context': {
+    #             'media': 'screen,projection',
+    #         },
+    #     }
+    #
+    # },
+    'PIPELINE_ENABLED': True,
+    'JS_COMPRESSOR': 'pipeline.compressors.jsmin.JSMinCompressor',
+    # 'CSS_COMPRESSOR': 'pipeline.compressors.cssmin.CSSMinCompressor',
+    # 'CSSMIN_BINARY': shutil.which('cssmin')
+}
+
 MEDIA_URL = '/media/'
+
+MEDIA_ROOT = env('MEDIA_ROOT')
+ARCHIVE_ROOT = env('ARCHIVE_ROOT')
+WORKING_ROOT = env('WORKING_ROOT')
+WORKFLOW_ROOT = env('WORKFLOW_ROOT')
+ASSETS_ROOT = env('ASSETS_ROOT')
+RAWSEQ_ROOT = env('RAWSEQ_ROOT')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': True,
+#     'formatters': {
+#         'verbose': {
+#             'format': '%(asctime)s %(levelname)s [%(name)s:%(lineno)s] %(module)s %(process)d %(thread)d %(message)s'
+#         }
+#     },
+#     'handlers': {
+#         'gunicorn': {
+#             'level': 'DEBUG',
+#             'class': 'logging.handlers.RotatingFileHandler',
+#             'formatter': 'verbose',
+#             'filename': '/srv/data_sata/reshub/.logs/gunicorn.errors',
+#             'maxBytes': 1024 * 1024 * 100,  # 100 mb
+#         },
+#         "file": {
+#             "level": "DEBUG",
+#             "class": "logging.FileHandler",
+#             "filename": "/srv/data_sata/reshub/.logs/debug.log",
+#         },
+#     },
+#     'loggers': {
+#         'gunicorn.errors': {
+#             'level': 'DEBUG',
+#             'handlers': ['gunicorn'],
+#             'propagate': True,
+#         },
+#     }
+# }
