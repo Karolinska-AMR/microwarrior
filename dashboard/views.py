@@ -25,30 +25,57 @@ def dashboard(request):
 
 @login_required
 def get_jobs(request):
+    # Fetch ongoing task from CELERY
+    tasks_stat = tasks.update_status()
+    print(tasks_stat)
+    # Get task from DB
     end_date = datetime.now()
-    start_date = end_date - timedelta(days=30)
-    task_bucket = Task.objects.filter(
+    start_date = end_date - timedelta(days=10)
+    tasks_records = Task.objects.filter(
         submission_timestamp__gte=start_date,
         submission_timestamp__lte=end_date
-    ).order_by('submission_timestamp') \
+    ).order_by('-submission_timestamp') \
         .values('id', 'task_id', 'ticket', 'submission_timestamp',
-                'completion_timestamp', 'status',
+                'completion_timestamp', 'status', 'samples_count',
                 submitter=Concat(F('user__first_name'),
                                  Value(' '),
                                  F('user__last_name'), output_field=CharField())
                 )
-    ongoing_tasks = Task.objects.filter(status=-1).count()
-    return JsonResponse({'data': list(task_bucket), 'ongoing': ongoing_tasks})
+    order = 2
+    ongoing_tasks = 0
+    tasks_list = []
+    for tsk in tasks_records:
+        tmp = {"id": tsk['task_id'],
+               'ticket': tsk['ticket'],
+               'submission_timestamp': tsk['submission_timestamp'],
+               'completion_timestamp': tsk['completion_timestamp'],
+               "status": None,
+               'samples_count':tsk['samples_count'],
+               'submitter': tsk['submitter'],
+               'order':None
+               }
+        if tsk['task_id'] in tasks_stat['active']:
+            tmp['status'] = 'Running'
+            tmp['order'] = 1
+            ongoing_tasks += 1
+        elif tsk['task_id'] in tasks_stat['reserved']:
+            tmp['status'] = 'Enqueued'
+            ongoing_tasks += 1
+            tmp['order'] = order
+            order += 1
+        else:
+            tmp['status'] = ['Completed','Failed'][tsk['status'] == 1]
+            tmp['order'] = order
+            order += 1
+        tasks_list.append(tmp)
+
+    return JsonResponse({'data': tasks_list, 'ongoing': ongoing_tasks})
 
 
 @login_required
 def get_log(request):
     ticket = request.GET.get('ticket', '')
     task = Task.objects.get(ticket=ticket)
-    # if len(task.logs)>0: # completed send the log back
-    #     log = task.logs
-    # else: # fetch the samples from
-
     pe_samples = File.objects.filter(ticket=ticket, eof=1).values('sample').annotate(pe=Count('id')).filter(pe=2)
     log = []
     for s in pe_samples:
@@ -61,12 +88,13 @@ def enqueue_task(request):
     if request.method == 'POST':
         ticket = request.POST["ticket"]
         count = request.POST["samples_count"]
-        res = tasks.fake_spear_mtb.delay(ticket)
+        res = tasks.spear_mtb.delay(ticket)
         ts = Task(name="spear-mtb",
-                  status=-1,
+                  status=-2,
                   ticket=ticket,
                   user=request.user,
-                  task_id=res.task_id, samples_count=count)
+                  task_id=res.task_id,
+                  samples_count=count)
         ts.save()
         return JsonResponse({'task_id': res.task_id})
 
@@ -93,11 +121,10 @@ def get_overview(request):
 
     top_mu = fetch_abundant_mutations(10)
 
-    return JsonResponse({"stats": cat_stat, "samples": samlist, "lineages": hlin,'mutations':top_mu})
+    return JsonResponse({"stats": cat_stat, "samples": samlist, "lineages": hlin, 'mutations': top_mu})
 
 
 def fetch_abundant_mutations(size=10):
-
     # A dictionary to hold the top mutations for each drug and prediction value
     top_mutations_grouped = {'R': {}, 'U': {}}
     # Fetch all drugs
@@ -127,12 +154,11 @@ def fetch_abundant_mutations(size=10):
             # Format the results as a list of dictionaries
             formatted_mutations = [
                 {'mutation': f"{mutation['variant__gene']}@{mutation['variant__variant']}",
-                 'frequency': round(mutation['freq_percentage'],2)}
+                 'frequency': round(mutation['freq_percentage'], 2)}
                 for mutation in top_mutations
             ]
-            if(len(formatted_mutations)>0):
+            if len(formatted_mutations) > 0:
                 top_mutations_grouped[prediction_value][drug.name] = formatted_mutations
-
 
     return top_mutations_grouped
 

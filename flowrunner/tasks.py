@@ -3,10 +3,11 @@ from __future__ import absolute_import, unicode_literals
 import glob
 import subprocess
 from celery import Task
+from celery.signals import task_prerun
 from microwarrior.celery import app
 from .models import Task as djTask
 from datetime import datetime
-import os
+import os, time
 from glob import glob
 import json
 from samplesbrowser.models import Sample, Lineage, Catalog, Mutation, UnverifiedMutation
@@ -16,21 +17,34 @@ from iomanager.models import File
 
 
 class Task_handler(Task):
+
     def on_success(self, retval, task_id, args, kwargs):
         djTask.objects.filter(task_id=task_id) \
-            .update(status=0, completion_timestamp=datetime.now(), logs=retval)
+            .update(completion_timestamp=datetime.now(), logs=retval)
+        #
+        # tsk = djTask.objects.get(task_id=task_id)
+        #
+        # json_file = glob(os.path.join(settings.ARCHIVE_ROOT, f'reports/{tsk.ticket}.json'))
+        #
+        # status = 1
+        # if len(json_file) > 0:
+        #     save_report(json_file[0], tsk)
+        #     status = 0
+        # else:
+        #     status = 1
 
-        tsk = djTask.objects.get(task_id=task_id)
-
-        json_file = glob(os.path.join(settings.ARCHIVE_ROOT, f'reports/{tsk.ticket}.json'))
-
-        if len(json_file) > 0:
-            save_report(json_file[0], tsk)
+        # djTask.objects.filter(task_id=task_id).update(status=status)
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         djTask.objects.filter(task_id=task_id).update(status=1
                                                       , completion_timestamp=datetime.now(),
                                                       logs=einfo)
+        # delete files in uploads and possibly the commands
+
+
+@task_prerun.connect
+def task_prerun_handler(sender=None, task_id=None, task=None, args=None, kwargs=None, **extras):
+    pass
 
 
 @app.task(base=Task_handler)
@@ -44,9 +58,11 @@ def spear_mtb(ticket):
               "-o", settings.ARCHIVE_ROOT,
               "-v", settings.RAWSEQ_ROOT,
               os.path.join(settings.MEDIA_ROOT, ticket)]
-
-    subprocess.run(' '.join(runner), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    log_json = trace_to_json(os.path.join(settings.ARCHIVE_ROOT, f'traces/{ticket}.txt'))
+    print(' '.join(runner))
+    time.sleep(1200)
+    # subprocess.call(' '.join(runner), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    # log_json = trace_to_json(os.path.join(settings.ARCHIVE_ROOT, f'traces/{ticket}.txt'))
+    log_json = {}
     return log_json
 
 
@@ -62,6 +78,53 @@ def trace_to_json(trace_txt):
                 row_dict[headers[i]] = values[i]
             data.append(row_dict)
     return data
+
+
+def update_status():
+    def run_celery_inspect(command):
+        # Execute the Celery inspect command
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        output_b, error = process.communicate()
+
+        if process.returncode != 0:
+            print(f"Error: {error.decode('utf-8')}")
+            return ""
+        return output_b.decode('utf-8')
+
+    def extract_tickets_id(output):
+        out_list = []
+        for out in output.split('*'):
+            start_idx = out.find('{')
+            end_idx = out.rfind('}')
+
+            if end_idx > start_idx > -1:
+                json_str = out[start_idx:end_idx + 1]
+                json_str = json_str.replace("'", '"') \
+                    .replace('True', 'true') \
+                    .replace('False', 'false').replace('None', '""')
+                try:
+                    dic = json.loads(json_str)
+                    if 'id' in dic:
+                        out_list.append(dic['id'])
+                except json.JSONDecodeError as e:
+                    print(json_str)
+                    print(f"JSON decode error: {e}")
+        return out_list
+
+    commands = [
+        "celery -A microwarrior inspect active",
+        "celery -A microwarrior inspect reserved",
+        "celery -A microwarrior inspect scheduled"
+    ]
+
+    results = {}
+    for command in commands:
+        output = run_celery_inspect(command)
+        if output:
+            command_key = command.split()[-1]
+            results[command_key] = extract_tickets_id(output)
+
+    return results
 
 
 def save_report(report_json, task):

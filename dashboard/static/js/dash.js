@@ -7,6 +7,7 @@ $(document).ready(function () {
     let jobStatusInterval;
     let interval = 1000, interval_step = 5000, interval_max = 60 * 1000;
     const timer = (ms) => new Promise((res) => setTimeout(res, ms));
+    var requestInterval;
 
 
     function init() {
@@ -367,7 +368,7 @@ $(document).ready(function () {
         constructor(files) {
             this.ticket = util_get_random();
             this.files = files;
-            this.max_length = 10 * 1024 * 1024; // 10 mb
+            this.max_length = 0.5 * 1024 * 1024; // 0.5 mb
             this.attempts = 5;
             this.uploaded_files = {};
             this.uploaded_samples_count = 0;
@@ -616,9 +617,23 @@ $(document).ready(function () {
         });
     }
 
+    function get_job_status(status) {
+        const status_icon = {
+            "Completed": {'icon': "<i class=\"fas fa-check-circle\"></i>", "cl": "text-success"},
+            'Failed': {'icon': "<i class=\"fas fa-times-circle\"></i>", "cl": "text-danger"},
+            'Running': {
+                'icon': `<div class="spinner-grow spinner-grow-sm" role="status">
+                                              <span class="visually-hidden">Loading...</span>
+                                            </div>`, "cl": "text-primary"
+            },
+            "Enqueued": {'icon': "<i class=\"fas fa-hourglass-half\"></i>", "cl": "text-warning"}
+        };
+        return status_icon[status];
+
+    }
+
     function job_update_table(data) {
 
-        const status_icon = {"0": "text-success", '1': "text-danger", '-1': 'blink'};
         const tbl = document.querySelector("#jobs-tbl");
         $(tbl).bootstrapTable("destroy");
         $(tbl).bootstrapTable({
@@ -633,10 +648,13 @@ $(document).ready(function () {
         }
         $(tbl).bootstrapTable("hideLoading");
         let rec;
+        data.sort((a, b) => b.order - a.order);
         for (let i = 0; i < data.length; i++) {
             rec = data[i];
+            let icon = get_job_status(rec.status).icon;
+            let cl = get_job_status(rec.status).cl;
             rec.actions = `<a class="job-log text-secondary" href="#" data-status="${rec.status}" data-ticket="${rec.ticket}" title="view logs" > <i class="fas fa-clipboard-list"></i></a>`;
-            rec.status = `<a class="status" data-sample="${rec.id}" title="status" ><i class="fa fa-circle ${status_icon[rec.status]}"></i> </a>`;
+            rec.status_icon = `<a class="status ${cl}" data-sample="${rec.id}" title="status" >${icon}</a>`;
             $(tbl).bootstrapTable("insertRow", {index: 0, row: rec});
         }
 
@@ -645,7 +663,7 @@ $(document).ready(function () {
 
     function job_connect_cell_events() {
         // connect view logs events
-        const status_icon = {"0": "text-success", '1': "text-danger", '-1': 'blink'};
+
         const tbl = document.querySelector("#jobs-tbl");
 
         const log_btns = tbl.querySelectorAll(".job-log");
@@ -656,8 +674,9 @@ $(document).ready(function () {
                 let tkt = $(this).data('ticket');
                 let stat = $(this).data('status');
                 const mdl = document.getElementById("logmodal");
-
-                $(mdl).find('.modal-title').html(`<a class="status" title="status" ><i class="fa fa-circle ${status_icon[stat]}"></i></a>
+                let icon = get_job_status(stat).icon;
+                let cl = get_job_status(stat).cl;
+                $(mdl).find('.modal-title').html(`<a class="status ${cl}" title="status" >${icon}</a>
                                                                     <span class="text-muted"> Ticket log: <small>${tkt}</small></span>`);
                 $(mdl).modal('show');
 
@@ -678,7 +697,6 @@ $(document).ready(function () {
             data: {"ticket": ticket},
             success: function (response) {
                 // Process the response data
-                console.log(response);
                 job_fill_log(response['data']);
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -725,7 +743,8 @@ $(document).ready(function () {
                     jobStatusInterval = setInterval(job_send_request, interval);
 
                 }
-                job_update_table(response['data']);
+                console.log(response.data)
+                job_update_table(response.data);
             },
             error: function (xhr, errmsg, err) {
                 console.log(xhr.status + ": " + xhr.responseText);
@@ -784,7 +803,7 @@ $(document).ready(function () {
 
     });
     $('#logmodal').on('hidden.bs.modal', function () {
-         const tbl = document.getElementById("log-tbl");
+        const tbl = document.getElementById("log-tbl");
         $(tbl).bootstrapTable('removeAll');
     });
 
@@ -848,9 +867,9 @@ $(document).ready(function () {
                 cnt = 1;
             }
             if (prvidx > 10) {
-                step = 1 + (cnt*.2);
-                prvidx = 0.5+(cnt*.2);
-                cnt +=1;
+                step = 1 + (cnt * .2);
+                prvidx = 0.5 + (cnt * .2);
+                cnt += 1;
             }
             prvdt = d.date;
             d.value = prvidx;
@@ -878,7 +897,7 @@ $(document).ready(function () {
             .enter()
             .append("circle")
             .attr('class', d => `point bg-${d.cat.toLowerCase()}`)
-            .attr("cx", d => x(d.date) )
+            .attr("cx", d => x(d.date))
             .attr("cy", d => y(d.value))
             .attr("r", 5);
         scatter.selectAll('.point')
@@ -1002,7 +1021,7 @@ $(document).ready(function () {
             .style('fill', d => color(d.data.name))//(d.children ? d : d.parent)
             .attr('d', arc)
             .on('mouseover', function (event, d) {
-                let name = d.data.name.length===0? 'All' : d.data.name;
+                let name = d.data.name.length === 0 ? 'All' : d.data.name;
                 var tooltip = d3.select("#tooltip");
                 tooltip.transition().duration(200).style('opacity', .9);
                 tooltip.html(`<p class="p-0 m-1 text-white "><span class="text-break text-center">${name}</span>
@@ -1229,7 +1248,6 @@ $(document).ready(function () {
                 // Parse the response JSON
                 data = JSON.parse(xhr.responseText);
                 Overview_data = data;
-                console.log(Overview_data);
                 plot_temporal_dist(data.samples);
                 fill_stats(data.stats);
                 plot_lineages(data.lineages, 4);
