@@ -38,9 +38,9 @@ body {
     line-height: 46px;
 }
 
-.navbar {
-    z-index: 1001;
-}
+/*.navbar {*/
+/*    z-index: 1001;*/
+/*}*/
 
 .sidebar {
     width: 6.5rem;
@@ -677,31 +677,31 @@ body {
 
 @keyframes blinking {
     0% {
-        color: #ffc107
+        color: rgba(0, 0, 0, 0.65)
     }
     50% {
         color: #fff
     }
     100% {
-        color: #ffc107
+        color: rgba(0, 0, 0, 0.65)
     }
 }
 
 @-webkit-keyframes blinking {
     0% {
-        color: #ffc107
+        color: rgba(0, 0, 0, 0.65)
     }
     50% {
-        color: rgba(255, 193, 7, 0.38)
+        color: #fff
     }
     100% {
-        color: #ffc107
+        color: rgba(0, 0, 0, 0.65)
     }
 }
 
 .blink {
-    animation: blinking 1s ease infinite;
-    -webkit-animation: blinking 1s ease infinite;
+    animation: blinking 1s ease 3;
+    -webkit-animation: blinking 1s ease 3;
 }
 
 #log-tbl td {
@@ -746,4 +746,48 @@ body {
 
 .side-label {
     font-size: 6px;
+}
+.loading-text{
+    font-size: 1rem!important;
+    color: #16365f!important;
+}
+.pagination-detail{
+    color: #16365f!important;
+}
+td {
+    white-space: nowrap;
+}
+.text-mutation{
+  font-size: 0.8rem;
+}
+
+.table-main th{
+    background-color: #16365f;
+    color: #fff!important;
+}
+.table-sub th{
+    background-color: #f8f9fa;
+    color: #000!important;
+    font-size: 0.9rem;
+}
+.table-main{
+    font-size: 0.9rem;
+}
+.table-sub{
+    font-size: 0.8rem;
+}
+.col-highlight {
+    background-color: #EEF5FF!important;
+    cursor: pointer;
+    font-size: 0.9rem!important;
+ }
+.col-highlight .cat-circle{
+    -webkit-text-stroke: 1px #16365f!important;
+}
+.col-highlight-header {
+    background-color: #EEF5FF!important;
+    cursor: pointer;
+    color: #16365f!important;
+    -webkit-text-stroke: 1px #16365f!important;
+
 }
