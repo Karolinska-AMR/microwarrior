@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}"/>
     <link rel="stylesheet" href="{% static "css/bootstrap-table.min.css" %}"/>
     <link rel="stylesheet" href="{% static "css/bootstrap-datepicker3.min.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/base.css" %}"/>
 
     {% block cssblock %} {% endblock %}
 </head>
@@ -78,7 +79,7 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{% url "catalog" %}">
                 <i class="fas fa-book"></i>
                 <span>Catalogues</span>
             </a>
@@ -87,7 +88,7 @@
         <hr class="sidebar-divider"/>
 
         <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{% url "help" %}">
                 <i class="fas fa-fw fa-question-circle"></i>
                 <span>Help</span></a
             >
@@ -133,7 +134,7 @@
                                         aria-haspopup="true"
                                         aria-expanded="false"
                                 >
-                      <span class="mr-2 d-none d-lg-inline text-gray-600 small">Hello {{ name }}!</span><i class="fas fa-user"></i></a>
+                      <span class="mr-2 d-none d-lg-inline text-gray-600 small">Hello {{ name }}! </span><i class="fas fa-user"></i></a>
                                 <!-- Dropdown - User Information -->
                                 <div class="dropdown-menu dropdown-menu-right shadow" aria-labelledby="userDropdown">
                                     <a class="dropdown-item small" href="{% url "change-password" %}">
