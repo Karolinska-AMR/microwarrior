@@ -233,12 +233,14 @@ $(document).ready(function () {
                 $('.list-group-item').removeClass('active');
                 $(this).addClass('active');
                 let sid = $(this).data('sid');
-
-                if (!repo[sid].dcheck) {
-                    fetch_mutations(sid);
-                } else {
-                    update_page(sid);
-                }
+                update_table_loading('showLoading');
+                setTimeout(function () {
+                    if (!repo[sid].dcheck) {
+                        fetch_mutations(sid);
+                    } else {
+                        update_page(sid);
+                    }
+                }, 500);
 
 
             });
@@ -246,6 +248,14 @@ $(document).ready(function () {
             sampleList.appendChild(listItem);
 
 
+        });
+    }
+
+    function update_table_loading(status) {
+        let tables = ['lin-tbl', 'prd-tbl', 'umu-tbl'];
+        tables.forEach((tn) => {
+            const tbl = document.getElementById(tn);
+            $(tbl).bootstrapTable(status);
         });
     }
 
@@ -399,6 +409,7 @@ $(document).ready(function () {
         });
 
         fill_unverified_mu(unverif_mutations);
+        update_table_loading('hideLoading');
     }
 
     function fill_evidence(drug) {

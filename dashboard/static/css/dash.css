@@ -147,13 +147,6 @@
 .side-label {
     font-size: 6px;
 }
-.loading-text{
-    font-size: 1rem!important;
-    color: #16365f!important;
-}
-.pagination-detail{
-    color: #16365f!important;
-}
 td {
     white-space: nowrap;
 }

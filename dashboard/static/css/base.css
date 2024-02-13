@@ -597,3 +597,10 @@ body {
     background-color: #fff;
     border-bottom: 1px solid #e3e6f0;
 }
+.loading-text{
+    font-size: 1rem!important;
+    color: #16365f!important;
+}
+.pagination-detail{
+    color: #16365f!important;
+}

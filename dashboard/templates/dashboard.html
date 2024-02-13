@@ -1,6 +1,9 @@
 {% extends "base.html" %} {% load static %} {% load pipeline %} {% block title %}ResHub: Dashboard{% endblock %}
 {% block cssblock %}
-    <link rel="stylesheet" href="{% static "css/dash.css" %}"/> {% endblock %} {% block menubarcontent %}
+    <link rel="stylesheet" href="{% static "css/dash.css" %}"/> {% endblock %}
+
+
+{% block menubarcontent %}
     <li class="nav-item">
         <a class="nav-link" aria-current="page" href="#import-card">
             <i class="fas fa-file-import"></i> Submit Jobs </a>
