@@ -3,14 +3,15 @@ from django.http import JsonResponse
 import os
 from .models import File
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
 
 @login_required
 def upload(request, ticket):
     if request.method == 'POST':
-        fdir = f"media/uploaded/{ticket}/"
+        fdir = os.path.join(settings.MEDIA_ROOT, ticket)
         if not os.path.isdir(fdir):
-            os.makedirs(fdir,exist_ok=True)
+            os.makedirs(fdir, exist_ok=True)
 
         file = request.FILES['file'].read()
         sample = request.POST['sample']
@@ -28,7 +29,7 @@ def upload(request, ticket):
 
             if existingPath == 'null':
 
-                path = fdir + fileName
+                path = os.path.join(fdir, fileName)
                 existingPath = f"{ticket}/{fileName}"
 
                 with open(path, 'wb+') as destination:
@@ -39,8 +40,8 @@ def upload(request, ticket):
                 new_file.sample = sample
                 new_file.collection_date = collection_date
                 new_file.ticket = ticket
-
                 new_file.save()
+
                 if int(end):
                     res = JsonResponse({'data': 'Uploaded Successfully', 'existingPath': existingPath})
                 else:
@@ -48,13 +49,7 @@ def upload(request, ticket):
                 return res
 
             else:
-                # # should be deleted Just for creating error in uploading files
-                # if request.POST['error'] == 'true':
-                #     __undo_copy(f"{ticket}/{fileName}")
-                #     return JsonResponse({'status': 'Reverting!'}, status=500)
-                # #-------------
-
-                path = fdir + fileName
+                path = os.path.join(fdir, fileName)
                 try:
                     model_id = File.objects.get(existingPath=existingPath)
                 except File.MultipleObjectsReturned:
@@ -84,4 +79,4 @@ def upload(request, ticket):
 
 def __undo_copy(filename):
     File.objects.filter(existingPath=filename).delete()
-    os.remove(f"media/uploaded/{filename}")
+    os.remove(os.path.join(settings.MEDIA_ROOT, filename))
