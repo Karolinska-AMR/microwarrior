@@ -53,10 +53,15 @@ def get_jobs(request):
                'submitter': tsk['submitter'],
                'order': None
                }
+
         if tsk['task_id'] in tasks_stat['active']:
             tmp['status'] = 'Running'
             tmp['order'] = 1
             ongoing_tasks += 1
+
+            if tsk['status'] != -1:
+                Task.objects.filter(task_id=tsk['task_id']).update(status=-1)
+
         elif tsk['task_id'] in tasks_stat['reserved']:
             tmp['status'] = 'Enqueued'
             ongoing_tasks += 1
@@ -79,7 +84,13 @@ def get_log(request):
     pe_samples = File.objects.filter(ticket=ticket, eof=1).values('sample').annotate(pe=Count('id')).filter(pe=2)
 
     for s in pe_samples:
-        log[s["sample"]] = {"sample": s["sample"], "species": 'Other', "cryptic": None, "tbprofiler": None,
+        pass_cry = None
+        pass_tbp = None
+        if task.status >= 0:
+            pass_cry = False
+            pass_tbp = False
+        log[s["sample"]] = {"sample": s["sample"], "species": 'Other',
+                            "cryptic": pass_cry, "tbprofiler": pass_tbp,
                             "status": task.status}
     samples = Sample.objects.filter(task=task)
     if samples.exists():
@@ -90,6 +101,7 @@ def get_log(request):
                 ptr["species"] = 'MTB'
                 ptr["cryptic"] = s.passed_cryptic
                 ptr["tbprofiler"] = s.passed_tbprofiler
+
     return JsonResponse({'data': list(log.values())})
 
 
@@ -154,9 +166,9 @@ def check_sample_ids(request):
         data.append({"sample": s, "reason": 'enqueued'})
 
     valid_samples = set(sample_names).difference(invalid_samples)
-    all_invalid = len(valid_samples)==0
+    all_invalid = len(valid_samples) == 0
 
-    return JsonResponse({"samples":data,"all_invalid":all_invalid})
+    return JsonResponse({"samples": data, "all_invalid": all_invalid})
 
 
 def fetch_abundant_mutations(size=10):

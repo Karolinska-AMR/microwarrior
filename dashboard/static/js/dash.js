@@ -566,7 +566,6 @@ $(document).ready(function () {
             let samples = data.map((it) => {
                 return it.sample
             }).filter(it => !dup_samples.includes(it));
-            console.log(samples)
             if (samples.length > 0) {
                 job_check_samples(samples);
             } else {
@@ -748,7 +747,6 @@ $(document).ready(function () {
             type: 'POST',
             url: 'fetchjobs',
             success: function (response) {
-                console.log(response)
                 if (response.ongoing === 0) {
                     clearInterval(jobStatusInterval);
                     isJobRunning = false;
