@@ -55,7 +55,7 @@ $(document).ready(function () {
         $("#del-all").click(function () {
             const search_tbl = document.getElementById('search-tbl');
             $(search_tbl).bootstrapTable("removeAll");
-            search_repo = {};
+            search_repo = {}
         });
 
         $("#import-all").click(function () {
@@ -70,6 +70,14 @@ $(document).ready(function () {
             }
         });
 
+        $("#del-samples").click(function () {
+            $('#samples-list').empty();
+            $("#content-main").css('visibility', 'hidden');
+            $("#empty_msg").css('display', 'block');
+            repo = {};
+            selected_sample = undefined;
+            selected_drug_index = undefined;
+        });
         $("#import-sel").click(function () {
             const search_tbl = document.getElementById('search-tbl');
             const d = $(search_tbl).bootstrapTable("getData");
@@ -233,6 +241,9 @@ $(document).ready(function () {
                 $('.list-group-item').removeClass('active');
                 $(this).addClass('active');
                 let sid = $(this).data('sid');
+                $("#isolate-id").html(` <i class="fas fa-info-circle"></i>
+                                Currently Displayed: 
+                                <span class="h5 text-${repo[sid].info.category.toLowerCase()}">${repo[sid].info.sample}</span>`);
                 update_table_loading('showLoading');
                 setTimeout(function () {
                     if (!repo[sid].dcheck) {

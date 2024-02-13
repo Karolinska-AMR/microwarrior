@@ -19,11 +19,17 @@
             <!-- Main Content Column -->
 
             <div class="col-lg-10 col-md-8 col-sm-7">
-                <div id="empty_msg"><p class="text-center text-mutated"><i class="fas fa-info-circle"></i> Please select
-                    a
-                    sample from the view
-                    bar.</p></div>
+                <div id="empty_msg"><p class="text-center text-mutated"><i class="fas fa-info-circle"></i>
+                    Please add your isolates first, then select one from the 'View List' to see more details.</p></div>
                 <div id="content-main" style="visibility:hidden;">
+                    <div class="row">
+                        <div class="col-12">
+                            <p class="text-center text-mutated" id="isolate-id">
+                                <i class="fas fa-info-circle"></i>
+                                Currently Displayed: <span class="h5"></span>
+                            </p>
+                        </div>
+                    </div>
                     <div id='lin_card' class="card shadow-sm mb-2">
                         <div class="card-header section-header text-uppercase py-2 bg-white">
                             <i class="fas fa-sitemap"></i> Coll's Classification
@@ -117,7 +123,7 @@
             <!-- Sidebar Column -->
             <div class="col-lg-2 col-md-4 col-sm-5">
                 <div class="card bg-white shadow-sm">
-                    <div class="card-title section-header text-center text-uppercase p-0 m-0 bg-white border-4 border-bottom">
+                    <div class="card-title section-header text-center text-uppercase p-0 m-0 bg-white border-2 border-bottom">
                         <p class="pt-2"><i class="fas fa-stream"></i>
                             View List</p>
                         <hr class="w-75 mx-auto my-0">
@@ -291,6 +297,6 @@
 {% endblock %}
 
 {% block jscontent %}
-      {% javascript 'sambrow_js' %}
+    {% javascript 'sambrow_js' %}
 {% endblock %}
 
