@@ -3,7 +3,6 @@ from __future__ import absolute_import, unicode_literals
 import glob
 import subprocess
 from celery import Task
-from celery.signals import task_prerun
 from microwarrior.celery import app
 from .models import Task as djTask
 from datetime import datetime
@@ -21,30 +20,23 @@ class Task_handler(Task):
     def on_success(self, retval, task_id, args, kwargs):
         djTask.objects.filter(task_id=task_id) \
             .update(completion_timestamp=datetime.now(), logs=retval)
-        #
-        # tsk = djTask.objects.get(task_id=task_id)
-        #
-        # json_file = glob(os.path.join(settings.ARCHIVE_ROOT, f'reports/{tsk.ticket}.json'))
-        #
-        # status = 1
-        # if len(json_file) > 0:
-        #     save_report(json_file[0], tsk)
-        #     status = 0
-        # else:
-        #     status = 1
 
-        # djTask.objects.filter(task_id=task_id).update(status=status)
+        tsk = djTask.objects.get(task_id=task_id)
+        json_file = glob(os.path.join(settings.ARCHIVE_ROOT, f'reports/{tsk.ticket}.json'))
+        status = 1
+        if len(json_file) > 0:
+            save_report(json_file[0], tsk)
+            status = 0
+        djTask.objects.filter(task_id=task_id).update(status=status)
+
+        clean_storage(tsk.ticket, True)
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         djTask.objects.filter(task_id=task_id).update(status=1
                                                       , completion_timestamp=datetime.now(),
                                                       logs=einfo)
-        # delete files in uploads and possibly the commands
-
-
-@task_prerun.connect
-def task_prerun_handler(sender=None, task_id=None, task=None, args=None, kwargs=None, **extras):
-    pass
+        tsk = djTask.objects.get(task_id=task_id)
+        clean_storage(tsk.ticket, False)
 
 
 @app.task(base=Task_handler)
@@ -59,17 +51,16 @@ def spear_mtb(ticket):
               "-v", settings.RAWSEQ_ROOT,
               os.path.join(settings.MEDIA_ROOT, ticket)]
     print(' '.join(runner))
-    time.sleep(1200)
-    # subprocess.call(' '.join(runner), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    # log_json = trace_to_json(os.path.join(settings.ARCHIVE_ROOT, f'traces/{ticket}.txt'))
-    log_json = {}
+    # time.sleep(1200)
+    subprocess.call(' '.join(runner), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    log_json = trace_to_json(os.path.join(settings.ARCHIVE_ROOT, f'traces/{ticket}.trace'))
+    # log_json = {}
     return log_json
 
 
 def trace_to_json(trace_txt):
     data = []
     with open(trace_txt, 'r') as hdl:
-
         headers = hdl.readline().strip().split('\t')
         for line in hdl:
             values = line.strip().split('\t')
@@ -111,19 +102,20 @@ def update_status():
                     print(f"JSON decode error: {e}")
         return out_list
 
+    # TODO: Fix these paths
     commands = [
-        "celery -A microwarrior inspect active",
-        "celery -A microwarrior inspect reserved",
-        "celery -A microwarrior inspect scheduled"
+        "/home/h5admin/miniconda3/envs/microwarrior/bin/celery -A microwarrior inspect active",
+        "/home/h5admin/miniconda3/envs/microwarrior/bin/celery -A microwarrior inspect reserved",
+        "/home/h5admin/miniconda3/envs/microwarrior/bin/celery -A microwarrior inspect scheduled"
     ]
 
     results = {}
     for command in commands:
+        key = command.split()[-1]
+        results[key] = []
         output = run_celery_inspect(command)
         if output:
-            command_key = command.split()[-1]
-            results[command_key] = extract_tickets_id(output)
-
+            results[key] = extract_tickets_id(output)
     return results
 
 
@@ -138,12 +130,18 @@ def save_report(report_json, task):
                 sid = transaction.savepoint()
 
                 pe_file = File.objects.filter(ticket=task.ticket, sample=sample_data['seqid']).first()
+                collection_date = None
+                if pe_file.collection_date:
+                    try:
+                        collection_date = datetime.strptime(pe_file.collection_date, '%Y-%m-%d').date()
+                    except ValueError:
+                        pass
 
                 # Create Sample
                 sample, created = Sample.objects.get_or_create(
                     sample=sample_data['seqid'],
                     defaults={"task_id": task.id,
-                              "collection_date": pe_file.collection_date,
+                              "collection_date": collection_date,
                               "category": sample_data["category"],
                               "passed_tbprofiler": sample_data["tbprofiler"],
                               "passed_cryptic": sample_data["cryptic"],
@@ -194,3 +192,12 @@ def save_report(report_json, task):
                 transaction.savepoint_rollback(sid)
             else:
                 transaction.savepoint_commit(sid)
+
+
+def clean_storage(ticket, was_success):
+    subprocess.call(f'rm -rf {os.path.join(settings.WORKING_ROOT, ticket)}', stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE, shell=True)
+    # keep the sequences if it was failed run
+    if was_success:
+        subprocess.call(f'rm -rf {os.path.join(settings.MEDIA_ROOT, ticket)}', stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE, shell=True)
