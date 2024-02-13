@@ -242,3 +242,9 @@ def build_hierarchy(items):
         set_leaf_counts(root, item, 0, len(levels) - 1)
 
     return {"name": "", "children": root}
+
+@login_required
+def under_construction(request):
+    fname = request.user.first_name
+    page = request.path.strip('/')
+    return render(request, 'under_contruction.html', {"name": fname,"page":page})
