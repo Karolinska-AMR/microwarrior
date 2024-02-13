@@ -8,4 +8,5 @@ urlpatterns = [
     path('fetchlog', views.get_log, name='fetch_log'),
     path('enqjob',views.enqueue_task,name='enqjob'),
     re_path(r'^fetch-overview/$', views.get_overview, name='fetch_overview'),
+    re_path(r'^chk-ids/$', views.check_sample_ids, name='check_sampleid'),
 ]

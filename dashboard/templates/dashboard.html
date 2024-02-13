@@ -2,15 +2,15 @@
 {% block cssblock %}
     <link rel="stylesheet" href="{% static "css/dash.css" %}"/> {% endblock %} {% block menubarcontent %}
     <li class="nav-item">
-        <a class="nav-link" aria-current="page" href="#">
+        <a class="nav-link" aria-current="page" href="#import-card">
             <i class="fas fa-file-import"></i> Submit Jobs </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" aria-disabled="true" href="#">
+        <a class="nav-link" aria-disabled="true" href="#jobsq">
             <i class="fas fa-bars fa-rotate-90"></i> Jobs Queue </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" aria-disabled="true" href="#updates">
+        <a class="nav-link" aria-disabled="true" href="#overview">
             <i class="fas fa-chart-pie"></i> Overview </a>
     </li>
 {% endblock %}
@@ -20,7 +20,7 @@
             <div class="col-12">
                 <div id="import-card" class="card shadow-sm h-100 py-2 mx-2">
                     <div class="card-header py-2">
-                        <h5 class="text-center text-uppercase section-header"> New Submission </h5>
+                        <h5 class="text-uppercase section-header"><i class="fas fa-upload"></i> New Submission </h5>
                     </div>
                     <div class="card-body">
                         <div id="import-panel" class="m-fadeIn">
@@ -44,10 +44,13 @@
                                     </ul>
                                     <ul class="navbar-nav ml-auto mb-md-0">
                                         <li class="nav-item">
-                                            <form> {% csrf_token %} <a type="submit" class="nav-link pr-0"
-                                                                       id="submit-jobs" data-action="submit" href="#"
-                                                                       title="submit">
-                                                <i class="fa fa-fw fa-paper-plane"></i> Submit </a>
+                                            <form> {% csrf_token %}
+                                                <a type="submit" class="nav-link pr-0 text-dark"
+                                                   id="proceed-btn" data-action="submit" href="#"
+                                                   title="Proceed" style="display: none">
+                                                    <i class="fas fa-forward blink"></i> Proceed </a>
+                                                <a class="nav-link pr-0" id="submit-jobs" data-action="submit" href="#" title="submit">
+                                                    <i class="fa fa-fw fa-paper-plane"></i> Submit </a>
                                                 <input type="file" id="choose-dir" style="display: none"/>
                                             </form>
                                         </li>
@@ -56,7 +59,7 @@
                             </div>
                             <div class="row my-1">
                                 <div class="col-12">
-                                    <table id="import-tbl" class="table table-sm text-sm" data-toggle="table"
+                                    <table id="import-tbl" class="table table-sm text-sm table-main" data-toggle="table"
                                            data-icons-prefix="fa" data-icons="icons" data-unique-id="sample"
                                            data-pagination="true" data-sortable="true">
                                         <thead>
@@ -103,12 +106,20 @@
             <div class="col-12">
                 <div id="jobsq" class="card shadow-sm h-100 py-2 mx-2">
                     <div class="card-header py-2">
-                        <h5 class="text-center text-uppercase section-header"> Jobs Queue </h5>
+                        <h5 class="text-uppercase section-header"><i class="fas fa-tasks"></i> Jobs Queue </h5>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-12">
-                                <table id="jobs-tbl" class="table" data-toggle="table" data-icons-prefix="fa"
+                                <div class="row">
+                                    <div class="col-2 pb-2">
+                                        <input id="search-jobs-input" class="form-control form-control-sm" type="text"
+                                               placeholder="Search">
+                                    </div>
+                                </div>
+                                <table id="jobs-tbl" class="table table-sm table-main" data-toggle="table"
+                                       data-icons-prefix="fa"
+                                       data-search-selector="#search-jobs-input"
                                        data-icons="icons" data-virtual-scroll="true" data-pagination="true"
                                        data-search="true" data-search-highlight="true" data-unique-id="task_id">
                                     <thead>
@@ -207,7 +218,7 @@
                         jobs have been fully submitted before proceeding with the logout.</small>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
                     <a class="btn btn-primary" href="{% url "logout" %}">Proceed</a>
                 </div>
             </div>
@@ -229,8 +240,8 @@
                                 <tr>
                                     <th data-field="sample" data-sortable="true">Sample</th>
                                     <th data-field="species" data-sortable="true">Species</th>
-                                    <th data-field="cryptic">CRyPTIC</th>
-                                    <th data-field="tbprofiler">TB-Profiler</th>
+                                    <th data-field="cryptic_icon">CRyPTIC</th>
+                                    <th data-field="tbprofiler_icon">TB-Profiler</th>
                                 </tr>
                                 </thead>
                             </table>
@@ -238,7 +249,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

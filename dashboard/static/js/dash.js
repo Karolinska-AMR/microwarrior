@@ -115,12 +115,6 @@ $(document).ready(function () {
             }, 1000);
         });
 
-        // SUBMIT BUTTON
-        const submit_btn = document.querySelector("#submit-btn");
-        $(submit_btn).click(function () {
-
-        });
-
     }
 
     function import_connect_cell_events() {
@@ -282,9 +276,9 @@ $(document).ready(function () {
 
     function import_get_date_cell(id, type) {
         return `
-    <div class="input-group input-group-sm border-0 m-0"> 
-        <input id="${id}" type="text" class="form-control form-control-sm ${type}" data-col="${type}" data-provide="datepicker" data-date-format="yy-mm-dd">
-  </div>`;
+            <div class="input-group input-group-sm border-0 m-0"> 
+            <input id="${id}" type="text" class="form-control form-control-sm ${type}" data-col="${type}" data-provide="datepicker" data-date-format="yy-mm-dd">
+        </div>`;
     }
 
     function import_reset_form_cells() {
@@ -297,15 +291,18 @@ $(document).ready(function () {
 
     function import_show_duplicate_rows(samples) {
         if (samples.length === 0) return;
-
-        for (const sample of samples) {
-            if (!DUPLICATE_SAMPLES.includes(sample)) {
+        let dup_samples = DUPLICATE_SAMPLES.map((d) => d.sample);
+        samples.forEach((sample) => {
+            if (!dup_samples.includes(sample.sample)) {
                 DUPLICATE_SAMPLES.push(sample);
             }
-
+            let name = sample.sample;
+            let reason = sample.reason;
+            let message = reason === 'analyzed' ? "This sample has been previously analyzed." :
+                "This sample is scheduled for analyzing.";
             const td = Array.from(
                 document.querySelectorAll("#import-tbl tr td")
-            ).find((el) => el.textContent === sample);
+            ).find((el) => el.textContent === name);
             if (td !== undefined) {
                 const row = td.parentElement;
                 $(row).addClass("table-row-error");
@@ -314,8 +311,7 @@ $(document).ready(function () {
                 for (const td of row.querySelectorAll("td")) {
                     if (i === 2) {
                         td.innerHTML =
-                            "<span class='text-danger .font-weight-lighter'>This sample will be ignored as it has been previously analyzed. " +
-                            "Please consider removing this row or importing the sequences with different sample name.</span>";
+                            `<span class='text-danger .font-weight-lighter'><i class="fas fa-exclamation-triangle"></i> ${message} </span>`;
                         $(td).attr("colspan", ll - 2);
                     }
                     if (i > 2 && i < ll) {
@@ -324,7 +320,7 @@ $(document).ready(function () {
                     i += 1;
                 }
             }
-        }
+        });
     }
 
     function import_show_msg(msg, type, auto_hide = true, delay = 3000) {
@@ -543,7 +539,7 @@ $(document).ready(function () {
                         isJobRunning = true;
                         jobStatusInterval = setInterval(job_send_request, interval);
                     }
-                    job_send_request();
+                    job_send_request(true);
                 },
                 error: function (xhr, errmsg, err) {
                     console.log('ERROR!!!');
@@ -552,15 +548,27 @@ $(document).ready(function () {
         }
     }
 
+    function start_upload() {
+        let files = upload_get_files();
+        if (files.length > 0) {
+            upload_setup_table(files);
+            let uploader = new Uploader(files);
+            uploader.upload();
+        }
+    }
+
     function upload_connect_events() {
         $("#submit-jobs").on('click', function (event) {
             event.preventDefault();
 
-            let files = upload_get_files();
-            if (files.length > 0) {
-                upload_setup_table(files);
-                let uploader = new Uploader(files);
-                uploader.upload();
+            let data = $("#import-tbl").bootstrapTable("getData");
+            let dup_samples = DUPLICATE_SAMPLES.map((d) => d.sample);
+            let samples = data.map((it) => {
+                return it.sample
+            }).filter(it => !dup_samples.includes(it));
+            console.log(samples)
+            if (samples.length > 0) {
+                job_check_samples(samples);
             } else {
                 import_show_msg("Kindly begin by importing Illumina files " +
                     "in the pair-end format ({*_1/*_2}.fastq.gz).", "danger", 1e4);
@@ -574,8 +582,9 @@ $(document).ready(function () {
         let data = $("#import-tbl").bootstrapTable("getData");
 
         let files = [];
+        let dup_samples = DUPLICATE_SAMPLES.map((d) => d.sample);
         data.forEach((row) => {
-            if (!DUPLICATE_SAMPLES.includes(row.sample)) {
+            if (!dup_samples.includes(row.sample)) {
                 files.unshift({file: row.fobj1, sample: row.sample, cdate: row.v_collection_date, read: '1'});
                 files.unshift({file: row.fobj2, sample: row.sample, cdate: row.v_collection_date, read: '2'});
             }
@@ -677,7 +686,7 @@ $(document).ready(function () {
                 let icon = get_job_status(stat).icon;
                 let cl = get_job_status(stat).cl;
                 $(mdl).find('.modal-title').html(`<a class="status ${cl}" title="status" >${icon}</a>
-                                                                    <span class="text-muted"> Ticket log: <small>${tkt}</small></span>`);
+                                                  <span class="text-muted"> Ticket log: <small>${tkt}</small></span>`);
                 $(mdl).modal('show');
 
                 timer(1000).then(r => {
@@ -710,18 +719,25 @@ $(document).ready(function () {
         $(tbl).bootstrapTable('hideLoading');
 
         let rec;
-        let success = `<span class="text-success"> <i class="fas fa-check"></i></span>`;
-        let failed = `<span class="text-danger"> <i class="fas fa-times"></i></span>`;
+        let s = `<span class="text-success"> <i class="fas fa-check"></i></span>`;
+        let f = `<span class="text-danger"> <i class="fas fa-times"></i></span>`;
+        let u = `<span class="text-secondary"> <i class="fas fa-question"></i></span>`;
         for (let i = 0; i < data.length; i++) {
             rec = data[i];
-            rec.cryptic = rec.cryptic === '0' ? success : failed;
-            rec.tbprofiler = rec.tbprofiler === '0' ? success : failed;
+            rec.species = rec.status < 0 ? u : rec.species;
+            rec.cryptic_icon = rec.cryptic === null ? u : rec.cryptic ? s : f;
+            rec.tbprofiler_icon = rec.tbprofiler == null ? u : rec.tbprofiler ? s : f;
             $(tbl).bootstrapTable("insertRow", {index: 0, row: rec});
         }
 
     }
 
-    function job_send_request() {
+    function job_send_request(show_load = false) {
+        var job_tbl = document.getElementById('jobs-tbl');
+        if (show_load) {
+            $(job_tbl).bootstrapTable('showLoading');
+        }
+
         $.ajaxSetup({
             // make sure to send the header
             headers: {
@@ -732,7 +748,7 @@ $(document).ready(function () {
             type: 'POST',
             url: 'fetchjobs',
             success: function (response) {
-
+                console.log(response)
                 if (response.ongoing === 0) {
                     clearInterval(jobStatusInterval);
                     isJobRunning = false;
@@ -743,13 +759,59 @@ $(document).ready(function () {
                     jobStatusInterval = setInterval(job_send_request, interval);
 
                 }
-                console.log(response.data)
+                $(job_tbl).bootstrapTable('hideLoading');
+
                 job_update_table(response.data);
             },
             error: function (xhr, errmsg, err) {
                 console.log(xhr.status + ": " + xhr.responseText);
             }
         });
+    }
+
+    function job_check_samples(samples) {
+        var xhr = new XMLHttpRequest();
+        var queryString = samples.map(function (sample) {
+            return 'samples=' + encodeURIComponent(sample);
+        }).join('&');
+
+        const tbl = document.getElementById('import-tbl')
+        $(tbl).bootstrapTable('showLoading')
+
+        xhr.open('GET', '/chk-ids/?' + queryString, true);
+
+        xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                // Parse the response JSON
+                let data = JSON.parse(xhr.responseText);
+                if (data.samples.length > 0) {
+                    import_show_duplicate_rows(data.samples);
+                    $(tbl).bootstrapTable('hideLoading');
+                    //trigger proceed
+                    if (!data.all_invalid) {
+                        const proceed_btn = document.getElementById('proceed-btn');
+                        const submit_btn = document.getElementById('submit-jobs');
+                        $(submit_btn).css('display', 'none');
+                        $(proceed_btn).css('display', 'block');
+                        $(proceed_btn).on('click', function () {
+                            start_upload();
+                            $('#submit-jobs').css('display', 'block');
+                            $(this).css('display', 'none');
+                        });
+                    }
+                } else {
+                    start_upload();
+                }
+            } else {
+                console.error('Error fetching samples:', xhr.statusText);
+            }
+        };
+        xhr.onerror = function () {
+            console.error('Network error');
+        };
+
+        xhr.send();
+
     }
 
     // UTILITY SECTION
@@ -1267,7 +1329,7 @@ $(document).ready(function () {
     init();
     import_connect_events();
     upload_connect_events();
-    job_send_request();
+    job_send_request(true);
 
 })
 ;

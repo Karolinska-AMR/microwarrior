@@ -27,7 +27,6 @@ def dashboard(request):
 def get_jobs(request):
     # Fetch ongoing task from CELERY
     tasks_stat = tasks.update_status()
-    print(tasks_stat)
     # Get task from DB
     end_date = datetime.now()
     start_date = end_date - timedelta(days=10)
@@ -50,9 +49,9 @@ def get_jobs(request):
                'submission_timestamp': tsk['submission_timestamp'],
                'completion_timestamp': tsk['completion_timestamp'],
                "status": None,
-               'samples_count':tsk['samples_count'],
+               'samples_count': tsk['samples_count'],
                'submitter': tsk['submitter'],
-               'order':None
+               'order': None
                }
         if tsk['task_id'] in tasks_stat['active']:
             tmp['status'] = 'Running'
@@ -64,7 +63,7 @@ def get_jobs(request):
             tmp['order'] = order
             order += 1
         else:
-            tmp['status'] = ['Completed','Failed'][tsk['status'] == 1]
+            tmp['status'] = ['Completed', 'Failed'][tsk['status'] == 1]
             tmp['order'] = order
             order += 1
         tasks_list.append(tmp)
@@ -74,13 +73,24 @@ def get_jobs(request):
 
 @login_required
 def get_log(request):
+    log = {}
     ticket = request.GET.get('ticket', '')
     task = Task.objects.get(ticket=ticket)
     pe_samples = File.objects.filter(ticket=ticket, eof=1).values('sample').annotate(pe=Count('id')).filter(pe=2)
-    log = []
+
     for s in pe_samples:
-        log.append({"sample": s["sample"], "species": None, "cryptic": None, "tbprofiler": None})
-    return JsonResponse({'data': log})
+        log[s["sample"]] = {"sample": s["sample"], "species": 'Other', "cryptic": None, "tbprofiler": None,
+                            "status": task.status}
+    samples = Sample.objects.filter(task=task)
+    if samples.exists():
+        for s in samples:
+            sn = s.sample
+            if sn in log:
+                ptr = log[sn]
+                ptr["species"] = 'MTB'
+                ptr["cryptic"] = s.passed_cryptic
+                ptr["tbprofiler"] = s.passed_tbprofiler
+    return JsonResponse({'data': list(log.values())})
 
 
 @login_required
@@ -122,6 +132,31 @@ def get_overview(request):
     top_mu = fetch_abundant_mutations(10)
 
     return JsonResponse({"stats": cat_stat, "samples": samlist, "lineages": hlin, 'mutations': top_mu})
+
+
+def check_sample_ids(request):
+    sample_names = request.GET.getlist('samples')
+
+    invalid_samples = []
+    # Check for samples in Sample model
+    analyzed_samples = Sample.objects.filter(sample__in=sample_names).values_list('sample', flat=True)
+    data = []
+    for s in list(analyzed_samples):
+        invalid_samples.append(s)
+        data.append({"sample": s, "reason": 'analyzed'})
+    # Check for samples in File model with Status -1 or -2
+    ongoing_enqueued_samples = File.objects.filter(
+        sample__in=sample_names,
+        ticket__in=Task.objects.filter(status__in=[-1, -2]).values_list('ticket', flat=True)
+    ).values_list('sample', flat=True)
+    for s in ongoing_enqueued_samples:
+        invalid_samples.append(s)
+        data.append({"sample": s, "reason": 'enqueued'})
+
+    valid_samples = set(sample_names).difference(invalid_samples)
+    all_invalid = len(valid_samples)==0
+
+    return JsonResponse({"samples":data,"all_invalid":all_invalid})
 
 
 def fetch_abundant_mutations(size=10):
