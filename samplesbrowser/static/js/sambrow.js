@@ -241,9 +241,9 @@ $(document).ready(function () {
                 $('.list-group-item').removeClass('active');
                 $(this).addClass('active');
                 let sid = $(this).data('sid');
-                $("#isolate-id").html(` <i class="fas fa-info-circle"></i>
+                $("#isolate-id").html(`<i class="fas fa-info-circle"></i>
                                 Currently Displayed: 
-                                <span class="h5 text-${repo[sid].info.category.toLowerCase()}">${repo[sid].info.sample}</span>`);
+                                <span class="h5 text-${repo[sid].info.category.toLowerCase()}"> ${repo[sid].info.sample}</span>`);
                 update_table_loading('showLoading');
                 setTimeout(function () {
                     if (!repo[sid].dcheck) {

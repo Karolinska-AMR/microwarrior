@@ -747,6 +747,7 @@ $(document).ready(function () {
             type: 'POST',
             url: 'fetchjobs',
             success: function (response) {
+                console.log(response);
                 if (response.ongoing === 0) {
                     clearInterval(jobStatusInterval);
                     isJobRunning = false;

@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["127.0.0.1", "reshub.ki.se", 'localhost', 'reshub.labmed.ki.se']
 
@@ -98,7 +98,7 @@ WSGI_APPLICATION = 'microwarrior.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR /'db.sqlite3',
     }
 }
 
@@ -133,8 +133,8 @@ LOGIN_REDIRECT_URL = '/dashboard/'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
-STATIC_ROOT = '/var/www/static'
-# STATIC_ROOT = 'static/'
+# STATIC_ROOT = '/var/www/static'
+STATIC_ROOT = 'static/'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'dashboard/static'),
@@ -195,68 +195,9 @@ PIPELINE = {
             ),
         }
     },
-    # 'STYLESHEETS': {
-    #     'base_css': {
-    #         'source_filenames': (
-    #             'css/font.css',
-    #             'css/fw.all.min.css',
-    #             'css/bootstrap.min.css',
-    #             'css/bootstrap-table.min.css'
-    #             'css/bootstrap-datepicker3.min.css'
-    #         ),
-    #         'output_filename': 'css/base.min.css',
-    #         'extra_context': {
-    #             'media': 'screen,projection',
-    #         },
-    #     },
-    #     'home_css': {
-    #         'source_filenames': (
-    #             'css/font.css',
-    #             'css/fw.all.min.css',
-    #             'css/bootstrap.min.css',
-    #             'css/home.css',
-    #         ),
-    #         'output_filename': 'css/home.min.css',
-    #         'extra_context': {
-    #             'media': 'screen,projection',
-    #         },
-    #     },
-    #     'dashboard_css': {
-    #         'source_filenames': (
-    #             'css/dash.css',
-    #         ),
-    #         'output_filename': 'css/dash.min.css',
-    #         'extra_context': {
-    #             'media': 'screen,projection',
-    #         },
-    #     },
-    #     'sambrow_css': {
-    #         'source_filenames': (
-    #             'css/sambrow.css',
-    #         ),
-    #         'output_filename': 'css/sambrow.min.css',
-    #         'extra_context': {
-    #             'media': 'screen,projection',
-    #         },
-    #     },
-    #     'user_css': {
-    #         'source_filenames': (
-    #             'css/font.css',
-    #             'css/fw.all.min.css',
-    #             'css/bootstrap.min.css',
-    #             'css/auth.css'
-    #         ),
-    #         'output_filename': 'css/user.min.css',
-    #         'extra_context': {
-    #             'media': 'screen,projection',
-    #         },
-    #     }
-    #
-    # },
-    'PIPELINE_ENABLED': True,
+
+    'PIPELINE_ENABLED': False,
     'JS_COMPRESSOR': 'pipeline.compressors.jsmin.JSMinCompressor',
-    # 'CSS_COMPRESSOR': 'pipeline.compressors.cssmin.CSSMinCompressor',
-    # 'CSSMIN_BINARY': shutil.which('cssmin')
 }
 
 MEDIA_URL = '/media/'
@@ -275,30 +216,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # LOGGING = {
 #     'version': 1,
-#     'disable_existing_loggers': True,
-#     'formatters': {
-#         'verbose': {
-#             'format': '%(asctime)s %(levelname)s [%(name)s:%(lineno)s] %(module)s %(process)d %(thread)d %(message)s'
-#         }
-#     },
+#     'disable_existing_loggers': False,
 #     'handlers': {
-#         'gunicorn': {
-#             'level': 'DEBUG',
-#             'class': 'logging.handlers.RotatingFileHandler',
-#             'formatter': 'verbose',
-#             'filename': '/srv/data_sata/reshub/.logs/gunicorn.errors',
-#             'maxBytes': 1024 * 1024 * 100,  # 100 mb
-#         },
 #         "file": {
-#             "level": "DEBUG",
+#             "level": "INFO",
 #             "class": "logging.FileHandler",
 #             "filename": "/srv/data_sata/reshub/.logs/debug.log",
 #         },
 #     },
 #     'loggers': {
-#         'gunicorn.errors': {
-#             'level': 'DEBUG',
-#             'handlers': ['gunicorn'],
+#         'django': {
+#             'level': 'INFO',
+#             'handlers': ['file'],
 #             'propagate': True,
 #         },
 #     }
