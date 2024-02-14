@@ -20,7 +20,7 @@ $(document).ready(function () {
         $(umu_tbl).bootstrapTable('destroy');
         $(umu_tbl).bootstrapTable({
             formatNoMatches: function () {
-                return '<span class="text-dark">No unverified mutations found</span>';
+                return '<i class="fas fa-info"></i> No unverified mutations were identified.';
             }
         });
 
@@ -325,100 +325,109 @@ $(document).ready(function () {
         $(lin_tbl).bootstrapTable("removeAll");
         $(lin_tbl).bootstrapTable("insertRow", {index: 0, row: data.info.lineage});
 
-        // Define same sort based on line of drug
-        drugs.sort(function (a, b) {
-            return meta.drugs.indexOf(a) - meta.drugs.indexOf(b);
-        });
-        drug_cols.push({field: "cat", title: "Pred./Catalogues"});
-        $.each(drugs, function (_, v) {
-            drug_cols.push({
-                field: v,
-                title: v.charAt(0).toUpperCase() + v.slice(1),
-            });
-        });
         const prd_tbl = document.getElementById('prd-tbl');
         $(prd_tbl).bootstrapTable("destroy");
-        $(prd_tbl).bootstrapTable({columns: drug_cols});
 
-        let rows = [{cat: "<span class=''>Predictions</span>"}, {cat: ""}];
-        meta.catalogs.forEach((d) => {
-            rows.push({'cat': d});
-        });
+        if (drugs.length === 0) {
+            $(prd_tbl).bootstrapTable({
+                formatNoMatches: function () {
+                    return '<i class="fas fa-info"></i> No Resistance or Uncertain mutations were detected.';
+                }
+            });
+        } else {
+            // Define same sort based on line of drug
+            drugs.sort(function (a, b) {
+                return meta.drugs.indexOf(a) - meta.drugs.indexOf(b);
+            });
+            drug_cols.push({field: "cat", title: "Pred./Catalogues"});
+            $.each(drugs, function (_, v) {
+                drug_cols.push({
+                    field: v,
+                    title: v.charAt(0).toUpperCase() + v.slice(1),
+                });
+            });
+
+            $(prd_tbl).bootstrapTable({columns: drug_cols});
+
+            let rows = [{cat: "<span class=''>Predictions</span>"}, {cat: ""}];
+            meta.catalogs.forEach((d) => {
+                rows.push({'cat': d});
+            });
 
 
-        drugs.forEach((d) => {
+            drugs.forEach((d) => {
 
-            rows[0][d] = parse_prediction(preds[d]);
-            rows[1][d] = '';
-            let idx = 2;
-            meta.catalogs.forEach((c) => {
-                rows[idx][d] = parse_cataloge(mutations[d], c);
+                rows[0][d] = parse_prediction(preds[d]);
+                rows[1][d] = '';
+                let idx = 2;
+                meta.catalogs.forEach((c) => {
+                    rows[idx][d] = parse_cataloge(mutations[d], c);
+                    idx++;
+
+                });
+            });
+            rows.reverse().forEach((r) => {
+                $(prd_tbl).bootstrapTable("insertRow", {index: 0, row: r});
+            });
+
+            let tbl_rows = prd_tbl.querySelectorAll('tr');
+            let idx = 0;
+            tbl_rows.forEach((r) => {
+                if (idx === 2) {
+                    r.classList.add('table-secondary');
+                }
+                if (idx > 2) {
+                    r.classList.add('table-light');
+                }
                 idx++;
-
             });
-        });
-        rows.reverse().forEach((r) => {
-            $(prd_tbl).bootstrapTable("insertRow", {index: 0, row: r});
-        });
 
-        let tbl_rows = prd_tbl.querySelectorAll('tr');
-        let idx = 0;
-        tbl_rows.forEach((r) => {
-            if (idx === 2) {
-                r.classList.add('table-secondary');
+            function select_column(index, class_names = "") {
+                if (index === 0) return;
+                $('#prd-tbl tr').each(function () {
+                    if ($(this).data('index') !== 1) {
+                        $(this).find('th').eq(index).addClass(`col-highlight-header ${class_names}`);
+                        $(this).find('td').eq(index).addClass(`col-highlight ${class_names}`);
+                    }
+                });
             }
-            if (idx > 2) {
-                r.classList.add('table-light');
-            }
-            idx++;
-        });
 
-        function select_column(index, class_names = "") {
-            if (index === 0) return;
-            $('#prd-tbl tr').each(function () {
-                if ($(this).data('index') !== 1) {
-                    $(this).find('th').eq(index).addClass(`col-highlight-header ${class_names}`);
-                    $(this).find('td').eq(index).addClass(`col-highlight ${class_names}`);
+            function deselect_column(index, class_names = "") {
+                if (index === 0) return;
+                $('#prd-tbl tr').each(function () {
+                    $(this).find('th').eq(index).removeClass(`col-highlight-header ${class_names}`);
+                    $(this).find('td').eq(index).removeClass(`col-highlight ${class_names}`);
+                });
+            }
+
+            $('#prd-tbl th, #prd-tbl td').mouseenter(function () {
+                // Mouse enters the cell
+                select_column($(this).index());
+
+            }).mouseleave(function () {
+                    // Mouse leaves the cell
+                    let index = $(this).index();
+                    if (index !== selected_drug_index) {
+                        deselect_column(index);
+                    }
                 }
-            });
-        }
-
-        function deselect_column(index, class_names = "") {
-            if (index === 0) return;
-            $('#prd-tbl tr').each(function () {
-                $(this).find('th').eq(index).removeClass(`col-highlight-header ${class_names}`);
-                $(this).find('td').eq(index).removeClass(`col-highlight ${class_names}`);
-            });
-        }
-
-        $('#prd-tbl th, #prd-tbl td').mouseenter(function () {
-            // Mouse enters the cell
-            select_column($(this).index());
-
-        }).mouseleave(function () {
-                // Mouse leaves the cell
+            ).click(function () {
                 let index = $(this).index();
-                if (index !== selected_drug_index) {
-                    deselect_column(index);
+                if (selected_drug_index > 0) {
+                    deselect_column(selected_drug_index, 'shadow-lg');
                 }
-            }
-        ).click(function () {
-            let index = $(this).index();
-            if (selected_drug_index > 0) {
-                deselect_column(selected_drug_index, 'shadow-lg');
-            }
-            if (selected_drug_index === index) {
-                selected_drug_index = -1;
-                reset_evidence();
+                if (selected_drug_index === index) {
+                    selected_drug_index = -1;
+                    reset_evidence();
 
-            } else {
-                selected_drug_index = index;
-                select_column(index, 'shadow-lg');
-                let drug = $('#prd-tbl thead th').eq(index).data('field');
-                fill_evidence(drug);
-            }
-        });
-
+                } else {
+                    selected_drug_index = index;
+                    select_column(index, 'shadow-lg');
+                    let drug = $('#prd-tbl thead th').eq(index).data('field');
+                    fill_evidence(drug);
+                }
+            });
+        }
         fill_unverified_mu(unverif_mutations);
         update_table_loading('hideLoading');
     }

@@ -604,3 +604,6 @@ body {
 .pagination-detail{
     color: #16365f!important;
 }
+.no-records-found td{
+    color: #16365f!important;
+}
