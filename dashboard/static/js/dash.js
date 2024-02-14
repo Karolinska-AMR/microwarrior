@@ -5,7 +5,7 @@ $(document).ready(function () {
     let load_flag = false;
     let isJobRunning = false;
     let jobStatusInterval;
-    let interval = 1000, interval_step = 5000, interval_max = 60 * 1000;
+    let interval = 1000, interval_step = 10000, interval_max = 60 * 1000;
     const timer = (ms) => new Promise((res) => setTimeout(res, ms));
     var requestInterval;
 
@@ -747,7 +747,6 @@ $(document).ready(function () {
             type: 'POST',
             url: 'fetchjobs',
             success: function (response) {
-                console.log(response);
                 if (response.ongoing === 0) {
                     clearInterval(jobStatusInterval);
                     isJobRunning = false;
@@ -1006,6 +1005,7 @@ $(document).ready(function () {
     }
 
     function plot_lineages(data, allowedDepth) {
+        if(!data) return;
 
         let width = 200,
             height = 200;

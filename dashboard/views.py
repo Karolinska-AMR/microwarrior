@@ -154,11 +154,19 @@ def get_overview(request):
         cat_stat['total'] += 1
         samlist.append({"sample": sample.sample, "date": sample.collection_date, "cat": cat})
 
-    lineages = Lineage.objects.all()
-    names = [l.lin for l in lineages]
-    hlin = build_hierarchy(names)
+    try:
+        lineages = Lineage.objects.all()
+        names = [l.lin for l in lineages]
+        hlin = build_hierarchy(names)
+    except Exception as e:
+        hlin = None
+        print(e)
 
-    top_mu = fetch_abundant_mutations(10)
+    try:
+        top_mu = fetch_abundant_mutations(10)
+    except Exception as e:
+        top_mu = None
+        print(e)
 
     return JsonResponse({"stats": cat_stat, "samples": samlist, "lineages": hlin, 'mutations': top_mu})
 
@@ -228,6 +236,7 @@ def fetch_abundant_mutations(size=10):
 
 
 def build_hierarchy(items):
+    items.sort(key=lambda x:len(x),reverse=True)
     def add_or_get_node(hierarchy, name):
         for node in hierarchy:
             if node['name'] == name:
