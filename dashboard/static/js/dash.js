@@ -383,6 +383,7 @@ $(document).ready(function () {
                 this.sample = f.sample;
                 this.read = f.read;
                 this.cdate = f.cdate;
+                // scroll to the row
 
                 timer(1000).then(r => {
                     upload_setup_progressbar(this.file.name);
@@ -395,8 +396,6 @@ $(document).ready(function () {
 
 
                 if (this.uploaded_samples_count > 0) {
-                    //submitting the job
-                    //*******
                     this.submit_jobs(this.uploaded_samples_count);
                 }
             }
@@ -579,7 +578,6 @@ $(document).ready(function () {
 
     function upload_get_files() {
         let data = $("#import-tbl").bootstrapTable("getData");
-
         let files = [];
         let dup_samples = DUPLICATE_SAMPLES.map((d) => d.sample);
         data.forEach((row) => {
@@ -604,7 +602,9 @@ $(document).ready(function () {
                 .addClass('active-progress')
                 .removeClass("bg-success")
                 .removeClass("bg-danger");
-
+            const index = $(td).parent().attr('data-index');
+            const upload_tbl = document.getElementById('upload-tbl')
+            $(upload_tbl).bootstrapTable('scrollTo', {unit: 'rows', value: index})
         }
     }
 
