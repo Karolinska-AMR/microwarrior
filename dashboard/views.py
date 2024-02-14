@@ -68,12 +68,29 @@ def get_jobs(request):
             tmp['order'] = order
             order += 1
         else:
-            tmp['status'] = ['Completed', 'Failed'][tsk['status'] == 1]
-            tmp['order'] = order
+            # in case the celery inspect failed
+            is_running = False
+            if tsk['status'] == 0:
+                tmp['status'] = 'Completed'
+            elif tsk['status'] == 1:
+                tmp['status'] = 'Failed'
+            elif tsk['status'] == -1:
+                if tmp['completion_timestamp'] is not None:
+                    tmp['status'] = 'Failed'
+                    Task.objects.filter(task_id=tsk['task_id']).update(status=1)
+                else:
+                    tmp['status'] = 'Running'
+                    tmp['order'] = 1
+                    is_running = True
+            elif tsk['status'] == -2:
+                tmp['status'] = 'Enqueued'
+
+            if not is_running:
+                tmp['order'] = order
             order += 1
         tasks_list.append(tmp)
 
-    return JsonResponse({'data': tasks_list, 'ongoing': ongoing_tasks})
+    return JsonResponse({'data': tasks_list, 'ongoing': ongoing_tasks,'active':tasks_stat['active']})
 
 
 @login_required
