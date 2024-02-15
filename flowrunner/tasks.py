@@ -30,6 +30,7 @@ class Task_handler(Task):
         djTask.objects.filter(task_id=task_id).update(status=status)
 
         clean_storage(tsk.ticket, True)
+        app.control.revoke(task_id, terminate=True)
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         djTask.objects.filter(task_id=task_id).update(status=1
@@ -37,6 +38,7 @@ class Task_handler(Task):
                                                       logs=einfo)
         tsk = djTask.objects.get(task_id=task_id)
         clean_storage(tsk.ticket, False)
+        app.control.revoke(task_id, terminate=True)
 
 
 @app.task(base=Task_handler)
