@@ -58,6 +58,9 @@ $(document).ready(function () {
             "#import-card .nav-link"
         )) {
             $(btn).on('click', function (event) {
+
+                toggle_submit(false);
+
                 const action = $(this).data("action");
                 let open_browser = false;
                 if (action === "submit") return;
@@ -787,15 +790,7 @@ $(document).ready(function () {
                     $(tbl).bootstrapTable('hideLoading');
                     //trigger proceed
                     if (!data.all_invalid) {
-                        const proceed_btn = document.getElementById('proceed-btn');
-                        const submit_btn = document.getElementById('submit-jobs');
-                        $(submit_btn).css('display', 'none');
-                        $(proceed_btn).css('display', 'block');
-                        $(proceed_btn).on('click', function () {
-                            start_upload();
-                            $('#submit-jobs').css('display', 'block');
-                            $(this).css('display', 'none');
-                        });
+                        toggle_submit(true);
                     }
                 } else {
                     start_upload();
@@ -810,6 +805,26 @@ $(document).ready(function () {
 
         xhr.send();
 
+    }
+
+    function toggle_submit(show_proceed) {
+        const proceed_btn = document.getElementById('proceed-btn');
+        const submit_btn = document.getElementById('submit-jobs');
+        if (show_proceed) {
+            $(submit_btn).css('display', 'none');
+            $(proceed_btn).css('display', 'block');
+            $(proceed_btn).on('click', function () {
+                start_upload();
+                $('#submit-jobs').css('display', 'block');
+                $(this).css('display', 'none');
+                $(this).off('click');
+
+            });
+        } else {
+            $(submit_btn).css('display', 'block');
+            $(proceed_btn).css('display', 'none');
+            $(proceed_btn).off('click');
+        }
     }
 
     // UTILITY SECTION
@@ -938,15 +953,17 @@ $(document).ready(function () {
         });
 
         const xExtent = d3.extent(data, d => d.date);
-        xExtent[0] = new Date(xExtent[0].getTime() - 10 * 24 * 60 * 60 * 1000);
+        xExtent[0] = new Date(xExtent[0].getFullYear(), 0, 1);
         xExtent[1] = new Date(xExtent[1].getTime() + 10 * 24 * 60 * 60 * 1000);
 
         const x = d3.scaleTime().domain(xExtent).range([0, width]).nice();
-        const xAxis = svg.append("g").attr('class', 'axis x-axis').attr('transform', `translate(0,${height})`).call(d3.axisBottom(x));
+        xAxis = d3.axisBottom(x);
+        let gxAxis = svg.append("g").attr('class', 'axis x-axis')
+            .attr('transform', `translate(0,${height})`)
+            .call(xAxis);
 
         const y = d3.scaleLinear().domain([0, d3.max(data, d => d.value)]).range([height, 0]).nice();
-        const yAxis = d3.axisLeft(y).tickValues([]);
-        //svg.append('g').attr('class', 'axis y-axis').call(yAxis);
+        d3.axisLeft(y).tickValues([]);
 
         const brush = d3.brushX().extent([[0, -margin.top], [width, height + margin.top]]).on("end", brushended);
         const scatter = svg.append('g').attr("clip-path", "url(#clip)");
@@ -962,14 +979,16 @@ $(document).ready(function () {
             .attr("r", 5);
         scatter.selectAll('.point')
             .on('mouseover', function (event, d) {
+                d3.select(this).attr("r", 8);
                 var tooltip = d3.select("#tooltip");
-                tooltip.transition().duration(200).style('opacity', .9);
+                tooltip.transition().duration(1000).style('opacity', .9);
                 tooltip.html(`<p class="p-0 m-1 text-white"><small>Sample</small>: ${d.sample}
                               <br><small>Category</small>: ${d.cat.toUpperCase()}</p>`)
                     .style('left', (event.pageX + 5) + 'px')
                     .style('top', (event.pageY - 28) + 'px');
             })
             .on('mouseout', function (d) {
+                d3.select(this).attr("r", 5);
                 var tooltip = d3.select("#tooltip");
                 tooltip.transition().duration(500).style('opacity', 0);
             });
@@ -991,7 +1010,7 @@ $(document).ready(function () {
                 x.domain([x0, x1]);
                 scatter.select(".brush").call(brush.move, null);
             }
-            xAxis.transition().duration(1000).call(d3.axisBottom(x));
+            gxAxis.transition().duration(1000).call(xAxis);
             svg.selectAll("circle").transition().duration(1000).attr('cx', d => x(d.date));
         }
     }
@@ -1005,7 +1024,7 @@ $(document).ready(function () {
     }
 
     function plot_lineages(data, allowedDepth) {
-        if(!data) return;
+        if (!data) return;
 
         let width = 200,
             height = 200;
@@ -1238,8 +1257,14 @@ $(document).ready(function () {
         const y = d3.scaleLinear()
             .domain([0, 1])
             .range([height, 0]);
-        svg.append("g").attr('class', 'axis y-axis')
-            .call(d3.axisLeft(y).tickFormat(d3.format("~%")));
+        const yAxis = d3.axisLeft(y).ticks(10).tickSize(4).tickPadding(6).tickFormat(d3.format("~%"));
+        svg.append("g")
+            .attr('class', 'axis y-axis')
+            .call(yAxis)
+            .call(d => d.select(".domain").remove());
+
+        svg.append("g").attr('class', 'grid')
+            .call(yAxis.tickSize(-width, 0, 0).tickFormat("").ticks(10));
 
         // Bars
         svg.selectAll("mybar")

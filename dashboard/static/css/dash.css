@@ -147,40 +147,58 @@
 .side-label {
     font-size: 6px;
 }
+
 td {
     white-space: nowrap;
 }
-.text-mutation{
-  font-size: 0.8rem;
-}
 
-.table-main th{
-    background-color: #16365f;
-    color: #fff!important;
-}
-.table-sub th{
-    background-color: #f8f9fa;
-    color: #000!important;
-    font-size: 0.9rem;
-}
-.table-main{
-    font-size: 0.9rem;
-}
-.table-sub{
+.text-mutation {
     font-size: 0.8rem;
 }
-.col-highlight {
-    background-color: #EEF5FF!important;
-    cursor: pointer;
-    font-size: 0.9rem!important;
- }
-.col-highlight .cat-circle{
-    -webkit-text-stroke: 1px #16365f!important;
-}
-.col-highlight-header {
-    background-color: #EEF5FF!important;
-    cursor: pointer;
-    color: #16365f!important;
-    -webkit-text-stroke: 1px #16365f!important;
 
+.table-main th {
+    background-color: #16365f;
+    color: #fff !important;
+}
+
+.table-sub th {
+    background-color: #f8f9fa;
+    color: #000 !important;
+    font-size: 0.9rem;
+}
+
+.table-main {
+    font-size: 0.9rem;
+}
+
+.table-sub {
+    font-size: 0.8rem;
+}
+
+.col-highlight {
+    background-color: #EEF5FF !important;
+    cursor: pointer;
+    font-size: 0.9rem !important;
+}
+
+.col-highlight .cat-circle {
+    -webkit-text-stroke: 1px #16365f !important;
+}
+
+.col-highlight-header {
+    background-color: #EEF5FF !important;
+    cursor: pointer;
+    color: #16365f !important;
+    -webkit-text-stroke: 1px #16365f !important;
+
+}
+
+.grid .tick line {
+    stroke: #737373;
+    stroke-dasharray: 5, 5;
+    stroke-width: 0.3px;
+    stroke-opacity: 1;
+}
+.grid path {
+  stroke: none;
 }
