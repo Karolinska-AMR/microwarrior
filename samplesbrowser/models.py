@@ -11,6 +11,7 @@ class Sample(models.Model):
     fraction = models.FloatField(default=0)
     passed_tbprofiler = models.BooleanField(default=False)
     passed_cryptic = models.BooleanField(default=False)
+    passed_who = models.BooleanField(default=False)
     mapped_reads = models.FloatField(null=True, blank=True)
     mapped_reads_pct = models.FloatField(null=True, blank=True)
     genome_depth = models.FloatField(null=True, blank=True)
@@ -32,11 +33,11 @@ class Drug(models.Model):
     man_order = models.IntegerField(null=True, blank=True)
 
 
-class Catalog(models.Model):
+class Evidence(models.Model):
     name = models.CharField(max_length=100)
     version = models.CharField(max_length=50)
     gene = models.CharField(max_length=100)
-    variant = models.CharField(max_length=150)
+    variant = models.CharField(max_length=500)
     prediction = models.CharField(max_length=10)
     drug = models.ForeignKey(Drug, on_delete=models.CASCADE, related_name='d_catalogs')
     grade = models.CharField(max_length=100, null=True, blank=True)
@@ -46,19 +47,27 @@ class Catalog(models.Model):
     present_s = models.IntegerField(null=True, blank=True)
     absent_r = models.IntegerField(null=True, blank=True)
     absent_s = models.IntegerField(null=True, blank=True)
+    ppv = models.FloatField(null=True, blank=True)
+    odd_ratio = models.FloatField(null=True, blank=True)
+    sensitivity = models.FloatField(null=True, blank=True)
+    specificity = models.FloatField(null=True, blank=True)
     effect = models.CharField(max_length=150, null=True, blank=True)
 
 
 class Mutation(models.Model):
     sample = models.ForeignKey(Sample, on_delete=models.CASCADE, related_name='s_mutations')
+    drug = models.ForeignKey(Drug, on_delete=models.CASCADE)
+    catalog = models.CharField(max_length=150, null=True, blank=True)
+    gene = models.CharField(max_length=100)
+    variant = models.CharField(max_length=500)
+    prediction = models.CharField(max_length=10)
     freq = models.FloatField(null=True, blank=True)
     depth = models.IntegerField(null=True, blank=True)
-    variant = models.ForeignKey(Catalog, on_delete=models.CASCADE, related_name='cat_mutations')
 
 
 class UnverifiedMutation(models.Model):
     sample = models.ForeignKey(Sample, on_delete=models.CASCADE, related_name='s_umutations')
-    variant = models.ForeignKey(Catalog, on_delete=models.CASCADE, related_name='cat_umutations')
+    variant = models.ForeignKey(Evidence, on_delete=models.CASCADE, related_name='evi_umutations')
 
 
 class Meta(models.Model):

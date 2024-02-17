@@ -9,7 +9,7 @@ from datetime import datetime
 import os, time
 from glob import glob
 import json
-from samplesbrowser.models import Sample, Lineage, Catalog, Mutation, UnverifiedMutation
+from samplesbrowser.models import Sample, Lineage, Evidence, Mutation, UnverifiedMutation, Drug
 from django.db import transaction
 from django.conf import settings
 from iomanager.models import File
@@ -23,6 +23,7 @@ class Task_handler(Task):
 
         tsk = djTask.objects.get(task_id=task_id)
         json_file = glob(os.path.join(settings.ARCHIVE_ROOT, f'reports/{tsk.ticket}.json'))
+
         status = 1
         if len(json_file) > 0:
             save_report(json_file[0], tsk)
@@ -52,8 +53,7 @@ def spear_mtb(ticket):
               "-o", settings.ARCHIVE_ROOT,
               "-v", settings.RAWSEQ_ROOT,
               os.path.join(settings.MEDIA_ROOT, ticket)]
-    print(' '.join(runner))
-    # time.sleep(1200)
+    # time.sleep(5)
     subprocess.call(' '.join(runner), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     log_json = trace_to_json(os.path.join(settings.ARCHIVE_ROOT, f'traces/{ticket}.trace'))
     # log_json = {}
@@ -125,6 +125,9 @@ def save_report(report_json, task):
     # Load JSON data
     with open(report_json) as json_file:
         data = json.load(json_file)
+
+    catalog = ['CRyPTIC', 'WHO-UCN-2023.5', 'TB-Profiler']
+
     with transaction.atomic():
         # Iterate over each sample
         for seqid, sample_data in data.items():
@@ -139,14 +142,21 @@ def save_report(report_json, task):
                     except ValueError:
                         pass
 
+                cat_chck = {}
+                for cat in catalog:
+                    cat_chck[cat] = False
+                    if cat in sample_data['catalogs']:
+                        cat_chck[cat] = True
+
                 # Create Sample
                 sample, created = Sample.objects.get_or_create(
                     sample=sample_data['seqid'],
                     defaults={"task_id": task.id,
                               "collection_date": collection_date,
                               "category": sample_data["category"],
-                              "passed_tbprofiler": sample_data["tbprofiler"],
-                              "passed_cryptic": sample_data["cryptic"],
+                              "passed_tbprofiler": cat_chck["TB-Profiler"],
+                              "passed_cryptic": cat_chck["CRyPTIC"],
+                              "passed_who": cat_chck['WHO-UCN-2023.5'],
                               "genome_depth": sample_data["genome_median_depth"],
                               "mapped_reads": sample_data["num_mapped_reads"],
                               "mapped_reads_pct": sample_data["pct_mapped_reads"]
@@ -161,25 +171,24 @@ def save_report(report_json, task):
                     is_mixed=sample_data['lineage']['is_mixed'])
 
                 # Create Mutations
-                for variant in sample_data['variants']:
-                    # Look up the Catalogue entry
-                    catalog_entries = Catalog.objects.filter(
-                        name=variant['catalog'],
-                        gene=variant['gene'],
-                        variant=variant['variant'])
-
-                    for entry in catalog_entries:
-                        # assign Mutation
-                        Mutation.objects.create(
-                            sample=sample,
-                            variant=entry,
-                            freq=variant.get('freq'),
-                            depth=variant.get('depth'))
+                for var in sample_data['variants']:
+                    drug = Drug.objects.filter(name=var['drug']).first()
+                    if drug is None:
+                        print('####COULD NOT FOUND THIS DRUG: ' + var['drug'])
+                    Mutation.objects.create(
+                        sample=sample,
+                        catalog=var.get('catalog'),
+                        gene=var.get('gene'),
+                        variant=var.get('variant'),
+                        prediction=var.get('pred'),
+                        drug=drug,
+                        freq=var.get('freq'),
+                        depth=var.get('depth'))
 
                 # Create Unverified Mutations
                 for unverified_key, unverified_value in sample_data.get('unverified_mutations', {}).items():
                     # Look up the Catalogue entry
-                    catalog_entries = Catalog.objects.filter(
+                    catalog_entries = Evidence.objects.filter(
                         name=unverified_value['catalog'],
                         gene=unverified_value['gene'],
                         variant=unverified_value['variant'])
