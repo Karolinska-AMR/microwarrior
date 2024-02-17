@@ -40,6 +40,7 @@ def fetch_samples(request):
     if week_number:
         y4, w = week_number.split('-')
         w = int(w.strip('W'))
+        y4 = int(y4)
         query &= Q(extracted_week=w, extracted_year=y4)
 
     if date_from:
@@ -77,8 +78,8 @@ def fetch_samples(request):
                                    "collection_date": sample.collection_date,
                                    "category": sample.category,
                                    "lineage": lineage_data,
-                                    "pass_tbprofiler": sample.passed_tbprofiler,
-                                    "pass_cryptic":sample.passed_cryptic
+                                   "pass_tbprofiler": sample.passed_tbprofiler,
+                                   "pass_cryptic": sample.passed_cryptic
                                    }
 
     return JsonResponse(data)
@@ -126,6 +127,10 @@ def fetch_mutations(request):
                     ptr_ev[var.drug.name].append({'id': mu.id,
                                                   "mutation": f"{var.gene}@{var.variant}",
                                                   "drug": var.drug.name,
+                                                  'ppv': var.ppv,
+                                                  'OR': var.odd_ratio,
+                                                  'sens': var.sensitivity,
+                                                  'spec': var.specificity,
                                                   'present_solo_r': var.present_solo_r,
                                                   'present_solo_s': var.present_solo_s,
                                                   'present_r': var.present_r,
@@ -145,6 +150,10 @@ def fetch_mutations(request):
                     ptr_umu.append({'id': umu.id,
                                     "mutation": f"{var.gene}@{var.variant}",
                                     "drug": var.drug.name,
+                                    'ppv': var.ppv,
+                                    'OR': var.odd_ratio,
+                                    'sens': var.sensitivity,
+                                    'spec': var.specificity,
                                     'present_solo_r': var.present_solo_r,
                                     'present_solo_s': var.present_solo_s,
                                     'present_r': var.present_r,

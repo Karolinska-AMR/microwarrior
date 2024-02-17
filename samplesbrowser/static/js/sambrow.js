@@ -446,6 +446,7 @@ $(document).ready(function () {
         evidence.forEach((r) => {
             let cl = r.pred ? color_mapper[r.pred] : 'text-o';
             r.pred_icon = `<span class="${cl}"><i class="fas fa-circle"></i></span>`;
+            r.OR = r.OR === -999 ? '&#8734;': r.OR;
             $(evd_tbl).bootstrapTable("insertRow", {index: 0, row: r});
         });
 
