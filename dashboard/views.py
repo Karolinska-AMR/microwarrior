@@ -1,5 +1,3 @@
-import time
-
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -16,12 +14,16 @@ from samplesbrowser.models import Sample, Lineage, Mutation, Drug
 def home(request):
     return render(request, 'home.html')
 
-
 @login_required
 def dashboard(request):
     fname = request.user.first_name
     return render(request, 'dashboard.html', {"name": fname})
 
+@login_required
+def under_construction(request):
+    fname = request.user.first_name
+    page = request.path.strip('/')
+    return render(request, 'under_contruction.html', {"name": fname,"page":page})
 
 @login_required
 def get_jobs(request):
@@ -269,8 +271,3 @@ def build_hierarchy(items):
 
     return {"name": "", "children": root}
 
-@login_required
-def under_construction(request):
-    fname = request.user.first_name
-    page = request.path.strip('/')
-    return render(request, 'under_contruction.html', {"name": fname,"page":page})

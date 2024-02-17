@@ -23,7 +23,14 @@
             <div class="col-12">
                 <div id="import-card" class="card shadow-sm h-100 py-2 mx-2">
                     <div class="card-header py-2">
-                        <h5 class="text-uppercase section-header"><i class="fas fa-upload"></i> New Submission </h5>
+                        <div class="d-flex justify-content-between">
+                            <h5 class="text-uppercase section-header"><i class="fas fa-upload"></i> New Submission </h5>
+                            <div class="form-check-reverse form-switch">
+                                <input class="form-check-input ml-1" type="checkbox" role="switch"
+                                       id="flexSwitchCheckDefault" style="cursor: pointer;">
+                                <label class="form-check-label text-secondary" for="flexSwitchCheckDefault">Dropbox mode</label>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div id="import-panel" class="m-fadeIn">
@@ -44,6 +51,8 @@
                                             <a class="nav-link" data-action="removeAll" href="#" title="Delete all">
                                                 <i class="fa fa-fw fa-trash"></i> Delete All </a>
                                         </li>
+
+
                                     </ul>
                                     <ul class="navbar-nav ml-auto mb-md-0">
                                         <li class="nav-item">
@@ -52,7 +61,8 @@
                                                    id="proceed-btn" data-action="submit" href="#"
                                                    title="Proceed" style="display: none">
                                                     <i class="fas fa-forward blink"></i> Proceed </a>
-                                                <a class="nav-link pr-0" id="submit-jobs" data-action="submit" href="#" title="submit">
+                                                <a class="nav-link pr-0" id="submit-jobs" data-action="submit" href="#"
+                                                   title="submit">
                                                     <i class="fa fa-fw fa-paper-plane"></i> Submit </a>
                                                 <input type="file" id="choose-dir" style="display: none"/>
                                             </form>
