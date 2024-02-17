@@ -56,7 +56,9 @@
                             <div class="row">
                                 <table id="prd-tbl" class="table table-sm text-sm text-center table-main"
                                        data-toggle="table"
-                                       data-virtual-scroll="true"></table>
+                                       data-virtual-scroll="true"
+                                       data-fixed-columns="true"
+                                       data-fixed-number="1"></table>
                             </div>
 
                             <div class="row" id="evidence_row" style="display: none;">
@@ -64,7 +66,9 @@
                                 </p>
                                 <table id="evd-tbl" class="table table-sm text-sm text-center table-sub"
                                        data-toggle="table"
-                                       data-virtual-scroll="true">
+                                       data-virtual-scroll="true"
+                                       data-fixed-columns="true"
+                                       data-fixed-number="3">
                                     <thead>
                                     <tr>
                                         <th data-field="pred_icon"></th>
@@ -100,7 +104,9 @@
                                        data-search="true"
                                        data-search-align="left"
                                        data-search-highlight="true"
-                                       data-pagination="true">
+                                       data-pagination="true"
+                                       data-fixed-columns="true"
+                                       data-fixed-number="3">
                                     <thead>
                                     <tr>
                                         <th data-field="pred_icon"></th>
@@ -108,10 +114,10 @@
                                         <th data-field="mutation" data-sortable="true">Mutation</th>
                                         <th data-field="effect" data-sortable="true">Effect</th>
                                         <th data-field="grade" data-sortable="true">Grade</th>
-                                        <th data-field="ppv">PPV (%)</th>
-                                        <th data-field="sens">Sensitivity (%)</th>
-                                        <th data-field="spec">Specificity (%)</th>
-                                        <th data-field="OR">Odd-Ratio</th>
+                                        <th data-field="ppv" data-sortable="true">PPV (%)</th>
+                                        <th data-field="sens" data-sortable="true">Sensitivity (%)</th>
+                                        <th data-field="spec" data-sortable="true">Specificity (%)</th>
+                                        <th data-field="OR" data-sortable="true">Odd-Ratio</th>
                                         <th data-field="present_solo_r" data-sortable="true">Present Solo R</th>
                                         <th data-field="present_solo_s" data-sortable="true">Present Solo S</th>
                                         <th data-field="present_r" data-sortable="true">Present R</th>
@@ -306,5 +312,6 @@
 
 {% block jscontent %}
     {% javascript 'sambrow_js' %}
+    <script src="{% static 'js/bootstrap-table-fixed-columns.min.js' %} "></script>
 {% endblock %}
 

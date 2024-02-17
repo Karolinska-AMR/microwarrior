@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .models import Sample, Catalog, Mutation, Drug, Meta
+from .models import Sample, Evidence, Mutation, Drug, Meta
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
@@ -53,10 +53,11 @@ def fetch_samples(request):
         query &= Q(lineage__lin__icontains=lineage)
 
     if mutation:
-        query &= Q(s_mutations__variant__variant__icontains=mutation)
+        gene,variant = mutation.split('@')
+        query &= Q(s_mutations__variant__icontains=variant) & Q(s_mutations__gene__icontains=gene)
 
     if drug:
-        query &= Q(s_mutations__variant__drug__name__icontains=drug) & Q(s_mutations__variant__prediction='R')
+        query &= Q(s_mutations__drug__name__icontains=drug) & Q(s_mutations__prediction='R')
 
     if resistance_category:
         query &= Q(category__icontains=resistance_category)
@@ -79,7 +80,8 @@ def fetch_samples(request):
                                    "category": sample.category,
                                    "lineage": lineage_data,
                                    "pass_tbprofiler": sample.passed_tbprofiler,
-                                   "pass_cryptic": sample.passed_cryptic
+                                   "pass_cryptic": sample.passed_cryptic,
+                                   "pass_who": sample.passed_who
                                    }
 
     return JsonResponse(data)
@@ -95,74 +97,76 @@ def fetch_mutations(request):
     sample_ids = request.GET.getlist('sids')
     sample_data = {}
     for id in sample_ids:
+
         sample = get_object_or_404(
-            Sample.objects.prefetch_related('s_mutations__variant__drug', 's_umutations__variant__drug'),
+            Sample.objects.prefetch_related('s_mutations__drug', 's_umutations__variant__drug'),
             id=id)
-        catalogs = list(Catalog.objects.values_list('name').distinct())
+
+        catalogs = list(Meta.objects.filter(type__exact='catalog').values_list('name').distinct())
         data = {"mutations": {c[0]: [] for c in catalogs},
                 "unverified_mutations": [], "evidence": {}, "qc": {}, 'predictions': {}}
+
         ptr_mu = data["mutations"]
         ptr_ev = data["evidence"]
         for mu in sample.s_mutations.all():
-            var = mu.variant
-            if var.prediction in ['R', 'U']:
-                drug = var.drug.name
+            cat = mu.catalog
+            if mu.prediction in ['R', 'U']:
+                drug = mu.drug.name
                 if drug not in ptr_mu:
                     ptr_mu[drug] = {}
-                if var.name not in ptr_mu[drug]:
-                    ptr_mu[drug][var.name] = []
+                if cat not in ptr_mu[drug]:
+                    ptr_mu[drug][cat] = []
 
-                ptr_mu[drug][var.name].append({
+                ptr_mu[drug][cat].append({
                     "id": mu.id,
                     "freq": mu.freq,
                     "depth": mu.depth,
-                    "gene": var.gene,
-                    "variant": var.variant,
-                    "pred": var.prediction,
-                    'format': ['HGSV', 'GARC1'][var.name.startswith('CRyPTIC')]
+                    "gene": mu.gene,
+                    "variant": mu.variant,
+                    "pred": mu.prediction,
+                    'format': ['HGSV', 'GARC1'][cat.startswith('CRyPTIC')]
                 })
-                if var.name.startswith('WHO'):
-                    if var.drug.name not in ptr_ev:
-                        ptr_ev[var.drug.name] = []
-                    ptr_ev[var.drug.name].append({'id': mu.id,
-                                                  "mutation": f"{var.gene}@{var.variant}",
-                                                  "drug": var.drug.name,
-                                                  'ppv': var.ppv,
-                                                  'OR': var.odd_ratio,
-                                                  'sens': var.sensitivity,
-                                                  'spec': var.specificity,
-                                                  'present_solo_r': var.present_solo_r,
-                                                  'present_solo_s': var.present_solo_s,
-                                                  'present_r': var.present_r,
-                                                  'present_s': var.present_s,
-                                                  'absent_r': var.absent_r,
-                                                  'absent_s': var.absent_s,
-                                                  'grade': var.grade,
-                                                  "pred": var.prediction,
-                                                  'effect': var.effect, })
+                if cat.startswith('WHO'):
+                    if mu.drug.name not in ptr_ev:
+                        ptr_ev[mu.drug.name] = []
+                    evi = Evidence.objects.filter(name=cat,gene=mu.gene,variant=mu.variant,drug_id=mu.drug.id).first()
+                    ptr_ev[mu.drug.name].append({'id': evi.id,
+                                                  "mutation": f"{evi.gene}@{evi.variant}",
+                                                  "drug": mu.drug.name,
+                                                  'ppv': evi.ppv,
+                                                  'OR': evi.odd_ratio,
+                                                  'sens': evi.sensitivity,
+                                                  'spec': evi.specificity,
+                                                  'present_solo_r': evi.present_solo_r,
+                                                  'present_solo_s': evi.present_solo_s,
+                                                  'present_r': evi.present_r,
+                                                  'present_s': evi.present_s,
+                                                  'absent_r': evi.absent_r,
+                                                  'absent_s': evi.absent_s,
+                                                  'grade': evi.grade,
+                                                  "pred": evi.prediction,
+                                                  'effect': evi.effect, })
         ptr_umu = data["unverified_mutations"]
         for umu in sample.s_umutations.all():
-            var = umu.variant
-            if var.prediction in ['R', 'U']:
-                if var.name.startswith('WHO'):
-                    # if var.drug.name not in ptr_umu:
-                    #     ptr_umu[var.drug.name] = []
+            evi = umu.variant
+            if evi.prediction in ['R', 'U']:
+                if evi.name.startswith('WHO'):
                     ptr_umu.append({'id': umu.id,
-                                    "mutation": f"{var.gene}@{var.variant}",
-                                    "drug": var.drug.name,
-                                    'ppv': var.ppv,
-                                    'OR': var.odd_ratio,
-                                    'sens': var.sensitivity,
-                                    'spec': var.specificity,
-                                    'present_solo_r': var.present_solo_r,
-                                    'present_solo_s': var.present_solo_s,
-                                    'present_r': var.present_r,
-                                    'present_s': var.present_s,
-                                    'absent_r': var.absent_r,
-                                    'absent_s': var.absent_s,
-                                    'grade': var.grade,
-                                    "pred": var.prediction,
-                                    'effect': var.effect})
+                                    "mutation": f"{evi.gene}@{evi.variant}",
+                                    "drug": evi.drug.name,
+                                    'ppv': evi.ppv,
+                                    'OR': evi.odd_ratio,
+                                    'sens': evi.sensitivity,
+                                    'spec': evi.specificity,
+                                    'present_solo_r': evi.present_solo_r,
+                                    'present_solo_s': evi.present_solo_s,
+                                    'present_r': evi.present_r,
+                                    'present_s': evi.present_s,
+                                    'absent_r': evi.absent_r,
+                                    'absent_s': evi.absent_s,
+                                    'grade': evi.grade,
+                                    "pred": evi.prediction,
+                                    'effect': evi.effect})
         data['predictions'] = get_ensemble_prediction(id)
         sample_data[id] = data
     return JsonResponse(sample_data)
@@ -177,22 +181,22 @@ def get_meta():
 def get_ensemble_prediction(sample_id):
     queryset = Mutation.objects.filter(
         sample_id=sample_id,
-        variant__prediction__in=['R', 'U']
+        prediction__in=['R', 'U']
     ).values(
-        'variant__name',
-        'variant__drug__name',
-        'variant__prediction'
+        'catalog',
+        'drug__name',
+        'prediction'
     ).annotate(
         count=Count('id')
     )
     data = {}
     for item in queryset:
-        drg = item['variant__drug__name']
-        cat_name = item['variant__name']
-        pred = item['variant__prediction']
+        drg = item['drug__name']
+        cat_name = item['catalog']
+        pred = item['prediction']
 
         if drg not in data:
-            data[drg] = {c[0]: None for c in Catalog.objects.values_list('name').distinct()}
+            data[drg] = {c[0]: None for c in Meta.objects.filter(type='catalog').values_list('name').distinct()}
             data[drg]['final_pred'] = None
 
         if pred == 'R':

@@ -22,6 +22,7 @@ $(document).ready(function () {
             formatNoMatches: function () {
                 return '<i class="fas fa-info"></i> No unverified mutations were identified.';
             }
+
         });
 
         $("#search-btn").click(function () {
@@ -446,7 +447,7 @@ $(document).ready(function () {
         evidence.forEach((r) => {
             let cl = r.pred ? color_mapper[r.pred] : 'text-o';
             r.pred_icon = `<span class="${cl}"><i class="fas fa-circle"></i></span>`;
-            r.OR = r.OR === -999 ? '&#8734;': r.OR;
+            r.OR = r.OR === -999 ? '&#8734;' : r.OR;
             $(evd_tbl).bootstrapTable("insertRow", {index: 0, row: r});
         });
 
@@ -463,6 +464,7 @@ $(document).ready(function () {
         mutations.forEach((r) => {
             let cl = r.pred ? color_mapper[r.pred] : 'text-o';
             r.pred_icon = `<span class="${cl}"><i class="fas fa-circle"></i></span>`;
+            r.OR = r.OR === -999 ? '&#8734;' : r.OR;
             $(umu_tbl).bootstrapTable("insertRow", {index: 0, row: r});
         });
     }
@@ -484,7 +486,7 @@ $(document).ready(function () {
         // Iterate over the icons array and create each icon
         meta.catalogs.forEach(function (cat) {
             let isErrorCondition = (!info["pass_cryptic"] && cat.startsWith("CRyPTIC")) ||
-                (!info["pass_tbprofiler"] && !cat.startsWith("CRyPTIC"));
+                (!info["pass_tbprofiler"] && cat.startsWith("TB")) || (!info["pass_who"] && cat.startsWith("WHO"));
 
             let pred_cat = pred[cat];
             let link = document.createElement('a');
@@ -519,14 +521,13 @@ $(document).ready(function () {
     }
 
     function parse_cataloge(mutations_drug, catalog) {
+
         let mutations = mutations_drug[catalog];
         let info = repo[selected_sample]["info"];
-
         if (!mutations) {
 
-
             let isErrorCondition = (!info["pass_cryptic"] && catalog.startsWith("CRyPTIC")) ||
-                (!info["pass_tbprofiler"] && !catalog.startsWith("CRyPTIC"));
+                (!info["pass_tbprofiler"] && catalog.startsWith("TB")) || (!info["pass_who"] && catalog.startsWith("WHO"));
 
             if (isErrorCondition) {
                 return `<span class="text-secondary" title="Could not assess this catalogue due to errors in the pipeline.">
@@ -543,7 +544,7 @@ $(document).ready(function () {
         mutations.forEach((mu) => {
                 let cl = mu.pred === "R" ? "text-r" : "text-u";
                 if (mu.format === 'GARC1') {
-                    mu_tags.push(`<p class='${cl} text-mutation m-0 p-0'>${mu.variant}</p>`);
+                    mu_tags.push(`<p class='${cl} text-mutation m-0 p-0'>${mu.gene}@${mu.variant}</p>`);
                 } else {
                     let bg_cl;
                     if (mu.freq >= 0.8) {
