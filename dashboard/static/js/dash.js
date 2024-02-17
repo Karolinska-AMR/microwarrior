@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(document).ready(function (x) {
     let IMPORTED_SAMPLES = [];
     let DUPLICATE_SAMPLES = [];
     let Overview_data;
@@ -932,8 +932,14 @@ $(document).ready(function () {
         var prvidx = 5;
         var step = 0.5;
         var cnt = 1;
+
+        // remove those with no dates
+        data = data.filter(function(d) {
+            return d.date !== null;
+        });
         data.sort((a, b) => (a.date > b.date) ? 1 : (a.date < b.date) ? -1 : 0);
         data.forEach((d) => {
+            if(!d.date) return;
             if (d.date.toString() === prvdt) {
                 prvidx = prvidx + step;
             } else {
@@ -1220,6 +1226,7 @@ $(document).ready(function () {
     }
 
     function plot_mutations(pred, drug) {
+
         let mutations = Overview_data.mutations;
         let svg_tag = pred === 'R' ? '#top-rmu-plot' : '#top-umu-plot';
         let bar_color = pred === 'R' ? '#dc3545' : '#ffc107';
@@ -1281,7 +1288,7 @@ $(document).ready(function () {
                 var tooltip = d3.select("#tooltip");
                 tooltip.transition().duration(200).style('opacity', .9);
                 tooltip.html(`<p class="p-0 m-1 text-white "><small>Mutation</small>: <span class="text-break">${d.mutation}</span>
-                              <br><small>Frequency</small>: ${d.frequency * 100.0}%</p>`)
+                              <br><small>Frequency</small>: ${+(Math.round(d.frequency  + "e+4")+"e-2")}%</p>`)
                     .style('left', (event.pageX + 5) + 'px')
                     .style('top', (event.pageY - 28) + 'px');
             })
@@ -1315,6 +1322,7 @@ $(document).ready(function () {
                 $(select_ele).append(`<option value="${drug}"> ${drug} </option>`);
             });
         }
+
 
         fill(data.R, 'rmu-select');
         fill(data.U, 'umu-select');

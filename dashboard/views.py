@@ -5,25 +5,28 @@ from flowrunner import tasks
 from flowrunner.models import Task
 from datetime import datetime, timedelta
 from django.db.models import F, CharField, Value, Count
-from django.db.models.functions import Concat
+from django.db.models.functions import Concat, Round
 from iomanager.models import File
-from django.db.models import Sum, F
+from django.db.models import Sum, F, ExpressionWrapper, FloatField
 from samplesbrowser.models import Sample, Lineage, Mutation, Drug
 
 
 def home(request):
     return render(request, 'home.html')
 
+
 @login_required
 def dashboard(request):
     fname = request.user.first_name
     return render(request, 'dashboard.html', {"name": fname})
 
+
 @login_required
 def under_construction(request):
     fname = request.user.first_name
     page = request.path.strip('/')
-    return render(request, 'under_contruction.html', {"name": fname,"page":page})
+    return render(request, 'under_contruction.html', {"name": fname, "page": page})
+
 
 @login_required
 def get_jobs(request):
@@ -92,7 +95,7 @@ def get_jobs(request):
             order += 1
         tasks_list.append(tmp)
 
-    return JsonResponse({'data': tasks_list, 'ongoing': ongoing_tasks,'active':tasks_stat['active']})
+    return JsonResponse({'data': tasks_list, 'ongoing': ongoing_tasks, 'active': tasks_stat['active']})
 
 
 @login_required
@@ -205,30 +208,34 @@ def fetch_abundant_mutations(size=10):
     drugs = Drug.objects.all()
     for prediction_value in ['R', 'U']:
         for drug in drugs:
+
             # Calculate the total frequency of mutations for this drug and prediction value
             total_freq = Mutation.objects.filter(
-                variant__drug=drug,
-                variant__prediction=prediction_value,
-                variant__name='WHO-UCN-2023.5'
+                drug=drug,
+                prediction=prediction_value,
+                catalog='WHO-UCN-2023.5'
             ).aggregate(total=Sum('freq'))['total'] or 1
 
             # Fetch top 10 mutations for the current drug and prediction value
             top_mutations = Mutation.objects.filter(
-                variant__drug=drug,
-                variant__prediction=prediction_value,
-                variant__name='WHO-UCN-2023.5'
+                drug=drug,
+                prediction=prediction_value,
+                catalog='WHO-UCN-2023.5'
             ).values(
-                'variant__gene', 'variant__variant'
+                'gene', 'variant'
             ).annotate(
                 freq_sum=Sum('freq')
             ).annotate(
-                freq_percentage=F('freq_sum') / total_freq
+                freq_percentage=ExpressionWrapper(
+                    Round(F('freq_sum') / total_freq, 4),
+                    output_field=FloatField()
+                )
             ).order_by('-freq_sum')[:size]
 
             # Format the results as a list of dictionaries
             formatted_mutations = [
-                {'mutation': f"{mutation['variant__gene']}@{mutation['variant__variant']}",
-                 'frequency': round(mutation['freq_percentage'], 2)}
+                {'mutation': f"{mutation['gene']}@{mutation['variant']}",
+                 'frequency': mutation['freq_percentage']}
                 for mutation in top_mutations
             ]
             if len(formatted_mutations) > 0:
@@ -238,7 +245,8 @@ def fetch_abundant_mutations(size=10):
 
 
 def build_hierarchy(items):
-    items.sort(key=lambda x:len(x),reverse=True)
+    items.sort(key=lambda x: len(x), reverse=True)
+
     def add_or_get_node(hierarchy, name):
         for node in hierarchy:
             if node['name'] == name:
@@ -270,4 +278,3 @@ def build_hierarchy(items):
         set_leaf_counts(root, item, 0, len(levels) - 1)
 
     return {"name": "", "children": root}
-
