@@ -29,8 +29,8 @@ def fetch_samples(request):
     resistance_category = request.GET.get('rca', None)
 
     queryset = Sample.objects.annotate(
-        extracted_week=ExtractWeek('collection_date'),
-        extracted_year=ExtractYear('collection_date')
+        task__submission_timestamp__week=ExtractWeek('task__submission_timestamp'),
+        task__submission_timestamp__year=ExtractYear('task__submission_timestamp')
     )
 
     query = Q()
@@ -44,13 +44,13 @@ def fetch_samples(request):
         y4, w = week_number.split('-')
         w = int(w.strip('W'))
         y4 = int(y4)
-        query &= Q(extracted_week=w, extracted_year=y4)
+        query &= Q(task__submission_timestamp__week=w, task__submission_timestamp__year=y4)
 
     if date_from:
-        query &= Q(collection_date__gte=date_from)
+        query &= Q(task__submission_timestamp__gte=date_from)
 
     if date_to:
-        query &= Q(collection_date__lte=date_to)
+        query &= Q(task__submission_timestamp__lte=date_to)
 
     if lineage:
         query &= Q(lineage__lin__icontains=lineage)
@@ -79,7 +79,9 @@ def fetch_samples(request):
         } if lineage else {}
         data[sample.id] = {}
         data[sample.id]["info"] = {"id": sample.id, "sample": sample.sample,
+                                   "ticket":sample.task.ticket,
                                    "collection_date": sample.collection_date,
+                                   'submission_timestamp':sample.task.submission_timestamp,
                                    "category": sample.category,
                                    "lineage": lineage_data,
                                    "pass_tbprofiler": sample.passed_tbprofiler,
