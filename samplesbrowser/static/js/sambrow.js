@@ -27,6 +27,7 @@ $(document).ready(function () {
 
         $("#search-btn").click(function () {
             let formData = {
+                tkt:$("#ticketId").val(),
                 sid: $("#sampleId").val(),
                 wn: $("#weekNumber").val(),
                 dtf: $("#dateFrom").val(),

@@ -7,7 +7,7 @@ from django.db.models import Count
 from itertools import chain
 from django.db.models import Q
 from django.db.models.functions import ExtractWeek, ExtractYear
-
+from flowrunner.models import Task
 
 @login_required
 def samplesbrowser(request):
@@ -18,6 +18,7 @@ def samplesbrowser(request):
 # TODO: use django-ratelimit to control the rate of request
 @login_required
 def fetch_samples(request):
+    ticket = request.GET.get('tkt', None)
     sample_id = request.GET.get('sid', None)
     week_number = request.GET.get('wn', None)
     date_from = request.GET.get('dtf', None)
@@ -33,6 +34,8 @@ def fetch_samples(request):
     )
 
     query = Q()
+    if ticket:
+        query &= Q(task__ticket=ticket)
 
     if sample_id:
         query &= Q(sample__icontains=sample_id)
