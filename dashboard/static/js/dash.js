@@ -280,7 +280,7 @@ $(document).ready(function (x) {
     function import_get_date_cell(id, type) {
         return `
             <div class="input-group input-group-sm border-0 m-0"> 
-            <input id="${id}" type="text" class="form-control form-control-sm ${type}" data-col="${type}" data-provide="datepicker" data-date-format="yy-mm-dd">
+            <input id="${id}" type="text" class="form-control form-control-sm ${type}" data-col="${type}" data-provide="datepicker" data-date-format="yyyy-mm-dd">
         </div>`;
     }
 
@@ -718,6 +718,7 @@ $(document).ready(function (x) {
 
     function job_fill_log(data) {
         const tbl = document.getElementById("log-tbl");
+        $(tbl).bootstrapTable('removeAll');
         $(tbl).bootstrapTable('hideLoading');
 
         let rec;
@@ -729,6 +730,7 @@ $(document).ready(function (x) {
             rec.species = rec.status < 0 ? u : rec.species;
             rec.cryptic_icon = rec.cryptic === null ? u : rec.cryptic ? s : f;
             rec.tbprofiler_icon = rec.tbprofiler == null ? u : rec.tbprofiler ? s : f;
+            rec.who_icon = rec.who == null ? u : rec.who ? s : f;
             $(tbl).bootstrapTable("insertRow", {index: 0, row: rec});
         }
 

@@ -34,7 +34,7 @@ def get_jobs(request):
     tasks_stat = tasks.update_status()
     # Get task from DB
     end_date = datetime.now()
-    start_date = end_date - timedelta(days=10)
+    start_date = end_date - timedelta(days=30)
     tasks_records = Task.objects.filter(
         submission_timestamp__gte=start_date,
         submission_timestamp__lte=end_date
@@ -108,11 +108,13 @@ def get_log(request):
     for s in pe_samples:
         pass_cry = None
         pass_tbp = None
+        pass_who = None
         if task.status >= 0:
             pass_cry = False
             pass_tbp = False
+            pass_who = False
         log[s["sample"]] = {"sample": s["sample"], "species": 'Other',
-                            "cryptic": pass_cry, "tbprofiler": pass_tbp,
+                            "cryptic": pass_cry, "tbprofiler": pass_tbp,"who":pass_who,
                             "status": task.status}
     samples = Sample.objects.filter(task=task)
     if samples.exists():
@@ -123,6 +125,7 @@ def get_log(request):
                 ptr["species"] = 'MTB'
                 ptr["cryptic"] = s.passed_cryptic
                 ptr["tbprofiler"] = s.passed_tbprofiler
+                ptr["who"] = s.passed_who
 
     return JsonResponse({'data': list(log.values())})
 

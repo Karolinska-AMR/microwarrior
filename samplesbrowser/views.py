@@ -130,7 +130,8 @@ def fetch_mutations(request):
                     if mu.drug.name not in ptr_ev:
                         ptr_ev[mu.drug.name] = []
                     evi = Evidence.objects.filter(name=cat,gene=mu.gene,variant=mu.variant,drug_id=mu.drug.id).first()
-                    ptr_ev[mu.drug.name].append({'id': evi.id,
+                    if evi is not None:
+                        ptr_ev[mu.drug.name].append({'id': evi.id,
                                                   "mutation": f"{evi.gene}@{evi.variant}",
                                                   "drug": mu.drug.name,
                                                   'ppv': evi.ppv,
@@ -146,6 +147,8 @@ def fetch_mutations(request):
                                                   'grade': evi.grade,
                                                   "pred": evi.prediction,
                                                   'effect': evi.effect, })
+                    else:
+                        print(mu.variant)
         ptr_umu = data["unverified_mutations"]
         for umu in sample.s_umutations.all():
             evi = umu.variant
