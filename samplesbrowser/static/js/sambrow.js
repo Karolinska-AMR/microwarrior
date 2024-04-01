@@ -27,7 +27,7 @@ $(document).ready(function () {
 
         $("#search-btn").click(function () {
             let formData = {
-                tkt:$("#ticketId").val(),
+                tkt: $("#ticketId").val(),
                 sid: $("#sampleId").val(),
                 wn: $("#weekNumber").val(),
                 dtf: $("#dateFrom").val(),
@@ -51,9 +51,11 @@ $(document).ready(function () {
             }
 
         });
+
         $("#cls-form").click(function () {
             document.getElementById('searchForm').reset();
         });
+
         $("#del-all").click(function () {
             const search_tbl = document.getElementById('search-tbl');
             $(search_tbl).bootstrapTable("removeAll");
@@ -80,6 +82,7 @@ $(document).ready(function () {
             selected_sample = undefined;
             selected_drug_index = undefined;
         });
+
         $("#import-sel").click(function () {
             const search_tbl = document.getElementById('search-tbl');
             const d = $(search_tbl).bootstrapTable("getData");
@@ -101,7 +104,6 @@ $(document).ready(function () {
                 search_alert("Please search and retrieve at least one sample.");
             }
         });
-
 
         $("#searchModal").on("hide.bs.modal", function (event) {
             clean_search();
@@ -165,6 +167,9 @@ $(document).ready(function () {
                 let infoArray = $.map(search_repo, function (value, key) {
                     return value.info;
                 });
+                if (infoArray.length === 0) {
+                    search_alert('No Matches Found.');
+                }
                 const search_tbl = document.getElementById('search-tbl');
                 $(search_tbl).bootstrapTable('hideLoading');
                 document.getElementById('searchForm').reset();
