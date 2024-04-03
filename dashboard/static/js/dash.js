@@ -660,12 +660,21 @@ $(document).ready(function (x) {
         $(tbl).bootstrapTable("hideLoading");
         let rec;
         data.sort((a, b) => b.order - a.order);
+        let baseUrl = window.location.protocol + "//" + window.location.host + "/samplesbrowser";
+
         for (let i = 0; i < data.length; i++) {
+            console.log(rec);
             rec = data[i];
             let icon = get_job_status(rec.status).icon;
             let cl = get_job_status(rec.status).cl;
             rec.actions = `<a class="job-log text-secondary" href="#" data-status="${rec.status}" data-ticket="${rec.ticket}" title="view logs" > <i class="fas fa-clipboard-list"></i></a>`;
             rec.status_icon = `<a class="status ${cl}" data-sample="${rec.id}" title="status" >${icon}</a>`;
+            rec.ticket_lnk = rec.ticket;
+            if (rec.status === 'Completed') {
+                let encodedParameter = encodeURIComponent('ticket') + "=" + encodeURIComponent(rec.ticket);
+                let turl = baseUrl + "?" + encodedParameter;
+                rec.ticket_lnk = `<a class="fw-bold" href="${turl}" target="_blank">${rec.ticket}</a>`;
+            }
             $(tbl).bootstrapTable("insertRow", {index: 0, row: rec});
         }
 
@@ -936,12 +945,12 @@ $(document).ready(function (x) {
         var cnt = 1;
 
         // remove those with no dates
-        data = data.filter(function(d) {
+        data = data.filter(function (d) {
             return d.date !== null;
         });
         data.sort((a, b) => (a.date > b.date) ? 1 : (a.date < b.date) ? -1 : 0);
         data.forEach((d) => {
-            if(!d.date) return;
+            if (!d.date) return;
             if (d.date.toString() === prvdt) {
                 prvidx = prvidx + step;
             } else {
@@ -1290,7 +1299,7 @@ $(document).ready(function (x) {
                 var tooltip = d3.select("#tooltip");
                 tooltip.transition().duration(200).style('opacity', .9);
                 tooltip.html(`<p class="p-0 m-1 text-white "><small>Mutation</small>: <span class="text-break">${d.mutation}</span>
-                              <br><small>Frequency</small>: ${+(Math.round(d.frequency  + "e+4")+"e-2")}%</p>`)
+                              <br><small>Frequency</small>: ${+(Math.round(d.frequency + "e+4") + "e-2")}%</p>`)
                     .style('left', (event.pageX + 5) + 'px')
                     .style('top', (event.pageY - 28) + 'px');
             })

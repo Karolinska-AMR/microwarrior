@@ -34,7 +34,7 @@ def get_jobs(request):
     tasks_stat = tasks.update_status()
     # Get task from DB
     end_date = datetime.now()
-    start_date = end_date - timedelta(days=30)
+    start_date = end_date - timedelta(days=60)
     tasks_records = Task.objects.filter(
         submission_timestamp__gte=start_date,
         submission_timestamp__lte=end_date
@@ -51,8 +51,8 @@ def get_jobs(request):
     for tsk in tasks_records:
         tmp = {"id": tsk['task_id'],
                'ticket': tsk['ticket'],
-               'submission_timestamp': tsk['submission_timestamp'],
-               'completion_timestamp': tsk['completion_timestamp'],
+               'submission_timestamp': tsk['submission_timestamp'].strftime('%Y-%m-%d %H:%M:%S'),
+               'completion_timestamp': tsk['completion_timestamp'].strftime('%Y-%m-%d %H:%M:%S') if tsk.get('completion_timestamp') else None,
                "status": None,
                'samples_count': tsk['samples_count'],
                'submitter': tsk['submitter'],

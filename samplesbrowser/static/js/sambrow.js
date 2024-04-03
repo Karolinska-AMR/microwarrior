@@ -14,6 +14,19 @@ $(document).ready(function () {
         fetch_meta();
         adjust_viewbar();
 
+        // Run this script when the page loads
+        window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const paramValue = urlParams.get('ticket');
+            console.log(paramValue);
+            if (paramValue) {
+               let urlparams= {
+                tkt: paramValue,
+            };
+                fetchSamples(urlparams,true);
+            }
+        };
+
         $(window).resize(adjust_viewbar);
 
         const umu_tbl = document.getElementById('umu-tbl');
@@ -152,7 +165,7 @@ $(document).ready(function () {
         xhr.send();
     }
 
-    function fetchSamples(params) {
+    function fetchSamples(params,direct_import=false) {
 
         let queryString = Object.entries(params).map(([k, v]) => `${k}=${v}`).join('&');
 
@@ -174,6 +187,9 @@ $(document).ready(function () {
                 $(search_tbl).bootstrapTable('hideLoading');
                 document.getElementById('searchForm').reset();
                 update_search_tbl(infoArray);
+                if(direct_import){
+                    $("#import-all").trigger("click");
+                }
             } else {
                 const search_tbl = document.getElementById('search-tbl');
                 $(search_tbl).bootstrapTable('hideLoading');

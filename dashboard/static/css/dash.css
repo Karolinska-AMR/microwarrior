@@ -199,9 +199,22 @@ td {
     stroke-width: 0.3px;
     stroke-opacity: 1;
 }
+
 .grid path {
-  stroke: none;
+    stroke: none;
 }
+
 .modal {
-    --bs-modal-width:600px;
+    --bs-modal-width: 600px;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s ease-in-out;
+}
+
+a:hover {
+    color: #0056b3;
+    text-decoration: underline;
 }
