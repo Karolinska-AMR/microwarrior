@@ -326,7 +326,8 @@ $(document).ready(function () {
         selected_sample = sid;
         reset_evidence();
 
-
+        //meta-data
+        fill_metadata(data.info);
         // Lineage
         const lin_tbl = document.getElementById('lin-tbl');
         $(lin_tbl).bootstrapTable("removeAll");
@@ -437,6 +438,16 @@ $(document).ready(function () {
         }
         fill_unverified_mu(unverif_mutations);
         update_table_loading('hideLoading');
+    }
+
+    function fill_metadata(data) {
+        $('#info-sid').text(data.sample || 'N/A');
+        $('#info-tkt').text(data.ticket || 'N/A');
+        $('#info-sdt').text(data.submission_timestamp || 'N/A');
+        $('#info-cldt').text(data.collection_date || 'N/A');
+        $('#info-depth').text(data.genome_depth || 'N/A');
+        $('#info-mread').text(data.mapped_reads || 'N/A');
+        $('#info-pread').text(data.mapped_reads_pct + '%' || 'N/A');
     }
 
     function fill_evidence(drug) {

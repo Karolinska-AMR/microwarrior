@@ -132,6 +132,47 @@
 
                         </div>
                     </div>
+
+                    <div id="meta-card" class="card shadow-sm mb-2">
+                        <div class="card-header section-header text-uppercase py-2 bg-white">
+                            <i class="fas fa-info"></i> meta-data
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-2">
+                                <div class="col-3">
+                                    <span class="text-muted">Sample Id:</span>
+                                    <span class="val fw-bold" id="info-sid"></span>
+                                </div>
+                                <div class="col-3">
+                                    <span class="text-muted">Ticket:</span>
+                                    <span class="val fw-bold" id="info-tkt"></span>
+                                </div>
+
+                                <div class="col-4">
+                                    <span class="text-muted">Submission timestamp:</span>
+                                    <span class="val fw-bold" id="info-sdt"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                 <div class="col-3">
+                                    <span class="text-muted">Collection date:</span>
+                                    <span class="val fw-bold" id="info-cldt"></span>
+                                </div>
+                                <div class="col-2">
+                                    <span class="text-muted">Sequencing depth:</span>
+                                    <span class="val fw-bold" id="info-depth"></span>
+                                </div>
+                                <div class="col-3">
+                                    <span class="text-muted">Number of mapped reads:</span>
+                                    <span class="val fw-bold" id="info-mread"></span>
+                                </div>
+                                <div class="col-4">
+                                    <span class="text-muted">Percentage of mapped reads:</span>
+                                    <span class="val fw-bold" id="info-pread"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- Sidebar Column -->
@@ -189,19 +230,19 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="searchModalLabel"><i class="fas fa-search"></i> Search Samples</h5>
-                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div id="alertPlaceholder" style="display: none;">
 
                     </div>
                     <form id="searchForm">
-                         <div class="row">
-                              <div class="form-group col-6">
+                        <div class="row">
+                            <div class="form-group col-6">
                                 <label for="ticketId">Ticket</label>
                                 <input type="text" class="form-control" id="ticketId" placeholder="Ticket">
                             </div>
-                         </div>
+                        </div>
                         <div class="row">
                             <div class="form-group col-6">
                                 <label for="sampleId">Sample ID</label>
@@ -281,7 +322,9 @@
                                         <th data-field="state" data-checkbox="True"></th>
                                         <th data-field="ticket" data-sortable="True">Ticket</th>
                                         <th data-field="sample" data-sortable="True">Sample</th>
-                                        <th data-field="submission_timestamp" data-sortable="True">Submission timestamp</th>
+                                        <th data-field="submission_timestamp" data-sortable="True">Submission
+                                            timestamp
+                                        </th>
                                         <th data-field="collection_date" data-sortable="True">Collection date</th>
                                         <th data-field="lineage.lineage" data-sortable="True">Lineage</th>
                                         <th data-field="category">Category</th>
@@ -320,6 +363,6 @@
 
 {% block jscontent %}
     {% javascript 'sambrow_js' %}
-   <script src="{% static 'js/bootstrap-table-fixed-columns.min.js' %} "></script>
+    <script src="{% static 'js/bootstrap-table-fixed-columns.min.js' %} "></script>
 {% endblock %}
 

@@ -79,14 +79,17 @@ def fetch_samples(request):
         } if lineage else {}
         data[sample.id] = {}
         data[sample.id]["info"] = {"id": sample.id, "sample": sample.sample,
-                                   "ticket":sample.task.ticket,
+                                   "ticket":sample.task.ticket if sample.task is not None else None,
                                    "collection_date": sample.collection_date,
-                                   'submission_timestamp':sample.task.submission_timestamp,
+                                   'submission_timestamp':sample.task.submission_timestamp if sample.task is not None else None,
                                    "category": sample.category,
                                    "lineage": lineage_data,
                                    "pass_tbprofiler": sample.passed_tbprofiler,
                                    "pass_cryptic": sample.passed_cryptic,
-                                   "pass_who": sample.passed_who
+                                   "pass_who": sample.passed_who,
+                                   "mapped_reads_pct":sample.mapped_reads_pct,
+                                   "mapped_reads":sample.mapped_reads,
+                                   "genome_depth": sample.genome_depth
                                    }
 
     return JsonResponse(data)
