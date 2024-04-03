@@ -160,7 +160,11 @@ def get_overview(request):
             cat_stat[cat] = 0
         cat_stat[cat] += 1
         cat_stat['total'] += 1
-        samlist.append({"sample": sample.sample, "date": sample.collection_date, "cat": cat})
+        dt = sample.collection_date
+        if dt is None:
+            if sample.task is not None:
+                dt = sample.task.submission_timestamp.strftime('%Y-%m-%d')
+        samlist.append({"sample": sample.sample, "date":dt , "cat": cat})
 
     try:
         lineages = Lineage.objects.all()
