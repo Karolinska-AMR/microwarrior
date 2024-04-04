@@ -37,20 +37,24 @@
     color: #000;
     background-color: #4dd4ac;
 }
-.Mono{
+
+.Mono {
     color: #000;
     background-color: #FDE767;
 }
-.Poly{
+
+.Poly {
     color: #000;
     background-color: #FFB996;
 }
-.RR{
+
+.RR {
     color: #000;
     background-color: #FFA447;
 }
-.IR{
-     color: #000;
+
+.IR {
+    color: #000;
     background-color: #FFCF9D;
 }
 
@@ -74,9 +78,11 @@
     color: #000;
     background-color: #dee2e6;
 }
-.cat-circle{
+
+.cat-circle {
     cursor: help;
 }
+
 .text-r {
     color: #dc3545 !important;
 }
@@ -88,58 +94,80 @@
 .text-o {
     color: #adb5bd !important;
 }
-.badge-success{
+
+.badge-success {
     background-color: #33BBC5;
     color: #fff;
     border: 1px solid #3a3b45;
 }
-.badge-warning{
+
+.badge-warning {
     background-color: #FEFFAC;
     color: #000;
     border: 1px solid #3a3b45;
 }
-.badge-danger{
+
+.badge-danger {
     background-color: #FF9BD2;
     color: #000;
     border: 1px solid #3a3b45;
 }
+
 .text-outlined {
-   -webkit-text-stroke: 3px;
+    font-size: 1.2rem;
+    -webkit-text-stroke: 3px;
+
 }
+.text-pattern-r{
+    background: linear-gradient(45deg, #dc3545 40%, transparent 60%);
+    background-size: 2px 2px;
+    -webkit-background-clip: text;
+    color: transparent;
+    background-clip: text;
+}
+
 td {
     white-space: nowrap;
 }
-.text-mutation{
-  font-size: 0.8rem;
-}
-.table-main th{
-    background-color: #16365f;
-    color: #fff!important;
-}
-.table-sub th{
-    background-color: #f8f9fa;
-    color: #000!important;
-    font-size: 0.9rem;
-}
-.table-sub{
+
+.text-mutation {
     font-size: 0.8rem;
 }
-.col-highlight {
-    background-color: #EEF5FF!important;
-    cursor: pointer;
-    font-size: 0.9rem!important;
- }
-.col-highlight .cat-circle{
-    -webkit-text-stroke: 1px #16365f!important;
+
+.table-main th {
+    background-color: #16365f;
+    color: #fff !important;
 }
-.col-highlight-header {
-    background-color: #EEF5FF!important;
+
+.table-sub th {
+    background-color: #f8f9fa;
+    color: #000 !important;
+    font-size: 0.9rem;
+}
+
+.table-sub {
+    font-size: 0.8rem;
+}
+
+.col-highlight {
+    background-color: #EEF5FF !important;
     cursor: pointer;
-    color: #16365f!important;
-    -webkit-text-stroke: 1px #16365f!important;
+    font-size: 0.9rem !important;
+}
+
+.col-highlight .cat-circle {
+    -webkit-text-stroke: 1px #16365f !important;
+}
+
+.col-highlight-header {
+    background-color: #EEF5FF !important;
+    cursor: pointer;
+    color: #16365f !important;
+    -webkit-text-stroke: 1px #16365f !important;
 
 }
-.val{
+
+.val {
     color: #16365f;
 
 }

@@ -81,7 +81,7 @@ def fetch_samples(request):
         data[sample.id]["info"] = {"id": sample.id, "sample": sample.sample,
                                    "ticket":sample.task.ticket if sample.task is not None else None,
                                    "collection_date": sample.collection_date,
-                                   'submission_timestamp':sample.task.submission_timestamp if sample.task is not None else None,
+                                   'submission_timestamp':sample.task.submission_timestamp.strftime('%Y-%m-%d %H:%M') if sample.task is not None else None,
                                    "category": sample.category,
                                    "lineage": lineage_data,
                                    "pass_tbprofiler": sample.passed_tbprofiler,

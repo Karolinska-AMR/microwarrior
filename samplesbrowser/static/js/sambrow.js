@@ -20,10 +20,10 @@ $(document).ready(function () {
             const paramValue = urlParams.get('ticket');
             console.log(paramValue);
             if (paramValue) {
-               let urlparams= {
-                tkt: paramValue,
-            };
-                fetchSamples(urlparams,true);
+                let urlparams = {
+                    tkt: paramValue,
+                };
+                fetchSamples(urlparams, true);
             }
         };
 
@@ -165,7 +165,7 @@ $(document).ready(function () {
         xhr.send();
     }
 
-    function fetchSamples(params,direct_import=false) {
+    function fetchSamples(params, direct_import = false) {
 
         let queryString = Object.entries(params).map(([k, v]) => `${k}=${v}`).join('&');
 
@@ -187,7 +187,7 @@ $(document).ready(function () {
                 $(search_tbl).bootstrapTable('hideLoading');
                 document.getElementById('searchForm').reset();
                 update_search_tbl(infoArray);
-                if(direct_import){
+                if (direct_import) {
                     $("#import-all").trigger("click");
                 }
             } else {
@@ -535,10 +535,16 @@ $(document).ready(function () {
         header_icon.appendChild(flexContainer);
 
         // Create the second row with the text final prediction
+        let countR = Object.values(pred).filter(value => value === "R").length;
+
         let row2 = document.createElement('div');
         row2.className = 'row';
         let pf = pred['final_pred'];
         let text_color = pf ? color_mapper[pf] : 'text-o';
+        // specifying only one cataloge is R
+        if(countR===2){
+            text_color='text-pattern-r';
+        }
         row2.innerHTML = `<span class="text-center text-outlined ${text_color}">${pf}</span>`;
 
         let hr = document.createElement('hr');
