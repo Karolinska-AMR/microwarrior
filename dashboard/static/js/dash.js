@@ -663,7 +663,6 @@ $(document).ready(function (x) {
         let baseUrl = window.location.protocol + "//" + window.location.host + "/samplesbrowser";
 
         for (let i = 0; i < data.length; i++) {
-            console.log(rec);
             rec = data[i];
             let icon = get_job_status(rec.status).icon;
             let cl = get_job_status(rec.status).cl;

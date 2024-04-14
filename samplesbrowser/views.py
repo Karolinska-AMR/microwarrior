@@ -19,6 +19,7 @@ def samplesbrowser(request):
 @login_required
 def fetch_samples(request):
     ticket = request.GET.get('tkt', None)
+    ids = request.GET.get('ids', None)
     sample_id = request.GET.get('sid', None)
     week_number = request.GET.get('wn', None)
     date_from = request.GET.get('dtf', None)
@@ -36,6 +37,10 @@ def fetch_samples(request):
     query = Q()
     if ticket:
         query &= Q(task__ticket=ticket)
+
+    if ids:
+        id_lst = list(map(int,ids.split(',')))
+        query &= Q(id__in=id_lst)
 
     if sample_id:
         query &= Q(sample__icontains=sample_id)

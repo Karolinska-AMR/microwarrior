@@ -14,11 +14,18 @@ $(document).ready(function () {
         fetch_meta();
         adjust_viewbar();
 
+        var pinnedIDs = getCookie('pinnedIDs');
+
+        if (!!pinnedIDs && pinnedIDs.length > 0) {
+            let urlparams = {
+                ids: pinnedIDs,
+            };
+            fetchSamples(urlparams, true);
+        }
         // Run this script when the page loads
         window.onload = function () {
             const urlParams = new URLSearchParams(window.location.search);
             const paramValue = urlParams.get('ticket');
-            console.log(paramValue);
             if (paramValue) {
                 let urlparams = {
                     tkt: paramValue,
@@ -88,10 +95,22 @@ $(document).ready(function () {
         });
 
         $("#del-samples").click(function () {
-            $('#samples-list').empty();
+
+            const list = document.getElementById('samples-list');
+            const items = list.querySelectorAll('.list-group-item'); // Select all list items
+
+            items.forEach(item => {
+                $(item).removeClass('active');
+                if (!item.classList.contains('pinned-item')) {
+                    let id = $(item).attr('data-sid');
+                    list.removeChild(item);
+                    delete repo[id];
+                }
+            });
+
             $("#content-main").css('visibility', 'hidden');
             $("#empty_msg").css('display', 'block');
-            repo = {};
+
             selected_sample = undefined;
             selected_drug_index = undefined;
         });
@@ -214,75 +233,149 @@ $(document).ready(function () {
     }
 
     function update_viewbar() {
+        const pinnedIDs = getCookie('pinnedIDs') ? getCookie('pinnedIDs').split(',') : [];
 
-        let data = $.map(repo, function (value, key) {
-            return value.info;
-        });
+        let data = $.map(repo, (value) => value.info);
 
         const sampleList = document.getElementById('samples-list');
-        var listItems = sampleList.getElementsByClassName('list-group-item');
-        var listItemsArray = Array.from(listItems);
+        sampleList.innerHTML = '';
 
-        // Remove all
-        listItemsArray.forEach(function (it) {
-            sampleList.removeChild(it);
-        });
-
+        // Sort data based on the 'name' property
         data.sort((a, b) => (a.name > b.name) ? 1 : (a.name < b.name) ? -1 : 0);
-        data.forEach(function (d) {
-            // Create list item
+
+        const fragment = document.createDocumentFragment();
+        const topFragment = document.createDocumentFragment();  // Fragment for pinned items
+        const bottomFragment = document.createDocumentFragment();
+
+        data.forEach(d => {
             const listItem = document.createElement('li');
             listItem.className = 'list-group-item d-flex justify-content-between align-items-center list-group-item-light';
             $(listItem).attr('data-sid', d.id);
-            // Sample name and lineage
-            const sampleDiv = document.createElement('div');
-            const sampleName = document.createElement('div');
-            sampleName.className = 'strong';
-            sampleName.textContent = d.sample;
+            listItem.innerHTML = `
+            <div class="info-tag">
+                <div class="strong">${d.sample}</div>
+                <div class="lin-info text-muted small">${d.lineage.family}</div>
+            </div>
+            <a class="pin-btn"><i class="fas fa-sm fa-thumbtack"></i></a>`;
 
-            const sampleLineage = document.createElement('div');
-            sampleLineage.className = 'text-muted small';
-            sampleLineage.textContent = d.lineage.family; // Assuming lineage always has a family
+            // Set category class
+            let cat = d.category || 'cat-other';
+            $(listItem).addClass(`border-left-${cat.toLowerCase()}`);
 
-            sampleDiv.appendChild(sampleName);
-            sampleDiv.appendChild(sampleLineage);
+            // Add event listeners
+            listItem.querySelector('.pin-btn').addEventListener('click', sample_pin_toggle);
+            listItem.addEventListener('click', sample_clicked);
 
-            // Category badge
-            bg = d.category ? d.category : 'cat-other';
-            bg = bg === "other" ? 'cat-other' : bg;
-            const categoryBadge = document.createElement('span');
-            categoryBadge.className = `badge ${bg}`;
-            categoryBadge.textContent = d.category;
+            // Determine placement based on cookie
+            if (pinnedIDs.includes(d.id.toString())) {
+                $(listItem).addClass('pinned-item');
+                $(listItem).find('.pin-btn').toggleClass('pin-btn unpin-btn');
 
-            // Append to list item
-            listItem.appendChild(sampleDiv);
-            listItem.appendChild(categoryBadge);
+                // Toggle information visibility and classes based on pinning/unpinning
+                $(listItem).find('.lin-info').toggle(false);
+                $(listItem).find('.info-tag').toggleClass('pinned-info', true);
 
-            listItem.addEventListener('click', function () {
-                $("#content-main").css('visibility', 'visible');
-                $("#empty_msg").css('display', 'none');
-                $('.list-group-item').removeClass('active');
-                $(this).addClass('active');
-                let sid = $(this).data('sid');
-                $("#isolate-id").html(`<i class="fas fa-info-circle"></i>
-                                Currently Displayed: 
-                                <span class="h5 text-${repo[sid].info.category.toLowerCase()}"> ${repo[sid].info.sample}</span>`);
-                update_table_loading('showLoading');
-                setTimeout(function () {
-                    if (!repo[sid].dcheck) {
-                        fetch_mutations(sid);
-                    } else {
-                        update_page(sid);
-                    }
-                }, 500);
+                topFragment.appendChild(listItem);
 
-
-            });
-            // Append the list item to the list
-            sampleList.appendChild(listItem);
-
+            } else {
+                bottomFragment.appendChild(listItem);
+            }
 
         });
+
+        // Append all the items at once
+        fragment.appendChild(topFragment);
+        fragment.appendChild(bottomFragment);
+        sampleList.appendChild(fragment);
+    }
+
+
+    function sample_clicked() {
+        $("#content-main").css('visibility', 'visible');
+        $("#empty_msg").css('display', 'none');
+        $('.list-group-item').removeClass('active');
+        $(this).addClass('active');
+        let sid = $(this).data('sid');
+        $("#isolate-id").html(`<i class="fas fa-info-circle"></i>
+                                Currently Displayed: 
+                                <span class="h5 text-${repo[sid].info.category.toLowerCase()}"> ${repo[sid].info.sample}</span>`);
+        update_table_loading('showLoading');
+        setTimeout(function () {
+            if (!repo[sid].dcheck) {
+                fetch_mutations(sid);
+            } else {
+                update_page(sid);
+            }
+        }, 500);
+    }
+
+    function sample_pin_toggle(event) {
+        event.stopPropagation(); // Move to the top as a single call
+        const $currentItem = $(this).closest('.list-group-item');
+        const isUnpinning = $(this).hasClass('unpin-btn');
+
+        // Toggle button classes
+        $(this).toggleClass('pin-btn unpin-btn');
+
+        // Toggle information visibility and classes based on pinning/unpinning
+        $currentItem.find('.lin-info').toggle(isUnpinning);
+        $currentItem.find('.info-tag').toggleClass('pinned-info', !isUnpinning);
+
+        // Animating and moving the item
+        $currentItem.slideUp(300, function () {
+            if (isUnpinning) {
+                let $nonPinnedItems = $('#samples-list .list-group-item:not(.pinned-item)');
+                console.log($nonPinnedItems.length);
+                if ($nonPinnedItems.length > 0) {
+                    $nonPinnedItems.first().before($currentItem);
+                } else {
+                    $('#samples-list').append($currentItem);
+                }
+            } else {
+                $('#samples-list').prepend($currentItem);
+            }
+            $currentItem.toggleClass('pinned-item', !isUnpinning);
+            $currentItem.slideDown(300);
+            savePinnedIdsToCookie();
+        });
+
+    }
+
+    function savePinnedIdsToCookie() {
+        // Select all pinned items and map their data-id attributes to an array
+        var pinnedIds = $('.pinned-item').map(function () {
+            return $(this).data('sid');
+        }).get();
+
+        // Convert array to a string
+        var idsString = pinnedIds.join(',');
+
+        // Set the cookie with the string of IDs, with an expiration of 7 days
+        setCookie('pinnedIDs', idsString, 7);
+    }
+
+    function setCookie(name, value, days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+
+    function getCookie(name) {
+        var nameEQ = name + "="; // Construct a search pattern
+        var ca = document.cookie.split(';'); // Split the cookie string into an array of "name=value" pairs
+
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) === ' ') c = c.substring(1, c.length); // Trim leading whitespace
+            if (c.indexOf(nameEQ) === 0) {
+                return c.substring(nameEQ.length, c.length); // Extract and return the value
+            }
+        }
+        return null; // Return null if the cookie is not found
     }
 
     function update_table_loading(status) {
@@ -542,8 +635,8 @@ $(document).ready(function () {
         let pf = pred['final_pred'];
         let text_color = pf ? color_mapper[pf] : 'text-o';
         // specifying only one cataloge is R
-        if(countR===2){
-            text_color='text-pattern-r';
+        if (countR === 2) {
+            text_color = 'text-pattern-r';
         }
         row2.innerHTML = `<span class="text-center text-outlined ${text_color}">${pf}</span>`;
 

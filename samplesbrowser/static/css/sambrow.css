@@ -171,3 +171,23 @@ td {
     color: #16365f;
 
 }
+.pin-btn{
+    color:#bdbdbd;
+}
+
+.pin-btn:hover{
+    color: #6c757d!important;
+}
+
+.unpin-btn{
+    color:#16365f;
+    transform: rotate(30deg);
+}
+.pinned-item{
+    background: #EEEEEE;
+    border-style: outset;
+}
+.pinned-info{
+    font-size: 0.85rem;
+    font-weight: bolder;
+}
