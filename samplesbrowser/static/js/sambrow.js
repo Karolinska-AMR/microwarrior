@@ -140,6 +140,15 @@ $(document).ready(function () {
         $("#searchModal").on("hide.bs.modal", function (event) {
             clean_search();
         });
+
+        $("#toggle-pin-all").click(function () {
+            const isUnpinning = $(this).hasClass('unpin-btn');
+            $(this).toggleClass('pin-btn unpin-btn');
+            $('#samples-list .list-group-item').each(function () {
+                toggle_pin_item($(this), isUnpinning);
+            });
+
+        });
     }
 
     function adjust_viewbar() {
@@ -233,6 +242,7 @@ $(document).ready(function () {
     }
 
     function update_viewbar() {
+
         const pinnedIDs = getCookie('pinnedIDs') ? getCookie('pinnedIDs').split(',') : [];
 
         let data = $.map(repo, (value) => value.info);
@@ -263,7 +273,7 @@ $(document).ready(function () {
             $(listItem).addClass(`border-left-${cat.toLowerCase()}`);
 
             // Add event listeners
-            listItem.querySelector('.pin-btn').addEventListener('click', sample_pin_toggle);
+            listItem.querySelector('.pin-btn').addEventListener('click', sample_pin_clicked);
             listItem.addEventListener('click', sample_clicked);
 
             // Determine placement based on cookie
@@ -287,6 +297,12 @@ $(document).ready(function () {
         fragment.appendChild(topFragment);
         fragment.appendChild(bottomFragment);
         sampleList.appendChild(fragment);
+
+        let hasPinnedItems = $('#samples-list .pinned-item').length > 0;
+        $("#toggle-pin-all").removeClass(hasPinnedItems ? 'pin-btn' : 'unpin-btn')
+            .addClass(hasPinnedItems ? 'unpin-btn' : 'pin-btn');
+
+
     }
 
 
@@ -309,35 +325,49 @@ $(document).ready(function () {
         }, 500);
     }
 
-    function sample_pin_toggle(event) {
-        event.stopPropagation(); // Move to the top as a single call
-        const $currentItem = $(this).closest('.list-group-item');
-        const isUnpinning = $(this).hasClass('unpin-btn');
+    function sample_pin_clicked(event) {
 
+        event.stopPropagation(); // Move to the top as a single call
+
+        toggle_pin_item($(this).closest('.list-group-item'));
+
+    }
+
+    function toggle_pin_item($listItem, isUnpinning = null) {
+
+        const $pinbtn = $listItem.find('a');
+
+        if (isUnpinning === null) {
+            isUnpinning = $pinbtn.hasClass('unpin-btn');
+        }
         // Toggle button classes
-        $(this).toggleClass('pin-btn unpin-btn');
+        $pinbtn.removeClass(isUnpinning ? 'unpin-btn' : 'pin-btn').addClass(isUnpinning ? 'pin-btn' : 'unpin-btn');
 
         // Toggle information visibility and classes based on pinning/unpinning
-        $currentItem.find('.lin-info').toggle(isUnpinning);
-        $currentItem.find('.info-tag').toggleClass('pinned-info', !isUnpinning);
+        $listItem.find('.lin-info').toggle(isUnpinning);
+        $listItem.find('.info-tag').toggleClass('pinned-info', !isUnpinning);
 
         // Animating and moving the item
-        $currentItem.slideUp(300, function () {
+        $listItem.slideUp(300, function () {
             if (isUnpinning) {
                 let $nonPinnedItems = $('#samples-list .list-group-item:not(.pinned-item)');
-                console.log($nonPinnedItems.length);
                 if ($nonPinnedItems.length > 0) {
-                    $nonPinnedItems.first().before($currentItem);
+                    $nonPinnedItems.first().before($listItem);
                 } else {
-                    $('#samples-list').append($currentItem);
+                    $('#samples-list').append($listItem);
                 }
             } else {
-                $('#samples-list').prepend($currentItem);
+                $('#samples-list').prepend($listItem);
             }
-            $currentItem.toggleClass('pinned-item', !isUnpinning);
-            $currentItem.slideDown(300);
+            $listItem.toggleClass('pinned-item', !isUnpinning);
+            $listItem.slideDown(300);
             savePinnedIdsToCookie();
+
+            let hasPinnedItems = $('#samples-list .pinned-item').length > 0;
+            $("#toggle-pin-all").removeClass(hasPinnedItems ? 'pin-btn' : 'unpin-btn')
+                .addClass(hasPinnedItems ? 'unpin-btn' : 'pin-btn');
         });
+
 
     }
 
