@@ -34,8 +34,7 @@ $(document).ready(function () {
           .stop()
           .animate(
             { scrollTop: $(o.attr("href")).offset().top },
-            1e3,
-            "easeInOutExpo"
+            1e3
           ),
           e.preventDefault();
       });
