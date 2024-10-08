@@ -1,4 +1,6 @@
 from django.urls import path, re_path
+
+
 from . import views
 
 urlpatterns = [
@@ -13,3 +15,4 @@ urlpatterns = [
     re_path(r'^catalog/$', views.under_construction, name='catalog'),
     re_path(r'^help/$', views.under_construction, name='help'),
 ]
+

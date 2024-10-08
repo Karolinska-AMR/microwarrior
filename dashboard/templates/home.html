@@ -1,6 +1,6 @@
-{% load static %} {% load pipeline %}
+{% load static %} {% load pipeline %} {% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -40,57 +40,71 @@
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav me-auto mb-2 mb-md-0">
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="#">Home</a>
+                    <a class="nav-link" aria-current="page" href="#">{% trans "Hem" %}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" aria-disabled="true" href="#feed">News</a>
+                    <a class="nav-link" aria-disabled="true" href="#feed">{% trans "Nyheter" %}</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" aria-disabled="true" href="#updates"
-                    >Updates</a
+                    >{% trans "Uppdateringar" %}</a
                     >
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" aria-disabled="true" href="#about-us"
-                    >About us</a
+                    >{% trans "Om oss" %}</a
                     >
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" aria-disabled="true" href="#footer"
-                    >Contact us</a
+                    >{% trans "Kontakta oss" %}</a
                     >
                 </li>
             </ul>
 
             <ul class="navbar-nav ml-auto dropdown-menu-end">
+
                 {% if user.is_authenticated %}
                     <li>
-                        <a class="nav-link" aria-disabled="true" href="{% url 'dashboard' %}">Dashboard</a>
+                        <a class="nav-link" aria-disabled="true"
+                           href="{% url 'dashboard' %}">{% trans "Instrumentpanel" %}</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" aria-disabled="true"
+                           href="{% url 'samplesbrowser' %}">{% trans "Analysresultat" %}</a>
 
                     </li>
                     <li>
-                        <a class="nav-link" aria-disabled="true" href="{% url 'samplesbrowser' %}">Sample Browser</a>
+                        <a class="nav-link" aria-disabled="true"
+                           href="{% url 'catalog' %}">{% trans "Mutationskatalog" %}</a>
 
                     </li>
                     <li>
-                        <a class="nav-link" aria-disabled="true" href="{% url 'catalog' %}">Catalogues</a>
-
-                    </li>
-                    <li>
-                        <a class="nav-link" aria-disabled="true" href="{% url 'help' %}">Help</a>
+                        <a class="nav-link" aria-disabled="true" href="{% url 'help' %}">{% trans "Hjälp" %}</a>
 
                     </li>
                     <div class="vr mx-2 bg-white"></div>
                     <li>
-                        <a class="nav-link" aria-disabled="true" href="{% url 'logout' %}">Logout</a>
 
+                        <a class="nav-link" aria-disabled="true" href="{% url 'logout' %}">{% trans "Logga ut" %}</a>
                     </li>
                 {% else %}
+                    <div class="vr mx-2 bg-white"></div>
                     <li>
-                        <a class="nav-link" aria-disabled="true" href="{% url 'login' %}">Login</a>
+                        <a class="nav-link" aria-disabled="true" href="{% url 'login' %}">{% trans "Logga in" %}</a>
 
                     </li>
                 {% endif %}
+            <div class="vr mx-2 bg-white"></div>
+                  <form id="language-switcher" action="{% url 'set_language' %}" method="post">
+                    {% csrf_token %}
+                    {% if  request.LANGUAGE_CODE == 'sv' %}
+                       <li> <a class="nav-link lan-link"  href="#" data-lan="en">In English</a></li>
+                    {% else %}
+                          <li> <a class="nav-link lan-link"  href="#" data-lan="sv">På Svenska</a></li>
+                    {% endif %}
+                </form>
+
             </ul>
 
 
@@ -101,8 +115,8 @@
     <div class="container h-100">
         <div class="row h-50 align-items-center">
             <div class="col-12 text-center blur">
-                <h1>Fighting Antimicrobial Resistance at the Genomic Frontier</h1>
-                <h3>Your Portal to Genomic Solutions Against Tuberculosis</h3>
+                <h1>{% trans "Bekämpar antimikrobiell resistens vid den genomiska fronten" %}</h1>
+                <h3>{% trans "Din portal till genomiska lösningar mot tuberkulos" %}</h3>
             </div>
         </div>
     </div>
@@ -110,19 +124,19 @@
 
 <section id="feed">
     <header class="row section-header mb-3">
-        <h3>Stay Informed: Tuberculosis Developments</h3>
+        <h3>{% trans "Håll dig uppdaterad: Utveckling inom Tuberkulos" %}</h3>
     </header>
     <div class="container overflow-auto">
         <div class="row">
             <div class="col-md-6">
                 <header class="row section-header">
-                    <h4>NEWS</h4>
+                    <h4>{% trans "Nyheter" %}</h4>
                     <div id="news-feed" class="card-columns"></div>
                 </header>
             </div>
             <div id="ms-feed" class="col-md-6">
                 <header class="row section-header">
-                    <h4>PUBLICATIONS</h4>
+                    <h4>{% trans "Publikationer" %}</h4>
                 </header>
             </div>
         </div>
@@ -132,7 +146,7 @@
 <section id="updates" class="section-bg">
     <div class="container">
         <header class="section-header mt-3">
-            <h3>What's New:</h3>
+            <h3>{% trans "Uppdateringar" %}:</h3>
         </header>
         <div class="row">
             <div class="col-12">
@@ -144,8 +158,7 @@
                         <div class="col-md-8">
                             <div class="card-body overflow-auto">
                                 <p class="card-text">
-                                    Stay tuned for the latest updates and news regarding the
-                                    pipeline, which will be shared right here!
+                                    {% trans "Håll utkik efter de senaste uppdateringarna och nyheterna om pipeline, som kommer att delas här!" %}
                                 </p>
                             </div>
                         </div>
@@ -159,7 +172,7 @@
 <section id="about-us">
     <div class="container">
         <header class="section-header">
-            <h3>About us</h3>
+            <h3>{% trans "Om oss" %}</h3>
         </header>
         <div class="row">
             <div class="col-12">
@@ -168,25 +181,11 @@
                         <div class="col-md-8">
                             <div class="card-body overflow-auto">
                                 <p class="card-text">
-                                    Welcome to our project dedicated to combating
-                                    drug-resistant tuberculosis (TB) through innovative
-                                    research. At KI, we are deeply committed to addressing one
-                                    of the most pressing global health challenges of our time.
-                                    Our multidisciplinary team of experts has harnessed the
-                                    power of data and cutting-edge technology to develop a
-                                    solution that aims to predict drug-resistant TB.
+
+                                    {% trans "Välkommen till vårt projekt, dedikerat till att bekämpa läkemedelsresistent tuberkulos (TB) genom innovativ forskning. På KI är vi djupt engagerade i att ta itu med en av vår tids mest angelägna globala hälsoutmaningar. Vårt tvärvetenskapliga team av experter har utnyttjat kraften i data och banbrytande teknik för att utveckla en lösning som syftar till att förutse läkemedelsresistent TB." %}
                                 </p>
                                 <p class="card-text">
-                                    Our mission is centered on mitigating the impact of
-                                    drug-resistant TB on individuals, communities, and
-                                    healthcare systems. We are striving for a world where TB
-                                    is no longer a threat, and in achieving this vision, our
-                                    project plays a pivotal role. It offers key features, such
-                                    as the early identification of drug-resistant TB to
-                                    expedite treatment, informing treatment strategies for
-                                    more effective resistance management, and ongoing research
-                                    and development efforts aimed at enhancing our predictive
-                                    algorithms.
+                                    {% trans "Vårt uppdrag är att minska påverkan av läkemedelsresistent TB på individer, samhällen och hälso- och sjukvårdssystem. Vi strävar efter en värld där TB inte längre utgör ett hot, och i strävan efter denna vision spelar vårt projekt en avgörande roll. Det erbjuder nyckelfunktioner, såsom tidig identifiering av läkemedelsresistent TB för att påskynda behandlingen, vägledning i behandlingsstrategier för en mer effektiv resistenshantering, och pågående forsknings- och utvecklingsinsatser för att förbättra våra prediktiva algoritmer." %}
                                 </p>
                             </div>
                         </div>
@@ -203,17 +202,27 @@
 <section id="footer" class="section-bg">
     <div class="container">
         <footer
-                class="d-flex flex-wrap justify-content-between align-items-center py-0 my-1"
+                class="d-flex flex-column align-items-center py-0 my-1"
         >
-            <div class="col-md-4 d-flex align-items-center">
+            <div class="col-md-8 d-flex align-items-center">
                 <a
                         href="#"
                         class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1"
                 >
+                    &copy; 2023 Reshub. {% trans "Alla rättigheter reserverade" %}.
+
                 </a>
-                <span class="mb-3 mb-md-0 text-body-secondary"
-                >&copy; 2023 </span
+
+            </div>
+            <div class="col-md-8 d-flex align-items-center">
+                <a
+                        href="#"
+                        class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1"
                 >
+                    {% trans "Drift av innovation och teknik." %}{% trans " Utvecklad vid KI i samarbete med KUL." %}
+
+                </a>
+
             </div>
         </footer>
     </div>
@@ -234,7 +243,6 @@
         </p>
     </div>
 </div>
-
 {% javascript 'home_js' %}
 </body>
 </html>

@@ -18,12 +18,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-
+    path('set_language/', include('django.conf.urls.i18n')),
     path('auth', include('django.contrib.auth.urls')),
     path('auth', include('users.urls')),
     path('',include('dashboard.urls')),
     path('iom/', include('iomanager.urls')),
     path('',include('samplesbrowser.urls')),
-]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
