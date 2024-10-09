@@ -1,6 +1,6 @@
-{% load static %} {% load pipeline %}
+{% load static %} {% load pipeline %} {% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ request.LANGUAGE_CODE }}">
 <head>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -59,7 +59,7 @@
         <li class="nav-item">
             <a class="nav-link" data-message="home-cmp" href="{% url "home" %}">
                 <i class="fas fa-fw fa-home"></i>
-                <span>Home</span></a
+                <span>{% trans "Hem" %}</span></a
             >
         </li>
 
@@ -68,21 +68,21 @@
         <li class="nav-item">
             <a class="nav-link" href="{% url "dashboard" %}">
                 <i class="fas fa-tachometer-alt"></i>
-                <span>Dashboard</span>
+                <span>{% trans "Instrumentpanel" %}</span>
             </a>
         </li>
 
         <li class="nav-item">
             <a class="nav-link" href="{% url "samplesbrowser" %}">
                 <i class="fas fa-fw fa-search"></i>
-                <span>Samples Explorer</span>
+                <span>{% trans "Analysresultat" %}</span>
             </a>
         </li>
 
         <li class="nav-item">
             <a class="nav-link" href="{% url "catalog" %}">
                 <i class="fas fa-book"></i>
-                <span>Catalogues</span>
+                <span>{% trans "Mutationskatalog" %}</span>
             </a>
         </li>
 
@@ -91,7 +91,7 @@
         <li class="nav-item">
             <a class="nav-link" href="{% url "help" %}">
                 <i class="fas fa-fw fa-question-circle"></i>
-                <span>Help</span></a
+                <span>{% trans "Hjälp" %}</span></a
             >
         </li>
 
@@ -135,11 +135,25 @@
                                         aria-haspopup="true"
                                         aria-expanded="false"
                                 >
-                      <span class="mr-2 d-none d-lg-inline text-gray-600 small">Hello {{ name }}! </span><i class="fas fa-user"></i></a>
+                                    <span class="mr-2 d-none d-lg-inline text-gray-600 small">{% trans "Hej" %} {{ name }}! </span><i
+                                        class="fas fa-user"></i></a>
                                 <!-- Dropdown - User Information -->
                                 <div class="dropdown-menu dropdown-menu-right shadow" aria-labelledby="userDropdown">
+                                    <form id="language-switcher" action="{% url 'set_language' %}" method="post">
+                                        {% csrf_token %}
+                                        {% if  request.LANGUAGE_CODE == 'sv' %}
+                                            <a class="dropdown-item small lan-link" href="#" data-lan="en">
+                                            <i class="fas fa-globe fa-sm fa-fw mr-2 text-gray-400"></i>
+                                                In English</a>
+                                        {% else %}
+                                            <a class="dropdown-item small lan-link" href="#" data-lan="sv">
+                                                  <i class="fas fa-globe fa-sm fa-fw mr-2 text-gray-400"></i>
+                                                På Svenska</a>
+                                        {% endif %}
+                                    </form>
                                     <a class="dropdown-item small" href="{% url "change-password" %}">
-                                        <i class="fas fa-lock fa-sm fa-fw mr-2 text-gray-400"></i>Change Password</a>
+                                        <i class="fas fa-lock fa-sm fa-fw mr-2 text-gray-400"></i>{% trans "ändra lösenord" %}
+                                    </a>
                                     <div class="dropdown-divider"></div>
                                     <a
                                             class="dropdown-item small"
@@ -150,8 +164,9 @@
                                         <i
                                                 class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"
                                         ></i>
-                                        Logout
+                                        {% trans "Logga ut" %}
                                     </a>
+
                                 </div>
                             </li>
                         </ul>

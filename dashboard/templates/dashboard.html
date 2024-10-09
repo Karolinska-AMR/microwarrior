@@ -1,6 +1,8 @@
-{% extends "base.html" %} {% load static %} {% load pipeline %} {% block title %}ResHub: Dashboard{% endblock %}
+{% extends "base.html" %} {% load static %} {% load pipeline %}  {% load i18n %}
+{% block title %}ResHub: Dashboard{% endblock %}
 {% block cssblock %}
     <link rel="stylesheet" href="{% static "css/dash.css" %}"/> {% endblock %}
+
 
 
 {% block menubarcontent %}
@@ -10,11 +12,11 @@
     </li>
     <li class="nav-item">
         <a class="nav-link" aria-disabled="true" href="#jobsq">
-            <i class="fas fa-bars fa-rotate-90"></i> Jobs Queue </a>
+            <i class="fas fa-bars fa-rotate-90"></i> {% trans "Jobbkö" %} </a>
     </li>
     <li class="nav-item">
         <a class="nav-link" aria-disabled="true" href="#overview">
-            <i class="fas fa-chart-pie"></i> Overview </a>
+            <i class="fas fa-chart-pie"></i> {%  trans "Översikt" %} </a>
     </li>
 {% endblock %}
 {% block maincontent %}
@@ -24,11 +26,11 @@
                 <div id="import-card" class="card shadow-sm h-100 py-2 mx-2">
                     <div class="card-header py-2">
                         <div class="d-flex justify-content-between">
-                            <h5 class="text-uppercase section-header"><i class="fas fa-upload"></i> New Submission </h5>
+                            <h5 class="text-uppercase section-header"><i class="fas fa-upload"></i> {% trans "Ny inlämning" %} </h5>
                             <div class="form-check-reverse form-switch">
                                 <input class="form-check-input ml-1" type="checkbox" role="switch"
                                        id="flexSwitchCheckDefault" style="cursor: pointer;">
-                                <label class="form-check-label text-secondary" for="flexSwitchCheckDefault">Dropbox mode</label>
+                                <label class="form-check-label text-secondary" for="flexSwitchCheckDefault">{% trans "Dropbox-läge" %}</label>
                             </div>
                         </div>
                     </div>
@@ -39,17 +41,17 @@
                                     <ul class="navbar-nav me-auto mb-md-0">
                                         <li class="nav-item">
                                             <a class="nav-link pr-0" data-action="add-folder" href="#"
-                                               title="Add folder">
-                                                <i class="fa fa-fw fa-folder-open"></i> Add Folder </a>
+                                               title="{% trans "Lägg till mapp" %}">
+                                                <i class="fa fa-fw fa-folder-open"></i> {% trans "Lägg till mapp" %} </a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link pr-0" data-action="add-files" href="#" title="Add files">
-                                                <i class="fa fa-fw fa-file-alt"></i> Add Files </a>
+                                            <a class="nav-link pr-0" data-action="add-files" href="#" title="{% trans "Lägg till filer" %}">
+                                                <i class="fa fa-fw fa-file-alt"></i> {% trans "Lägg till filer" %}</a>
                                         </li>
                                         <div class="vr"></div>
                                         <li class="nav-item">
-                                            <a class="nav-link" data-action="removeAll" href="#" title="Delete all">
-                                                <i class="fa fa-fw fa-trash"></i> Delete All </a>
+                                            <a class="nav-link" data-action="removeAll" href="#" title="{% trans "Radera alla" %}">
+                                                <i class="fa fa-fw fa-trash"></i> {% trans "Radera alla" %} </a>
                                         </li>
 
 
@@ -59,11 +61,11 @@
                                             <form> {% csrf_token %}
                                                 <a type="submit" class="nav-link pr-0 text-dark"
                                                    id="proceed-btn" data-action="submit" href="#"
-                                                   title="Proceed" style="display: none">
-                                                    <i class="fas fa-forward blink"></i> Proceed </a>
+                                                   title="{% trans "Fortsätt" %}" style="display: none">
+                                                    <i class="fas fa-forward blink"></i> {% trans "Fortsätt" %} </a>
                                                 <a class="nav-link pr-0" id="submit-jobs" data-action="submit" href="#"
-                                                   title="submit">
-                                                    <i class="fa fa-fw fa-paper-plane"></i> Submit </a>
+                                                   title="{% trans "Skicka in" %}">
+                                                    <i class="fa fa-fw fa-paper-plane"></i> {% trans "Skicka in" %} </a>
                                                 <input type="file" id="choose-dir" style="display: none"/>
                                             </form>
                                         </li>
@@ -78,12 +80,11 @@
                                         <thead>
                                         <tr>
                                             <th data-field="rm"></th>
-                                            <th data-field="sample" data-sortable="true"> Sample</th>
+                                            <th data-field="sample" data-sortable="true">{% trans "Prov-id" %}</th>
                                             <th data-field="collection_date" data-sortable="true"
-                                                data-sorter="custom_sorter"> Collection date
-                                            </th>
-                                            <th data-field="file1">Forward</th>
-                                            <th data-field="file2">Reverse</th>
+                                                data-sorter="custom_sorter">{% trans "Provtagningsdatum" %}</th>
+                                            <th data-field="file1">{% trans "Framåt fil" %}</th>
+                                            <th data-field="file2">{% trans "Bakåt fil" %}</th>
                                         </tr>
                                         </thead>
                                     </table>
@@ -103,8 +104,8 @@
                                            data-height="400" data-virtual-scroll="true" data-unique-id="filename">
                                         <thead>
                                         <tr>
-                                            <th data-field="filename" data-width="400"> File Name</th>
-                                            <th data-field="progress" data-width="600">Status</th>
+                                            <th data-field="filename" data-width="400">{% trans "Filnamn" %}</th>
+                                            <th data-field="progress" data-width="600">{% trans "Status" %}</th>
                                         </tr>
                                         </thead>
                                     </table>
@@ -119,7 +120,7 @@
             <div class="col-12">
                 <div id="jobsq" class="card shadow-sm h-100 py-2 mx-2">
                     <div class="card-header py-2">
-                        <h5 class="text-uppercase section-header"><i class="fas fa-tasks"></i> Jobs Queue </h5>
+                        <h5 class="text-uppercase section-header"><i class="fas fa-tasks"></i>{% trans "Jobbkö" %}</h5>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -127,7 +128,7 @@
                                 <div class="row">
                                     <div class="col-2 pb-2">
                                         <input id="search-jobs-input" class="form-control form-control-sm" type="text"
-                                               placeholder="Search">
+                                               placeholder="{% trans "Sök" %}">
                                     </div>
                                 </div>
                                 <table id="jobs-tbl" class="table table-sm table-main" data-toggle="table"
@@ -139,11 +140,11 @@
                                     <tr>
                                         <th data-field="status_icon"></th>
                                         <th data-field="actions"></th>
-                                        <th data-field="ticket_lnk">Ticket</th>
-                                        <th data-field="samples_count">Nr. isolates</th>
-                                        <th data-field="submission_timestamp">Submission timestamp</th>
-                                        <th data-field="completion_timestamp">Completion timestamp</th>
-                                        <th data-field="submitter">Submitter</th>
+                                        <th data-field="ticket_lnk">{% trans "Ärendenummer" %}</th>
+                                        <th data-field="samples_count">{% trans "Antal isolat" %}</th>
+                                        <th data-field="submission_timestamp">{% trans "Tidstämpel för inlämning" %}</th>
+                                        <th data-field="completion_timestamp">{% trans "Tidstämpel för slutförande" %}</th>
+                                        <th data-field="submitter">{% trans "Inlämnare" %}</th>
                                     </tr>
                                     </thead>
                                 </table>
@@ -155,8 +156,8 @@
         </div>
         <div class="row mt-4" id="overview">
             <div class="col-12">
-                <h4 class="text-secondary text-uppercase text-center mb-0"> Overview </h4>
-                <h6 class="text-center text-muted text-uppercase mb-4"> Previous submissions </h6>
+                <h4 class="text-secondary text-uppercase text-center mb-0"> {% trans "Översikt" %} </h4>
+                <h6 class="text-center text-muted text-uppercase mb-4"> {% trans "Tidigare inlämningar" %} </h6>
             </div>
         </div>
         <div class="row my-2">
@@ -166,7 +167,7 @@
             <div class="col-12">
                 <div class="card" id="temporal-card">
                     <div class="card-header py-2">
-                        <span class="section-header"><i class="fas fa-chart-line fa-lg"></i> Temporal Distribution of Isolates Based on Sequencing Dates</span>
+                        <span class="section-header"><i class="fas fa-chart-line fa-lg"></i> {% trans "Tidsmässig fördelning av isolat baserat på sekvenseringsdatum" %}</span>
                     </div>
                     <div class="card-body p-1">
                         <svg id="temporal-plot"></svg>
@@ -179,7 +180,7 @@
             <div class="col-lg-4 col-md-4 col-sm-12">
                 <div class="card">
                     <div class="card-header py-2">
-                        <span class="section-header"><i class="fas fa-chart-pie fa-lg"></i> Lineage Distribution</span>
+                        <span class="section-header"><i class="fas fa-chart-pie fa-lg"></i> {% trans "Fördelning av bakteriella släkten" %}</span>
                     </div>
                     <div class="card-body">
                         <svg id="lineage-plot"></svg>
@@ -189,8 +190,7 @@
             <div class="col-lg-4 col-md-4 col-sm-12">
                 <div class="card">
                     <div class="card-header py-2">
-                        <span class="section-header text-capitalize"><i class="fas fa-chart-bar fa-lg"></i> Top abundant
-                            Resistance mutations</span>
+                        <span class="section-header text-capitalize"><i class="fas fa-chart-bar fa-lg"></i> {% trans "Mest förekommande resistensmutationer" %}</span>
                     </div>
                     <div class="card-body">
                         <select class="form-select form-select-sm drug-select" id="rmu-select" data-group='R'></select>
@@ -201,7 +201,7 @@
             <div class="col-lg-4 col-md-4 col-sm-12">
                 <div class="card">
                     <div class="card-header py-2">
-                        <span class="section-header text-capitalize"><i class="fas fa-chart-bar fa-lg"></i> Top abundant Uncertain mutations</span>
+                        <span class="section-header text-capitalize"><i class="fas fa-chart-bar fa-lg"></i> {% trans "Mest förekommande osäkra mutationer" %}</span>
                     </div>
                     <div class="card-body">
                         <select class="form-select form-select-sm drug-select" id="umu-select" data-group='U'></select>
@@ -224,15 +224,14 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">{% trans "Klar att avsluta?" %}</h5>
                 </div>
-                <div class="modal-body"> Your current session will be terminated. <br/>
-                    <small class="text-muted"> If you are in the process of uploading files, please ensure that your
-                        jobs have been fully submitted before proceeding with the logout.</small>
+                <div class="modal-body">{% trans "Din nuvarande session kommer att avslutas." %}<br/>
+                    <small class="text-muted">{% trans "Om du håller på att ladda upp filer, säkerställ att dina jobb har skickats in helt innan du loggar ut." %}</small>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="{% url "logout" %}">Proceed</a>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">{% trans "Avbryt" %}</button>
+                    <a class="btn btn-primary" href="{% url "logout" %}">{% trans "Fortsätt" %}</a>
                 </div>
             </div>
         </div>
@@ -241,7 +240,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Modal title</h5>
+                    <h5 class="modal-title"></h5>
                 </div>
                 <div class="modal-body">
                     <div class="row my-1">
@@ -251,8 +250,8 @@
                                    data-pagination="true" data-sortable="true">
                                 <thead>
                                 <tr>
-                                    <th data-field="sample" data-sortable="true">Sample</th>
-                                    <th data-field="species" data-sortable="true">Species</th>
+                                    <th data-field="sample" data-sortable="true">{% trans "Prov-id" %}</th>
+                                    <th data-field="species" data-sortable="true">{% trans "Art" %}</th>
                                     <th data-field="cryptic_icon">CRyPTIC</th>
                                     <th data-field="tbprofiler_icon">TB-Profiler</th>
                                     <th data-field="who_icon">WHO-UCN-2023.5</th>
@@ -263,12 +262,13 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Stäng" %}</button>
                 </div>
             </div>
         </div>
 
     </div> {% endblock %}
 {% block jscontent %}
+    <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
     {% javascript 'dashboard_js' %}
 {% endblock %}

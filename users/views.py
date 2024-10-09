@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import PasswordChangeView
 from .forms import PasswordChangingForm
-
+from django.utils.translation import gettext as _
 
 def login_user(request):
     if request.method == "POST":
@@ -19,9 +19,9 @@ def login_user(request):
             usr_mdl = User.objects.get(email=email.lower())
             username = usr_mdl.username
         except ObjectDoesNotExist:
-            messages.success(request, mark_safe("User was not found."
-                                                "<br/> <small>Please check your username and try again."
-                                                " If you don't have an account, contact the administrator.</small>"))
+            messages.success(request, mark_safe(_("Användaren hittades inte.") + "<br/> <small>" +
+                                                _("Vänligen kontrollera ditt användarnamn och försök igen. Om du inte har ett konto, kontakta administratören.") +
+                                                ".</small>"))
             return redirect('login')
         user = authenticate(request, username=username, password=password)
         if user is not None:
@@ -29,8 +29,9 @@ def login_user(request):
             return redirect('dashboard')
         else:
             messages.success(request, mark_safe(
-                "An error occurred during login.<br/> <small>Please try again later or contact support"
-                " if the issue persists.</small>"))
+                _("Ett fel inträffade vid inloggningen")+".<br/> <small>" +
+                _("Försök igen senare eller kontakta supporten om problemet kvarstår")+
+                "</small>"))
             return redirect('login')
     else:
         return render(request, 'login.html')

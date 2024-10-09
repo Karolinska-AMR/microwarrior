@@ -24,6 +24,10 @@ $(document).ready(function (x) {
 
         });
 
+        $(".lan-link").on("click", function (event) {
+            send_lan($(this).attr('data-lan'));
+        });
+
         request_overview_data();
         generate_overview_stats();
 
@@ -46,6 +50,9 @@ $(document).ready(function (x) {
         const import_table = document.querySelector("#import-tbl");
         $(import_table).bootstrapTable("destroy");
         $(import_table).bootstrapTable({
+            formatNoMatches: function () {
+                return gettext('Ingen matchande data hittades');
+            },
             onResetView: function (e) {
                 import_connect_cell_events();
                 import_show_duplicate_rows(DUPLICATE_SAMPLES);
@@ -191,7 +198,7 @@ $(document).ready(function (x) {
             $(import_table).bootstrapTable("insertRow", {index: 0, row: rr});
         }
         if (tmp > 0) {
-            import_show_msg(`${tmp} sample${tmp === 1 ? ' was' : 's were'} ignored due to causing duplication in the table.`, "danger", 10000);
+            import_show_msg(gettext('Vissa inmatningsfiler ignorerades eftersom de har samma namn som tidigare prov.'), "danger", 10000);
         }
         for (let i = 0; i < dlen; i++) {
             let sm = data[i].sample;
@@ -301,8 +308,8 @@ $(document).ready(function (x) {
             }
             let name = sample.sample;
             let reason = sample.reason;
-            let message = reason === 'analyzed' ? "This sample has been previously analyzed." :
-                "This sample is scheduled for analyzing.";
+            let message = reason === 'analyzed' ? gettext("Detta prov har analyserats tidigare.") :
+                gettext("Detta prov är schemalagt för analys.");
             const td = Array.from(
                 document.querySelectorAll("#import-tbl tr td")
             ).find((el) => el.textContent === name);
@@ -571,8 +578,8 @@ $(document).ready(function (x) {
             if (samples.length > 0) {
                 job_check_samples(samples);
             } else {
-                import_show_msg("Kindly begin by importing Illumina files " +
-                    "in the pair-end format ({*_1/*_2}.fastq.gz).", "danger", 1e4);
+                import_show_msg(gettext("Vänligen importera Illumina-filer i parformatet ({*_1/*_2}.fastq.gz).")
+                    , "danger", 1e4);
             }
 
         });
@@ -634,7 +641,7 @@ $(document).ready(function (x) {
             'Failed': {'icon': "<i class=\"fas fa-times-circle\"></i>", "cl": "text-danger"},
             'Running': {
                 'icon': `<div class="spinner-grow spinner-grow-sm" role="status">
-                                              <span class="visually-hidden">Loading...</span>
+                                              <span class="visually-hidden">${gettext("Laddar, vänligen vänta...")}</span>
                                             </div>`, "cl": "text-primary"
             },
             "Enqueued": {'icon': "<i class=\"fas fa-hourglass-half\"></i>", "cl": "text-warning"}
@@ -648,6 +655,9 @@ $(document).ready(function (x) {
         const tbl = document.querySelector("#jobs-tbl");
         $(tbl).bootstrapTable("destroy");
         $(tbl).bootstrapTable({
+            formatNoMatches: function () {
+                return gettext('Ingen matchande data hittades');
+            },
             onResetView: function (e) {
                 job_connect_cell_events();
             }
@@ -695,7 +705,7 @@ $(document).ready(function (x) {
                 const mdl = document.getElementById("logmodal");
                 let icon = get_job_status(stat).icon;
                 let cl = get_job_status(stat).cl;
-                $(mdl).find('.modal-title').html(`<a class="status ${cl}" title="status" >${icon}</a>
+                $(mdl).find('.modal-title').html(`<a class="status ${cl}" title="Status" >${icon}</a>
                                                   <span class="text-muted"> Ticket log: <small>${tkt}</small></span>`);
                 $(mdl).modal('show');
 
@@ -894,14 +904,14 @@ $(document).ready(function (x) {
 
     function generate_overview_stats() {
         let categories = [
-            {title: "Total Analyzed", id: "stat-total", class: "primary", icon: "fa-vials"},
-            {title: "Drug Susceptible", id: "stat-ds", class: "ds", icon: "fa-pills"},
-            {title: "Mono resistance", id: "stat-mono", class: "mono", icon: "fa-prescription-bottle"},
-            {title: "Poly-drug resistance", id: "stat-poly", class: "poly", icon: "fa-prescription-bottle-alt"},
-            {title: "MDR isolates", id: "stat-mdr", class: "mdr", icon: "fa-skull-crossbones"},
-            {title: "Pre-XDR isolates", id: "stat-prexdr", class: "prexdr", icon: "fa-exclamation-triangle"},
-            {title: "XDR isolates", id: "stat-xdr", class: "xdr", icon: "fa-biohazard"},
-            {title: "other", id: "stat-other", class: "other", icon: "fa-question-circle"},
+            {title: gettext("Totalt analyserat prov"), id: "stat-total", class: "primary", icon: "fa-vials"},
+            {title: gettext("Känsligt"), id: "stat-ds", class: "ds", icon: "fa-pills"},
+            {title: gettext("Monoresistens"), id: "stat-mono", class: "mono", icon: "fa-prescription-bottle"},
+            {title: gettext("Polyresistens"), id: "stat-poly", class: "poly", icon: "fa-prescription-bottle-alt"},
+            {title: gettext("MDR"), id: "stat-mdr", class: "mdr", icon: "fa-skull-crossbones"},
+            {title: gettext("Pre-XDR"), id: "stat-prexdr", class: "prexdr", icon: "fa-exclamation-triangle"},
+            {title: gettext("XDR"), id: "stat-xdr", class: "xdr", icon: "fa-biohazard"},
+            {title: gettext("Andra"), id: "stat-other", class: "other", icon: "fa-question-circle"},
         ];
 
         const container = document.getElementById('header-container');
@@ -998,8 +1008,8 @@ $(document).ready(function (x) {
                 d3.select(this).attr("r", 8);
                 var tooltip = d3.select("#tooltip");
                 tooltip.transition().duration(1000).style('opacity', .9);
-                tooltip.html(`<p class="p-0 m-1 text-white"><small>Sample</small>: ${d.sample}
-                              <br><small>Category</small>: ${d.cat.toUpperCase()}</p>`)
+                tooltip.html(`<p class="p-0 m-1 text-white"><small>${gettext("Prov-id")}</small>: ${d.sample}
+                              <br><small>${gettext("Kategori")}</small>: ${d.cat.toUpperCase()}</p>`)
                     .style('left', (event.pageX + 5) + 'px')
                     .style('top', (event.pageY - 28) + 'px');
             })
@@ -1121,7 +1131,7 @@ $(document).ready(function (x) {
                 var tooltip = d3.select("#tooltip");
                 tooltip.transition().duration(200).style('opacity', .9);
                 tooltip.html(`<p class="p-0 m-1 text-white "><span class="text-break text-center">${name}</span>
-                              <br><small>Frequency</small>: ${formatNumber(d.value)} </p>`)
+                              <br><small>${gettext("Frekvens")}</small>: ${formatNumber(d.value)} </p>`)
                     .style('left', (event.pageX + 5) + 'px')
                     .style('top', (event.pageY - 28) + 'px');
             })
@@ -1297,8 +1307,8 @@ $(document).ready(function (x) {
             .on('mouseover', function (event, d) {
                 var tooltip = d3.select("#tooltip");
                 tooltip.transition().duration(200).style('opacity', .9);
-                tooltip.html(`<p class="p-0 m-1 text-white "><small>Mutation</small>: <span class="text-break">${d.mutation}</span>
-                              <br><small>Frequency</small>: ${+(Math.round(d.frequency + "e+4") + "e-2")}%</p>`)
+                tooltip.html(`<p class="p-0 m-1 text-white "><small>${gettext('Mutation')}</small>: <span class="text-break">${d.mutation}</span>
+                              <br><small>${gettext("Frekvens")}</small>: ${+(Math.round(d.frequency + "e+4") + "e-2")}%</p>`)
                     .style('left', (event.pageX + 5) + 'px')
                     .style('top', (event.pageY - 28) + 'px');
             })
@@ -1365,6 +1375,16 @@ $(document).ready(function (x) {
         };
 
         xhr.send();
+    }
+
+    function send_lan(language) {
+        const form = document.getElementById('language-switcher');
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'language';
+        input.value = language;
+        form.appendChild(input);
+        form.submit();
     }
 
     // Function calls

@@ -13,11 +13,6 @@ from django.utils import translation
 
 
 def home(request):
-
-    if not request.session.get('django_language'):
-        translation.activate('sv')
-        request.session['django_language'] = 'sv-se'
-
     return render(request, 'home.html')
 
 
