@@ -179,6 +179,7 @@ PIPELINE = {
                 'js/bootstrap-table-fixed-columns.min.js'
                 'js/query.easing.js',
                 'js/style.js',
+                'js/base.js',
             ),
         },
         'home_js': {
@@ -188,6 +189,7 @@ PIPELINE = {
                 'js/bootstrap.bundle.min.js',
                 'js/query.easing.js',
                 'js/style.js',
+                'js/base.js',
                 'js/hm.js',
             )
 
@@ -196,6 +198,7 @@ PIPELINE = {
             'output_filename': 'js/dash.min.js',
             'source_filenames': (
                 'js/d3.v7.min.js',
+                'js/base.js',
                 'js/dash.js',
             ),
         },
@@ -203,6 +206,7 @@ PIPELINE = {
             'output_filename': 'js/sambrow.min.js',
             'source_filenames': (
                 'js/d3.v7.min.js',
+                'js/base.js',
                 'js/sambrow.js',
             ),
         },

@@ -24,10 +24,6 @@ $(document).ready(function (x) {
 
         });
 
-        $(".lan-link").on("click", function (event) {
-            send_lan($(this).attr('data-lan'));
-        });
-
         request_overview_data();
         generate_overview_stats();
 
@@ -1375,16 +1371,6 @@ $(document).ready(function (x) {
         };
 
         xhr.send();
-    }
-
-    function send_lan(language) {
-        const form = document.getElementById('language-switcher');
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'language';
-        input.value = language;
-        form.appendChild(input);
-        form.submit();
     }
 
     // Function calls

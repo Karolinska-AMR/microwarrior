@@ -35,23 +35,6 @@ $(document).ready(function () {
         });
     }
 
-    $(".lan-link").on("click", function (event) {
-
-        send_lan($(this).attr('data-lan'));
-
-
-    });
-
-    function send_lan(language) {
-        const form = document.getElementById('language-switcher');
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'language';
-        input.value = language;
-        form.appendChild(input);
-        form.submit();
-    }
-
     fetch_feed('https://www.sciencedaily.com/rss/health_medicine/tuberculosis.xml', feeds, 'news');
     fetch_feed('https://www.ecdc.europa.eu/en/taxonomy/term/1307/feed', feeds, 'news');
     fetch_feed('https://pubmed.ncbi.nlm.nih.gov/rss/search/12YY5Cbua67LOmQXAGezOZocEGMWwJE4_HTbHx2JN7f9HaCYFh/?limit=20&utm_campaign=pubmed-2&fc=20230913121323', feeds, 'ms');
