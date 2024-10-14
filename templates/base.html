@@ -57,7 +57,7 @@
 
         <!-- Nav Item - Dashboard -->
         <li class="nav-item">
-            <a class="nav-link" data-message="home-cmp" href="{% url "home" %}">
+            <a class="nav-link" data-message="home-cmp" href="{% url "home" %}" title="{% trans "Hem" %}">
                 <i class="fas fa-fw fa-home"></i>
                 <span>{% trans "Hem" %}</span></a
             >
@@ -66,21 +66,21 @@
         <hr class="sidebar-divider"/>
 
         <li class="nav-item">
-            <a class="nav-link" href="{% url "dashboard" %}">
+            <a class="nav-link" href="{% url "dashboard" %}" title="{% trans "Instrumentpanel" %}">
                 <i class="fas fa-tachometer-alt"></i>
                 <span>{% trans "Instrumentpanel" %}</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="{% url "samplesbrowser" %}">
+            <a class="nav-link" href="{% url "samplesbrowser" %}" title="{% trans "Analysresultat" %}">
                 <i class="fas fa-fw fa-search"></i>
                 <span>{% trans "Analysresultat" %}</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="{% url "catalog" %}">
+            <a class="nav-link" href="{% url "catalog" %}"  title="{% trans "Mutationskatalog" %}">
                 <i class="fas fa-book"></i>
                 <span>{% trans "Mutationskatalog" %}</span>
             </a>
@@ -89,9 +89,9 @@
         <hr class="sidebar-divider"/>
 
         <li class="nav-item">
-            <a class="nav-link" href="{% url "help" %}">
+            <a class="nav-link" href="{% url "help" %}" title="{% trans "Hjälp" %}">
                 <i class="fas fa-fw fa-question-circle"></i>
-                <span>{% trans "Hjälp" %}</span></a
+                <span >{% trans "Hjälp" %}</span></a
             >
         </li>
 

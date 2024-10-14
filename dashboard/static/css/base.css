@@ -132,6 +132,15 @@ body {
     color: #79084a;
     font-weight: 700;
 }
+.sidebar.collapsed .menu-text {
+  opacity: 0;
+  visibility: hidden;
+}
+.menu-text {
+  display: inline-block;
+  margin-left: 10px;
+  transition: opacity 0.3s ease;
+}
 
 .sidebar #sidebarToggle {
     width: 2.5rem;
@@ -308,7 +317,9 @@ body {
         overflow: visible;
         width: 6rem !important;
     }
-
+    .sidebar.toggled .nav-item{
+        font-size: 1.25rem;
+    }
     .sidebar.toggled .nav-item .collapse {
         position: absolute;
         left: calc(6rem + 1.5rem / 2);
@@ -348,8 +359,8 @@ body {
     }
 
     .sidebar.toggled .nav-item .nav-link span {
-        font-size: 0.8rem;
-        display: block;
+        /*font-size: 0.8rem;*/
+        display: none;
     }
 
     .sidebar.toggled .nav-item .nav-link i {
