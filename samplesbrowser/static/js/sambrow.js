@@ -5,14 +5,25 @@ $(document).ready(function () {
     let meta = {};
     var selected_drug_index;
     var selected_sample;
-
-    init();
-
+    var TB_DRUGS = {
+            "first_line": {
+                "title": "First-line anti-TB agents",
+                "drugs": ["isoniazid", "rifampicin", "pyrazinamide", "ethambutol", "streptomycin"]
+            }, "second_line": {
+                "title": "Second-line anti-TB agents",
+                "drugs": ["linezolid", "ethionamide", "levofloxacin", "moxifloxacin"]
+            }, "other": {
+                "title": "Other anti-TB agents",
+                "drugs": ["bedaquiline", "delamanid", "amikacin", "capreomycin", "kanamycin", "clofazimine"]
+            }
+        };
+    let WHO_Drugs = Object.values(TB_DRUGS).flatMap(it => it.drugs);
 
     function init() {
 
         fetch_meta();
         adjust_viewbar();
+        put_pred_layout();
 
         var pinnedIDs = getCookie('pinnedIDs');
 
@@ -148,6 +159,12 @@ $(document).ready(function () {
                 toggle_pin_item($(this), isUnpinning);
             });
 
+        });
+
+        let cardBody = document.querySelector("#pred_card .card-body");
+        cardBody.addEventListener('dblclick', function (event) {
+            document.querySelectorAll('.collapse').forEach(collapse => $(collapse).collapse('hide'));
+            event.stopPropagation();
         });
     }
 
@@ -316,6 +333,7 @@ $(document).ready(function () {
                                 Currently Displayed: 
                                 <span class="h5 text-${repo[sid].info.category.toLowerCase()}"> ${repo[sid].info.sample}</span>`);
         update_table_loading('showLoading');
+        reset_predictions();
         setTimeout(function () {
             if (!repo[sid].dcheck) {
                 fetch_mutations(sid);
@@ -453,8 +471,10 @@ $(document).ready(function () {
     function update_page(sid) {
         // Data shortcuts
         let data = repo[sid];
-
         let drug_cols = [];
+
+        update_predictions(data);
+
         let preds = data['predictions'];
         let mutations = data['mutations'];
         let unverif_mutations = data['unverified_mutations'];
@@ -489,8 +509,7 @@ $(document).ready(function () {
             drug_cols.push({field: "cat", title: "Pred./Catalogues"});
             $.each(drugs, function (_, v) {
                 drug_cols.push({
-                    field: v,
-                    title: v.charAt(0).toUpperCase() + v.slice(1),
+                    field: v, title: v.charAt(0).toUpperCase() + v.slice(1),
                 });
             });
 
@@ -552,13 +571,12 @@ $(document).ready(function () {
                 select_column($(this).index());
 
             }).mouseleave(function () {
-                    // Mouse leaves the cell
-                    let index = $(this).index();
-                    if (index !== selected_drug_index) {
-                        deselect_column(index);
-                    }
+                // Mouse leaves the cell
+                let index = $(this).index();
+                if (index !== selected_drug_index) {
+                    deselect_column(index);
                 }
-            ).click(function () {
+            }).click(function () {
                 let index = $(this).index();
                 if (selected_drug_index > 0) {
                     deselect_column(selected_drug_index, 'shadow-lg');
@@ -641,8 +659,7 @@ $(document).ready(function () {
         let info = repo[selected_sample]["info"];
         // Iterate over the icons array and create each icon
         meta.catalogs.forEach(function (cat) {
-            let isErrorCondition = (!info["pass_cryptic"] && cat.startsWith("CRyPTIC")) ||
-                (!info["pass_tbprofiler"] && cat.startsWith("TB")) || (!info["pass_who"] && cat.startsWith("WHO"));
+            let isErrorCondition = (!info["pass_cryptic"] && cat.startsWith("CRyPTIC")) || (!info["pass_tbprofiler"] && cat.startsWith("TB")) || (!info["pass_who"] && cat.startsWith("WHO"));
 
             let pred_cat = pred[cat];
             let link = document.createElement('a');
@@ -688,8 +705,7 @@ $(document).ready(function () {
         let info = repo[selected_sample]["info"];
         if (!mutations) {
 
-            let isErrorCondition = (!info["pass_cryptic"] && catalog.startsWith("CRyPTIC")) ||
-                (!info["pass_tbprofiler"] && catalog.startsWith("TB")) || (!info["pass_who"] && catalog.startsWith("WHO"));
+            let isErrorCondition = (!info["pass_cryptic"] && catalog.startsWith("CRyPTIC")) || (!info["pass_tbprofiler"] && catalog.startsWith("TB")) || (!info["pass_who"] && catalog.startsWith("WHO"));
 
             if (isErrorCondition) {
                 return `<span class="text-secondary" title="Could not assess this catalogue due to errors in the pipeline.">
@@ -704,28 +720,287 @@ $(document).ready(function () {
         });
         let mu_tags = [];
         mutations.forEach((mu) => {
-                let cl = mu.pred === "R" ? "text-r" : "text-u";
-                if (mu.format === 'GARC1') {
-                    mu_tags.push(`<p class='${cl} text-mutation m-0 p-0'>${mu.gene}@${mu.variant}</p>`);
+            let cl = mu.pred === "R" ? "text-r" : "text-u";
+            if (mu.format === 'GARC1') {
+                mu_tags.push(`<p class='${cl} text-mutation m-0 p-0'>${mu.gene}@${mu.variant}</p>`);
+            } else {
+                let bg_cl;
+                if (mu.freq >= 0.8) {
+                    bg_cl = "badge-success";
+                } else if (mu.freq >= 0.5) {
+                    bg_cl = "badge-warning";
                 } else {
-                    let bg_cl;
-                    if (mu.freq >= 0.8) {
-                        bg_cl = "badge-success";
-                    } else if (mu.freq >= 0.5) {
-                        bg_cl = "badge-warning";
-                    } else {
-                        bg_cl = "badge-danger";
-                    }
-                    let badge = `<span class="badge rounded-pill opacity-75 ${bg_cl}" title="Depth: ${mu.depth}">${mu.freq} <span class="visually-hidden">Frequency</span></span>`;
-                    mu_tags.push(`<p class='text-mutation ${cl} small text-mutated m-0 p-0'>${mu.gene}@${mu.variant} ${badge}</p>`);
+                    bg_cl = "badge-danger";
                 }
+                let badge = `<span class="badge rounded-pill opacity-75 ${bg_cl}" title="Depth: ${mu.depth}">${mu.freq} <span class="visually-hidden">Frequency</span></span>`;
+                mu_tags.push(`<p class='text-mutation ${cl} small text-mutated m-0 p-0'>${mu.gene}@${mu.variant} ${badge}</p>`);
             }
-        )
-        ;
+        });
 
         return mu_tags.join("");
 
     }
 
+
+    //---------------
+    function put_pred_layout() {
+
+        let cardBody = $("#pred_card .card-body");
+        let active_row;
+
+        $.each(TB_DRUGS, function (k, v) {
+            cardBody.append(`<h5 class="mt-2 text-center text-muted">${v.title}</h5>`)
+            names = v.drugs
+            for (let index = 0; index < names.length; index++) {
+                if (index % 2 == 0) {
+                    if (index > 0) {
+                        cardBody.append(active_row);
+                    }
+                    active_row = document.createElement("div");
+                    active_row.className = "row";
+                }
+                active_row.append(create_drug_card(names[index]));
+            }
+            cardBody.append(active_row);
+        });
+        // Add event listeners to handle icon toggle
+        document.querySelectorAll('.collapse').forEach(collapse => {
+            collapse.addEventListener('show.bs.collapse', function (event) {
+                const button = this.previousElementSibling.querySelector('.toggle-icon');
+                button.classList.remove('fa-plus');
+                button.classList.add('fa-minus');
+            });
+
+            collapse.addEventListener('hide.bs.collapse', function (event) {
+                const button = this.previousElementSibling.querySelector('.toggle-icon');
+                button.classList.remove('fa-minus');
+                button.classList.add('fa-plus');
+            });
+        });
+
+    }
+
+    function create_drug_card(dname) {
+
+        dname = dname.toLowerCase()
+        // Create the new content to be added
+        var newContent = document.createElement("div");
+        newContent.className = "col-md-6 mb-1";
+
+        // Create the card element
+        var card = document.createElement("div");
+        card.className = "card border-left-o shadow-sm";
+        card.id = `${dname}-card`
+        newContent.appendChild(card);
+
+        // Create the card header
+        var cardHeader = document.createElement("div");
+        cardHeader.className = "card-header pred-box-header py-1";
+        card.appendChild(cardHeader);
+
+        // Create the icon circle
+        var iconCircle = document.createElement("div");
+        iconCircle.className = "icon-circle";
+        cardHeader.appendChild(iconCircle);
+
+        // Create the pred-circle
+        var predCircle = document.createElement("div");
+        predCircle.className = "pred-circle text-capitalize text-bg-o";
+        predCircle.id = `${dname}-predcircle`
+        predCircle.textContent = "?";
+        iconCircle.appendChild(predCircle);
+
+        // Create the card title
+        var cardTitle = document.createElement("span");
+        cardTitle.className = "card-title mb-0 text-uppercase";
+        cardTitle.textContent = dname;
+        cardHeader.appendChild(cardTitle);
+
+        var infoIcons = document.createElement("div");
+        infoIcons.id = `${dname}-info`;
+        infoIcons.className = "info-icons";
+
+        // Create the collapse button
+        let collapse_id = `collapseCard-${dname}`
+        var collapseButton = document.createElement("button");
+        collapseButton.className = "btn btn-link btn-sm";
+        collapseButton.type = "button";
+        collapseButton.setAttribute("data-bs-toggle", "collapse");
+        collapseButton.setAttribute("data-bs-target", '#' + collapse_id);
+        collapseButton.setAttribute("aria-expanded", "false");
+        collapseButton.setAttribute("aria-controls", collapse_id);
+
+        infoIcons.appendChild(collapseButton);
+        cardHeader.appendChild(infoIcons);
+
+        // Create the collapse icon
+        var collapseIcon = document.createElement("i");
+        collapseIcon.className = "fas fa-plus toggle-icon";
+        collapseButton.appendChild(collapseIcon);
+
+        // Create the collapse content
+        var collapseContent = document.createElement("div");
+        collapseContent.id = collapse_id;
+        collapseContent.className = "collapse";
+        card.appendChild(collapseContent);
+
+        // Create the card body
+        var cardBodyInner = document.createElement("div");
+        cardBodyInner.className = "card-body p-1";
+        collapseContent.appendChild(cardBodyInner);
+
+        var container = document.createElement("div");
+        container.className = "info-header-cont";
+
+        // Create the resistance mutations paragraph
+        var resistanceMutationsParagraph = document.createElement("p");
+        resistanceMutationsParagraph.className = "my-1 text-center fs-6 fw-lighter";
+        resistanceMutationsParagraph.textContent = "Resistance Mutations";
+        container.appendChild(resistanceMutationsParagraph);
+
+        // Create the mubadges div
+        var mubadgesDiv = document.createElement("div");
+        mubadgesDiv.className = "d-flex justify-content-center mubadges";
+        container.appendChild(mubadgesDiv);
+
+        // Create the horizontal line
+        var horizontalLine = document.createElement("hr");
+        horizontalLine.className = "m-1";
+        container.appendChild(horizontalLine);
+
+        // Create the notes paragraph
+        var notesParagraph = document.createElement("p");
+        notesParagraph.className = "my-1 text-center fs-6 fw-lighter";
+        notesParagraph.textContent = "Notes";
+        container.appendChild(notesParagraph);
+
+        cardBodyInner.append(container);
+
+        // Create the notes div
+        var notesDiv = document.createElement("div");
+        notesDiv.className = "d-flex flex-column notes";
+        cardBodyInner.appendChild(notesDiv);
+
+        return newContent;
+
+    }
+
+    function update_predictions(data) {
+        let who_cat;
+        let prds = data.predictions;
+        let muts = data.mutations;
+        Object.keys(prds[Object.keys(prds)[0]]).forEach(function (cat, _) {
+            if (cat.startsWith('WHO')) {
+                who_cat = cat;
+            }
+        });
+        console.log(prds)
+        $.each(WHO_Drugs, function (idx,dname) {
+
+
+            let card = document.getElementById(`${dname}-card`);
+            let circle_icon = document.getElementById(`${dname}-predcircle`);
+            let info_icon = document.getElementById(`${dname}-info`);
+            let info_header = $(card).find('.info-header-cont');
+            let mu_badges_tag = $(card).find('.mubadges');
+            let mu_notes_tag = $(card).find('.notes');
+
+            $(card).removeClass(function (index, className) {
+                return (className.match(/(^|\s)border-left\S+/g) || []).join(' ');
+            });
+            $(circle_icon).removeClass(function (index, className) {
+                return (className.match(/(^|\s)text-bg\S+/g) || []).join(' ');
+            });
+            let key = dname.toUpperCase();
+
+            let dprd='N';
+            if(key in prds){
+              dprd = prds[key][who_cat];
+            }
+
+            if (dprd === 'R') {
+                $(card).addClass('border-left-r');
+                $(circle_icon).addClass('text-bg-r');
+                $(info_header).show();
+                $(circle_icon).text(dprd);
+                add_mu_badges(mu_badges_tag, muts[key][who_cat]);
+                add_notes(mu_notes_tag,[]);
+            } else if (dprd === 'U') {
+                $(card).addClass('border-left-ds');
+                $(circle_icon).addClass('text-bg-s');
+                $(circle_icon).text('S');
+                $(info_header).hide();
+                $(info_icon).prepend('<i class="fas fa-question-circle text-u" title="mutations with unspecific outcomes" style="cursor:help;"></i>');
+                add_notes(mu_notes_tag, [{
+                    'title': "",
+                    "text": "Mutations with uncertain significance were found. Check the table below for more info."
+                }])
+            } else if (dprd==='N' || !dprd) {
+                $(card).addClass('border-left-ds');
+                $(circle_icon).addClass('text-bg-s');
+                $(circle_icon).text('S');
+                $(info_header).hide();
+                let note_txt = !dprd ? `No mutations associated with resistance or uncertain significance from <em>${who_cat}</em> catalogue were found.`:
+                    'No mutations associated with resistance or uncertain significance from any catalogues were found.';
+                add_notes(mu_notes_tag, [{
+                    'title': "",
+                    "text": note_txt
+                }])
+            }
+
+        });
+    }
+
+    function reset_predictions() {
+        let cardBody = $("#pred_card .card-body");
+        cardBody.find('.collapse').each(function () {
+            $(this).collapse('hide');
+        });
+        cardBody.find('.pred-circle').each(function () {
+            $(this).text('-');
+            $(this).closest('.card').removeClass(function (index, className) {
+                return (className.match(/(^|\s)border-left\S+/g) || []).join(' ');
+            }).addClass("border-left-o");
+            $(this).removeClass(function (index, className) {
+                return (className.match(/(^|\s)text-bg\S+/g) || []).join(' ');
+            }).addClass("text-bg-o");
+        });
+
+        cardBody.find('.info-icons').each(function () {
+            $(this).children().not(":last-child").remove();
+        });
+        cardBody.find('.mubadges').each(function () {
+            $(this).children().remove();
+        });
+        cardBody.find('.notes').each(function () {
+            $(this).children().remove();
+        });
+
+    }
+
+    function add_mu_badges(ptag, mutations) {
+        mutations.forEach(function (m) {
+            if (m.pred === 'R') {
+                $(ptag).append(`<span class="badge text-bg-light text-danger fw-light fs-6 mx-1">${m.gene}@${m.variant}</span>`);
+            }
+        });
+    }
+
+    function add_notes(ptag, notes) {
+        if (notes.length === 0) {
+            $(ptag).append('<span class="text-center fw-light-lighter fs-6">No recorded notes.</span>')
+        } else {
+            notes.forEach(function (note) {
+                $(ptag).append(`
+                            <div class="alert alert-light border shadow-sm fw-light mb-1 mx-1" role="alert">
+                                <h6 class="alert-heading">${note.title}</h6>
+                                <p class="mb-1">${note.text}</p>
+                            </div>`)
+            });
+        }
+    }
+
+
+    init();
 
 });
