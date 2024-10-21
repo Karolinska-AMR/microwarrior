@@ -1,0 +1,117 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-10-21 13:02+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: dashboard/static/js/bootstrap-table.min.js:10
+msgid " rader per sida"
+msgstr ""
+
+#: dashboard/static/js/bootstrap-table.min.js:10
+msgid "Visar "
+msgstr ""
+
+#: dashboard/static/js/bootstrap-table.min.js:10
+msgid " till "
+msgstr ""
+
+#: dashboard/static/js/bootstrap-table.min.js:10
+msgid " av "
+msgstr ""
+
+#: dashboard/static/js/bootstrap-table.min.js:10
+msgid " rader"
+msgstr ""
+
+#: dashboard/static/js/bootstrap-table.min.js:10
+msgid "Sök"
+msgstr ""
+
+#: dashboard/static/js/dash.js:50 dashboard/static/js/dash.js:655
+msgid "Ingen matchande data hittades"
+msgstr ""
+
+#: dashboard/static/js/dash.js:197
+msgid ""
+"Vissa inmatningsfiler ignorerades eftersom de har samma namn som tidigare "
+"prov."
+msgstr ""
+
+#: dashboard/static/js/dash.js:307
+msgid "Detta prov har analyserats tidigare."
+msgstr ""
+
+#: dashboard/static/js/dash.js:308
+msgid "Detta prov är schemalagt för analys."
+msgstr ""
+
+#: dashboard/static/js/dash.js:577
+msgid "Vänligen importera Illumina-filer i parformatet ({*_1/*_2}.fastq.gz)."
+msgstr ""
+
+#: dashboard/static/js/dash.js:640
+msgid "Laddar, vänligen vänta..."
+msgstr ""
+
+#: dashboard/static/js/dash.js:903
+msgid "Totalt analyserat prov"
+msgstr ""
+
+#: dashboard/static/js/dash.js:904
+msgid "Känsligt"
+msgstr ""
+
+#: dashboard/static/js/dash.js:905
+msgid "Monoresistens"
+msgstr ""
+
+#: dashboard/static/js/dash.js:906
+msgid "Polyresistens"
+msgstr ""
+
+#: dashboard/static/js/dash.js:907
+msgid "MDR"
+msgstr ""
+
+#: dashboard/static/js/dash.js:908
+msgid "Pre-XDR"
+msgstr ""
+
+#: dashboard/static/js/dash.js:909
+msgid "XDR"
+msgstr ""
+
+#: dashboard/static/js/dash.js:910
+msgid "Andra"
+msgstr ""
+
+#: dashboard/static/js/dash.js:1007
+msgid "Prov-id"
+msgstr ""
+
+#: dashboard/static/js/dash.js:1008
+msgid "Kategori"
+msgstr ""
+
+#: dashboard/static/js/dash.js:1130 dashboard/static/js/dash.js:1307
+msgid "Frekvens"
+msgstr ""
+
+#: dashboard/static/js/dash.js:1306
+msgid "Mutation"
+msgstr ""

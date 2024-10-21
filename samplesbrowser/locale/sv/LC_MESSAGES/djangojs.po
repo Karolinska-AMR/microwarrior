@@ -1,0 +1,125 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-10-21 13:02+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: samplesbrowser/static/js/sambrow.js:9
+msgid "Första linjens anti-TB-läkemedel"
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:12
+msgid "Andra linjens anti-TB-läkemedel"
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:15
+msgid "Övriga anti-TB-läkemedel"
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:55
+msgid "Inga data att visa."
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:84
+msgid "Vänligen fyll i minst ett fält."
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:112
+#: samplesbrowser/static/js/sambrow.js:153
+msgid "Sök och hämta minst ett prov."
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:245
+msgid "Inga matchningar hittades."
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:348
+msgid "För närvarande Visas"
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:597
+msgid ""
+"En lågfrevent mutation har hittats. Vänligen diskutera dess möjliga påverkan "
+"på resultaten."
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:598
+msgid "Lågfrevent mutation upptäckt"
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:618
+msgid ""
+"Ingen exakt matchning för mutationen hittades i WHO:s katalog. Förutspådd "
+"funktionell påverkan: funktionsförlust"
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:619
+msgid "Länka mutation och bevis"
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:628
+#: samplesbrowser/static/js/sambrow.js:653
+msgid "Osäker signifikans"
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:631
+#: samplesbrowser/static/js/sambrow.js:651
+msgid "Associerad med resistens"
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:652
+msgid "Associerad med resistens-interim"
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:654
+msgid "Känslig-intrim"
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:655
+msgid "Känslig"
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:791
+msgid "Resistansmutationer"
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:807
+msgid "Anteckningar"
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:867
+msgid ""
+"Mutationer med osäker signifikans hittades. Se tabellen nedan för mer "
+"information."
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:874
+msgid "Inga mutationer associerade med resistens eller osäker signifikans från"
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:875
+msgid "katalog hittades."
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:876
+msgid ""
+"Inga mutationer associerade med resistens eller osäker signifikans från "
+"några kataloger hittades."
+msgstr ""
+
+#: samplesbrowser/static/js/sambrow.js:923
+msgid "Inga anteckningar."
+msgstr ""

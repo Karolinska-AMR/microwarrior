@@ -1,0 +1,269 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-10-19 20:25+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: dashboard/templates/dashboard.html:2 dashboard/templates/home.html:70
+msgid "Instrumentpanel"
+msgstr "Dashboard"
+
+#: dashboard/templates/dashboard.html:11 dashboard/templates/dashboard.html:29
+msgid "Ny inlämning"
+msgstr "New submission"
+
+#: dashboard/templates/dashboard.html:15 dashboard/templates/dashboard.html:123
+msgid "Jobbkö"
+msgstr "Job queue"
+
+#: dashboard/templates/dashboard.html:19 dashboard/templates/dashboard.html:159
+msgid "Översikt"
+msgstr "Overview"
+
+#: dashboard/templates/dashboard.html:33
+msgid "Dropbox-läge"
+msgstr "Dropbox mode"
+
+#: dashboard/templates/dashboard.html:44 dashboard/templates/dashboard.html:45
+msgid "Lägg till mapp"
+msgstr "Add folder"
+
+#: dashboard/templates/dashboard.html:48 dashboard/templates/dashboard.html:49
+msgid "Lägg till filer"
+msgstr "Add files"
+
+#: dashboard/templates/dashboard.html:53 dashboard/templates/dashboard.html:54
+msgid "Radera alla"
+msgstr "Delete all"
+
+#: dashboard/templates/dashboard.html:64 dashboard/templates/dashboard.html:65
+#: dashboard/templates/dashboard.html:234
+msgid "Fortsätt"
+msgstr "Proceed"
+
+#: dashboard/templates/dashboard.html:67 dashboard/templates/dashboard.html:68
+msgid "Skicka in"
+msgstr "Submit"
+
+#: dashboard/templates/dashboard.html:83 dashboard/templates/dashboard.html:253
+msgid "Prov-id"
+msgstr "Sample-id"
+
+#: dashboard/templates/dashboard.html:85
+msgid "Provtagningsdatum"
+msgstr "Collection date"
+
+#: dashboard/templates/dashboard.html:86
+msgid "Framåt fil"
+msgstr "Forward file"
+
+#: dashboard/templates/dashboard.html:87
+msgid "Bakåt fil"
+msgstr "Reverse file"
+
+#: dashboard/templates/dashboard.html:107
+msgid "Filnamn"
+msgstr "File name"
+
+#: dashboard/templates/dashboard.html:108
+msgid "Status"
+msgstr "Status"
+
+#: dashboard/templates/dashboard.html:131
+msgid "Sök"
+msgstr "Search"
+
+#: dashboard/templates/dashboard.html:143
+msgid "Ärendenummer"
+msgstr "Ticket"
+
+#: dashboard/templates/dashboard.html:144
+msgid "Antal isolat"
+msgstr "Nr. samples"
+
+#: dashboard/templates/dashboard.html:145
+msgid "Tidstämpel för inlämning"
+msgstr "Submission timestamp"
+
+#: dashboard/templates/dashboard.html:146
+msgid "Tidstämpel för slutförande"
+msgstr "Completion timestamp"
+
+#: dashboard/templates/dashboard.html:147
+msgid "Inlämnare"
+msgstr "Submitter"
+
+#: dashboard/templates/dashboard.html:160
+msgid "Tidigare inlämningar"
+msgstr "Previous submissions"
+
+#: dashboard/templates/dashboard.html:170
+msgid "Tidsmässig fördelning av isolat baserat på sekvenseringsdatum"
+msgstr "Temporal Distribution of Isolates Based on Sequencing Dates"
+
+#: dashboard/templates/dashboard.html:183
+msgid "Fördelning av bakteriella släkten"
+msgstr "Lineages Distribution"
+
+#: dashboard/templates/dashboard.html:193
+msgid "Mest förekommande resistensmutationer"
+msgstr "Top abundant Resistance mutations"
+
+#: dashboard/templates/dashboard.html:204
+msgid "Mest förekommande osäkra mutationer"
+msgstr "Top abundant Uncertain mutations"
+
+#: dashboard/templates/dashboard.html:227
+msgid "Klar att avsluta?"
+msgstr "Ready to Leave?"
+
+#: dashboard/templates/dashboard.html:229
+msgid "Din nuvarande session kommer att avslutas."
+msgstr "Your current session will be terminated."
+
+#: dashboard/templates/dashboard.html:230
+msgid ""
+"Om du håller på att ladda upp filer, säkerställ att dina jobb har skickats "
+"in helt innan du loggar ut."
+msgstr ""
+"If you are in the process of uploading files, please ensure that your jobs "
+"have been fully submitted before proceeding with the logout."
+
+#: dashboard/templates/dashboard.html:233
+msgid "Avbryt"
+msgstr "Cancel"
+
+#: dashboard/templates/dashboard.html:254
+msgid "Art"
+msgstr "Species"
+
+#: dashboard/templates/dashboard.html:265
+msgid "Stäng"
+msgstr "Close"
+
+#: dashboard/templates/home.html:43
+msgid "Hem"
+msgstr "Home"
+
+#: dashboard/templates/home.html:46 dashboard/templates/home.html:133
+msgid "Nyheter"
+msgstr "News"
+
+#: dashboard/templates/home.html:50 dashboard/templates/home.html:149
+msgid "Uppdateringar"
+msgstr "Updates"
+
+#: dashboard/templates/home.html:55 dashboard/templates/home.html:175
+msgid "Om oss"
+msgstr "About us"
+
+#: dashboard/templates/home.html:60
+msgid "Kontakta oss"
+msgstr "Contact us"
+
+#: dashboard/templates/home.html:74
+msgid "Analysresultat"
+msgstr "Analysis results"
+
+#: dashboard/templates/home.html:79
+msgid "Mutationskatalog"
+msgstr "Mutations catalogues"
+
+#: dashboard/templates/home.html:83
+msgid "Hjälp"
+msgstr "Help"
+
+#: dashboard/templates/home.html:89
+msgid "Logga ut"
+msgstr "Logout"
+
+#: dashboard/templates/home.html:94
+msgid "Logga in"
+msgstr "Login"
+
+#: dashboard/templates/home.html:118
+msgid "Bekämpar antimikrobiell resistens vid den genomiska fronten"
+msgstr "Fights antimicrobial resistance at the genomic front"
+
+#: dashboard/templates/home.html:119
+msgid "Din portal till genomiska lösningar mot tuberkulos"
+msgstr "Your portal to genomic solutions against tuberculosis"
+
+#: dashboard/templates/home.html:127
+msgid "Håll dig uppdaterad: Utveckling inom Tuberkulos"
+msgstr "Stay up to date: Developments in Tuberculosis"
+
+#: dashboard/templates/home.html:139
+msgid "Publikationer"
+msgstr "Publications"
+
+#: dashboard/templates/home.html:161
+msgid ""
+"Håll utkik efter de senaste uppdateringarna och nyheterna om pipeline, som "
+"kommer att delas här!"
+msgstr ""
+"Stay tuned for the latest pipeline updates and news, which will be shared "
+"here!"
+
+#: dashboard/templates/home.html:185
+msgid ""
+"Välkommen till vårt projekt, dedikerat till att bekämpa läkemedelsresistent "
+"tuberkulos (TB) genom innovativ forskning. På KI är vi djupt engagerade i "
+"att ta itu med en av vår tids mest angelägna globala hälsoutmaningar. Vårt "
+"tvärvetenskapliga team av experter har utnyttjat kraften i data och "
+"banbrytande teknik för att utveckla en lösning som syftar till att förutse "
+"läkemedelsresistent TB."
+msgstr ""
+"Welcome to our project, dedicated to combating drug-resistant tuberculosis "
+"(TB) through innovative research. At KI, we are deeply committed to "
+"addressing one of the most pressing global health challenges of our time. "
+"Our interdisciplinary team of experts has harnessed the power of data and "
+"cutting-edge technology to develop a solution aimed at anticipating drug-"
+"resistant TB."
+
+#: dashboard/templates/home.html:188
+msgid ""
+"Vårt uppdrag är att minska påverkan av läkemedelsresistent TB på individer, "
+"samhällen och hälso- och sjukvårdssystem. Vi strävar efter en värld där TB "
+"inte längre utgör ett hot, och i strävan efter denna vision spelar vårt "
+"projekt en avgörande roll. Det erbjuder nyckelfunktioner, såsom tidig "
+"identifiering av läkemedelsresistent TB för att påskynda behandlingen, "
+"vägledning i behandlingsstrategier för en mer effektiv resistenshantering, "
+"och pågående forsknings- och utvecklingsinsatser för att förbättra våra "
+"prediktiva algoritmer."
+msgstr ""
+"Our mission is to reduce the impact of drug-resistant TB on individuals, "
+"communities and healthcare systems. We strive for a world where TB no longer "
+"poses a threat, and in pursuit of this vision our project plays a crucial "
+"role. It offers key features, such as early identification of drug-resistant "
+"TB to speed up treatment, guidance in treatment strategies for more "
+"effective resistance management, and ongoing research and development "
+"efforts to improve our predictive algorithms."
+
+#: dashboard/templates/home.html:212
+msgid "Alla rättigheter reserverade"
+msgstr "All rights reserved"
+
+#: dashboard/templates/home.html:222
+msgid "Drift av innovation och teknik."
+msgstr "Powered by Innovation and Technology."
+
+#: dashboard/templates/home.html:222
+#, fuzzy
+#| msgid "Designad och utvecklad vid KI i samarbete med KUL."
+msgid " Utvecklad vid KI i samarbete med KUL."
+msgstr "Designed and developed by at KI in partnership with KUL."

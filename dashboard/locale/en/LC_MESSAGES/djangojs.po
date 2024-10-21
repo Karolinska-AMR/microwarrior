@@ -1,0 +1,122 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-10-20 19:53+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: dashboard/static/js/bootstrap-table.min.js:10
+msgid " rader per sida"
+msgstr " rows per page"
+
+#: dashboard/static/js/bootstrap-table.min.js:10
+msgid "Visar "
+msgstr "Showing "
+
+#: dashboard/static/js/bootstrap-table.min.js:10
+msgid " till "
+msgstr " to "
+
+#: dashboard/static/js/bootstrap-table.min.js:10
+msgid " av "
+msgstr " of "
+
+#: dashboard/static/js/bootstrap-table.min.js:10
+msgid " rader"
+msgstr " rows"
+
+#: dashboard/static/js/bootstrap-table.min.js:10
+msgid "Sök"
+msgstr "Search"
+
+#: dashboard/static/js/dash.js:50 dashboard/static/js/dash.js:655
+msgid "Ingen matchande data hittades"
+msgstr "No matching data found"
+
+#: dashboard/static/js/dash.js:197
+msgid ""
+"Vissa inmatningsfiler ignorerades eftersom de har samma namn som tidigare "
+"prov."
+msgstr ""
+"Some input files were ignored because they have identical names to previous "
+"samples."
+
+#: dashboard/static/js/dash.js:307
+msgid "Detta prov har analyserats tidigare."
+msgstr "This sample has been analyzed previously."
+
+#: dashboard/static/js/dash.js:308
+msgid "Detta prov är schemalagt för analys."
+msgstr "This sample is scheduled for analysis."
+
+#: dashboard/static/js/dash.js:577
+msgid "Vänligen importera Illumina-filer i parformatet ({*_1/*_2}.fastq.gz)."
+msgstr ""
+"Please import Illumina files in the paired-end format ({*_1/*_2}.fastq.gz)."
+
+#: dashboard/static/js/dash.js:640
+msgid "Laddar, vänligen vänta..."
+msgstr "Loading, please wait..."
+
+#: dashboard/static/js/dash.js:903
+msgid "Totalt analyserat prov"
+msgstr "Total analysed samples"
+
+#: dashboard/static/js/dash.js:904
+msgid "Känsligt"
+msgstr "Sensitive"
+
+#: dashboard/static/js/dash.js:905
+#, fuzzy
+msgid "Monoresistens"
+msgstr "Mono resistant"
+
+#: dashboard/static/js/dash.js:906
+#, fuzzy
+msgid "Polyresistens"
+msgstr "Poly resistant"
+
+#: dashboard/static/js/dash.js:907
+msgid "MDR"
+msgstr "MDR"
+
+#: dashboard/static/js/dash.js:908
+msgid "Pre-XDR"
+msgstr "Pre-XDR"
+
+#: dashboard/static/js/dash.js:909
+msgid "XDR"
+msgstr "XDR"
+
+#: dashboard/static/js/dash.js:910
+msgid "Andra"
+msgstr "Other"
+
+#: dashboard/static/js/dash.js:1007
+msgid "Prov-id"
+msgstr "Sample id"
+
+#: dashboard/static/js/dash.js:1008
+msgid "Kategori"
+msgstr "Category"
+
+#: dashboard/static/js/dash.js:1130 dashboard/static/js/dash.js:1307
+msgid "Frekvens"
+msgstr "Frequency"
+
+#: dashboard/static/js/dash.js:1306
+msgid "Mutation"
+msgstr "Mutation"

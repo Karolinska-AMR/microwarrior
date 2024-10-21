@@ -1,0 +1,105 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-10-20 20:05+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: users/forms.py:7
+#, fuzzy
+msgid "Gammalt lösenord"
+msgstr "Changing Password"
+
+#: users/forms.py:8
+#, fuzzy
+#| msgid "Lösenord"
+msgid "Nytt lösenord"
+msgstr "Change password"
+
+#: users/forms.py:9
+#, fuzzy
+#| msgid "Lösenord"
+msgid "Bekräfta lösenord"
+msgstr "Change password"
+
+#: users/templates/change-password.html:9
+#, fuzzy
+#| msgid "Lösenord"
+msgid "Lösenordsändring"
+msgstr "Password change"
+
+#: users/templates/change-password.html:39
+msgid "Instrumentpanel"
+msgstr "Dashboard"
+
+#: users/templates/change-password.html:50
+#, fuzzy
+msgid "Ändra lösenord"
+msgstr "Changing Password"
+
+#: users/templates/change-password.html:72
+#, fuzzy
+#| msgid "Lösenord"
+msgid "Byt Lösenord"
+msgstr "Change password"
+
+#: users/templates/login.html:9
+msgid "Inloggning"
+msgstr "Login"
+
+#: users/templates/login.html:39
+msgid "Hem"
+msgstr "Home"
+
+#: users/templates/login.html:50
+msgid "Har du ett konto?"
+msgstr "Have an account?"
+
+#: users/templates/login.html:52
+msgid "Logga in genom att ange följande information"
+msgstr "Login by entering the following information"
+
+#: users/templates/login.html:77
+msgid "e-post"
+msgstr "Email"
+
+#: users/templates/login.html:86
+msgid "Lösenord"
+msgstr "Password"
+
+#: users/templates/login.html:91
+msgid "Logga in"
+msgstr "Login"
+
+#: users/views.py:22
+msgid "Användaren hittades inte."
+msgstr "The user was not found."
+
+#: users/views.py:23
+msgid ""
+"Vänligen kontrollera ditt användarnamn och försök igen. Om du inte har ett "
+"konto, kontakta administratören."
+msgstr ""
+"Please check your username and try again. If you don't have an account, "
+"contact the administrator."
+
+#: users/views.py:32
+msgid "Ett fel inträffade vid inloggningen"
+msgstr ""
+
+#: users/views.py:33
+msgid "Försök igen senare eller kontakta supporten om problemet kvarstår"
+msgstr "Please try again later or contact support if the issue persists"
