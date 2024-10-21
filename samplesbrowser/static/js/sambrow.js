@@ -46,7 +46,7 @@ $(document).ready(function () {
 
         $(window).resize(adjust_viewbar);
 
-        let tables = ['lin-tbl', 'mu-who-tbl', 'mu-tbp-tbl', 'mu-cryp-tbl', 'umu-tbl','meta-tbl'];
+        let tables = ['lin-tbl', 'mu-who-tbl', 'mu-tbp-tbl', 'mu-cryp-tbl', 'umu-tbl','meta-tbl','search-tbl'];
         tables.forEach((tn) => {
             const tbl = document.getElementById(tn);
             $(tbl).bootstrapTable('destroy');
@@ -184,7 +184,7 @@ $(document).ready(function () {
     }
 
     function adjust_viewbar() {
-        $('#viewbar').css('height', $(window).height()).css('max-height', $(window).height());
+        $('#viewbar').css('height', $(window).height()-200).css('max-height', $(window).height()-200);
     }
 
     function clean_search() {

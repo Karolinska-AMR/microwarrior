@@ -14,8 +14,6 @@
 
 {% block maincontent %}
     <div class="container-fluid">
-
-
         <div class="row g-1">
             <!-- Main Content Column -->
 
@@ -68,7 +66,8 @@
                                     <a class="nav-link" data-target="cryptic-panel">CRyPTIC {% trans "Katalog" %}</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" data-target="tbprofiler-panel">TB-Profiler {% trans "Katalog" %}</a>
+                                    <a class="nav-link"
+                                       data-target="tbprofiler-panel">TB-Profiler {% trans "Katalog" %}</a>
                                 </li>
 
                             </ul>
@@ -83,13 +82,16 @@
                                                data-search-highlight="true"
                                                data-pagination="true"
                                                data-fixed-columns="true"
-                                               data-fixed-number="2">
+                                               data-fixed-number="2" data-page-size="25">
                                             <thead>
                                             <tr>
                                                 <th data-field="drug" data-sortable="true">{% trans "Läkemedel" %}</th>
-                                                <th data-field="mutation" data-sortable="true">{% trans "Mutation" %}</th>
-                                                <th data-field="depth" data-sortable="true">{% trans "Variantläsdjup" %}</th>
-                                                <th data-field="freq_icon" data-sortable="true">{% trans "Variantfrekvens" %} (%)
+                                                <th data-field="mutation"
+                                                    data-sortable="true">{% trans "Mutation" %}</th>
+                                                <th data-field="depth"
+                                                    data-sortable="true">{% trans "Variantläsdjup" %}</th>
+                                                <th data-field="freq_icon"
+                                                    data-sortable="true">{% trans "Variantfrekvens" %} (%)
                                                 </th>
                                                 <th data-field="effect" data-sortable="true">{% trans "Effekt" %}</th>
                                                 <th data-field="grade_icon" data-sortable="true">{% trans "Grad" %}</th>
@@ -109,7 +111,7 @@
                                        data-search-highlight="true"
                                        data-pagination="true"
                                        data-fixed-columns="true"
-                                       data-fixed-number="2">
+                                       data-fixed-number="2" data-page-size="25">
                                     <thead>
                                     <tr>
                                         <th data-field="drug" data-sortable="true">{% trans "Läkemedel" %}</th>
@@ -129,13 +131,16 @@
                                        data-search-highlight="true"
                                        data-pagination="true"
                                        data-fixed-columns="true"
-                                       data-fixed-number="2">
+                                       data-fixed-number="2"
+                                       data-page-size="25">
                                     <thead>
                                     <tr>
                                         <th data-field="drug" data-sortable="true">{% trans "Läkemedel" %}</th>
                                         <th data-field="mutation" data-sortable="true">{% trans "Mutation" %}</th>
                                         <th data-field="depth" data-sortable="true">{% trans "Variantläsdjup" %}</th>
-                                        <th data-field="freq_icon" data-sortable="true">{% trans "Variantfrekvens" %} (%)</th>
+                                        <th data-field="freq_icon" data-sortable="true">{% trans "Variantfrekvens" %}
+                                            (%)
+                                        </th>
                                         <th data-field="grade_icon" data-sortable="true">{% trans "Grad" %}</th>
                                     </tr>
                                     </thead>
@@ -157,7 +162,9 @@
                                        data-search-highlight="true"
                                        data-pagination="true"
                                        data-fixed-columns="true"
-                                       data-fixed-number="3">
+                                       data-fixed-number="3"
+                                       data-page-size="25">
+
                                     <thead>
                                     <tr>
                                         <th data-field="pred_icon"></th>
@@ -185,7 +192,7 @@
                     </div>
                     <div id="meta-card" class="card shadow-sm mb-2">
                         <div class="card-header section-header text-uppercase py-2 bg-white">
-                            <i class="fas fa-info"></i> meta-data
+                            <i class="fas fa-info"></i> {% trans "metadata" %}
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -196,10 +203,14 @@
 
                                         <th data-field="ticket" data-sortable="true">{% trans "Ärendenummer" %}</th>
                                         <th data-field="sample" data-sortable="true">{% trans "Prov-id" %}</th>
-                                        <th data-field="submission_timestamp" data-sortable="true">{% trans "Tidstämpel för inlämning" %}</th>
-                                        <th data-field="genome_depth" data-sortable="true">{% trans "Median genomtäckning" %}</th>
-                                        <th data-field="mapped_reads" data-sortable="true">{% trans "Kartlagda läsningar" %}</th>
-                                        <th data-field="mapped_reads_pct" data-sortable="true">{% trans "Procentandel kartlagda läsningar" %}</th>
+                                        <th data-field="submission_timestamp"
+                                            data-sortable="true">{% trans "Tidstämpel för inlämning" %}</th>
+                                        <th data-field="genome_depth"
+                                            data-sortable="true">{% trans "Median genomtäckning" %}</th>
+                                        <th data-field="mapped_reads"
+                                            data-sortable="true">{% trans "Kartlagda läsningar" %}</th>
+                                        <th data-field="mapped_reads_pct"
+                                            data-sortable="true">{% trans "Procentandel kartlagda läsningar" %}</th>
                                     </tr>
                                     </thead>
                                 </table>
@@ -210,15 +221,16 @@
             </div>
             <!-- Sidebar Column -->
             <div class="col-lg-2 col-md-4 col-sm-5">
-                <div class="card bg-white shadow-sm">
+                <div class="card view-card bg-white shadow-sm">
                     <div class="card-title section-header text-center text-uppercase p-0 m-0 bg-white border-2 border-bottom">
                         <p class="pt-2"><i class="fas fa-stream"></i>
-                           {% trans "Visa Lista" %}</p>
+                            {% trans "Visa Lista" %}</p>
                         <hr class="w-75 mx-auto my-0">
                         <nav class="navbar navbar-expand py-0 my-0">
                             <ul class="navbar-nav me-auto mb-md-0">
                                 <li class="nav-item">
-                                    <a class="nav-link pr-0" href="#" title="{% trans "Importera isolat" %}" data-bs-toggle="modal"
+                                    <a class="nav-link pr-0" href="#" title="{% trans "Importera isolat" %}"
+                                       data-bs-toggle="modal"
                                        data-bs-target="#searchModal">
                                         <i class="fas fa-search-plus fa-lg"></i>
                                     </a>
@@ -231,7 +243,8 @@
                             </ul>
                             <ul class="navbar-nav ml-auto mb-md-0">
                                 <li class="nav-item">
-                                    <a class="nav-link pin-btn" href="#" id="toggle-pin-all" title="{% trans "Fäst/lossa alla" %}">
+                                    <a class="nav-link pin-btn" href="#" id="toggle-pin-all"
+                                       title="{% trans "Fäst/lossa alla" %}">
                                         <i class="fas fa-thumbtack"></i>
                                     </a>
                                 </li>
@@ -239,7 +252,8 @@
                                 <li class="nav-item">
 
 
-                                    <a class="nav-link pr-0" id="del-samples" href="#" title="{% trans "Ta bort alla" %}">
+                                    <a class="nav-link pr-0" id="del-samples" href="#"
+                                       title="{% trans "Ta bort alla" %}">
                                         <i class="fa fa-fw fa-trash-alt fa-lg"></i>
                                     </a>
 
@@ -268,7 +282,8 @@
         <div class="modal-dialog  modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="searchModalLabel"><i class="fas fa-search"></i> Search Samples</h5>
+                    <h5 class="modal-title text-uppercase" id="searchModalLabel"><i
+                            class="fas fa-search"></i> {% trans "sök prover" %}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -278,59 +293,63 @@
                     <form id="searchForm">
                         <div class="row">
                             <div class="form-group col-6">
-                                <label for="ticketId">Ticket</label>
-                                <input type="text" class="form-control" id="ticketId" placeholder="Ticket">
+                                <label for="ticketId">{% trans "Ärendenummer" %}</label>
+                                <input type="text" class="form-control" id="ticketId"
+                                       placeholder="{% trans "Ärendenummer" %}">
                             </div>
                         </div>
                         <div class="row">
                             <div class="form-group col-6">
-                                <label for="sampleId">Sample ID</label>
-                                <input type="text" class="form-control" id="sampleId" placeholder="Sample ID">
+                                <label for="sampleId">{% trans "Prov-id" %}</label>
+                                <input type="text" class="form-control" id="sampleId"
+                                       placeholder="{% trans "Prov-id" %}">
                             </div>
                             <div class="form-group col-6">
-                                <label for="weekNumber">Week Number</label>
+                                <label for="weekNumber">{% trans "Veckans nummer" %}</label>
                                 <input type="week" class="form-control" id="weekNumber">
 
                             </div>
                         </div>
                         <div class="row">
                             <div class="form-group col-6">
-                                <label for="dateFrom">Date From</label>
+                                <label for="dateFrom">{% trans "Datum från" %}</label>
                                 <input type="date" class="form-control" id="dateFrom">
                             </div>
                             <div class="form-group col-6">
-                                <label for="dateTo">Date To</label>
+                                <label for="dateTo">{% trans "Datum till" %}</label>
                                 <input type="date" class="form-control" id="dateTo">
                             </div>
                         </div>
                         <div class="row">
                             <div class="form-group col-6">
-                                <label for="lineages">Lineage</label>
-                                <input type="text" class="form-control" id="lineage" placeholder="Lineage">
+                                <label for="lineages">{% trans "Släkten" %}</label>
+                                <input type="text" class="form-control" id="lineage"
+                                       placeholder="{% trans "Släkten" %}">
                             </div>
                             <div class="form-group col-6">
-                                <label for="mutation">Mutation</label>
-                                <input type="text" class="form-control" id="mutation" placeholder="Mutation">
+                                <label for="mutation">{% trans "Mutation" %}</label>
+                                <input type="text" class="form-control" id="mutation"
+                                       placeholder="{% trans "Mutation" %}">
                             </div>
                         </div>
                         <div class="row">
                             <div class="form-group col-6">
-                                <label for="drug">Resistant to</label>
-                                <input type="text" class="form-control" id="drug" placeholder="Drug">
+                                <label for="drug">{% trans "Resistent mot" %}</label>
+                                <input type="text" class="form-control" id="drug" placeholder="{% trans "Läkemedel" %}">
                             </div>
                             <div class="form-group col-6">
-                                <label for="resistanceCategory">Resistance Category</label>
+                                <label for="resistanceCategory">{% trans "Resistenskategori" %}</label>
                                 <input type="text" class="form-control" id="resistanceCategory"
-                                       placeholder="Resistance Category">
+                                       placeholder="{% trans "Resistenskategori" %}: DS, MDR, {% trans "osv." %}">
                             </div>
                         </div>
                         <div class="d-flex flex-row-reverse p-2">
                             <div class="btn-group btn-group-sm" role="group">
                                 <button type="button" class="btn btn-light" id="cls-form"><i class="fas fa-broom"></i>
-                                    Clear
+                                    {% trans "Rensa" %}
                                 </button>
                                 <button type="button" class="btn btn-primary" id="search-btn"><i
-                                        class="fas fa-search"></i> Search
+                                        class="fas fa-search"></i> {% trans "Sök" %}
                                 </button>
                             </div>
                         </div>
@@ -338,14 +357,14 @@
                         <div class="d-flex justify-content-between">
                             <div class="btn-group btn-group-sm" role="group">
                                 <button type="button" class="btn btn-light btn-sm" id="import-sel"><i
-                                        class="fas fa-check"></i> import selected
+                                        class="fas fa-check"></i> {% trans "Importera Utvalda" %}
                                 </button>
                                 <button type="button" class="btn btn-light" id="del-all"><i class="fas fa-trash"></i>
-                                    Delete all
+                                    {% trans "Ta Bort Alla" %}
                                 </button>
                             </div>
                             <button type="button" class="btn btn-primary btn-sm" id="import-all"><i
-                                    class="fas fa-arrow-circle-right"></i> import all
+                                    class="fas fa-arrow-circle-right"></i> {% trans "Importera Alla" %}
                             </button>
                         </div>
                         <div class="row p-1">
@@ -359,14 +378,13 @@
                                     <thead>
                                     <tr>
                                         <th data-field="state" data-checkbox="True"></th>
-                                        <th data-field="ticket" data-sortable="True">Ticket</th>
-                                        <th data-field="sample" data-sortable="True">Sample</th>
-                                        <th data-field="submission_timestamp" data-sortable="True">Submission
-                                            timestamp
+                                        <th data-field="ticket" data-sortable="True">{% trans "Ärendenummer" %}</th>
+                                        <th data-field="sample" data-sortable="True">{% trans "Prov-id" %}</th>
+                                        <th data-field="submission_timestamp"
+                                            data-sortable="True">{% trans "Tidstämpel för inlämning" %}
                                         </th>
-                                        <th data-field="collection_date" data-sortable="True">Collection date</th>
-                                        <th data-field="lineage.lineage" data-sortable="True">Lineage</th>
-                                        <th data-field="category">Category</th>
+                                        <th data-field="lineage.lineage" data-sortable="True">{% trans "Släkten" %}</th>
+                                        <th data-field="category">{% trans "Resistenskategori" %}</th>
                                     </tr>
                                     </thead>
                                 </table>
