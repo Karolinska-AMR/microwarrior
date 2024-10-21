@@ -3,8 +3,7 @@ $(document).ready(function () {
     let repo = {};
     let search_repo = {};
     let meta = {};
-    var selected_drug_index;
-    var selected_sample;
+
     var TB_DRUGS = {
         "first_line": {
             "title": gettext("Första linjens anti-TB-läkemedel"),
@@ -47,7 +46,7 @@ $(document).ready(function () {
 
         $(window).resize(adjust_viewbar);
 
-        let tables = ['lin-tbl', 'mu-who-tbl', 'mu-tbp-tbl', 'mu-cryp-tbl', 'umu-tbl'];
+        let tables = ['lin-tbl', 'mu-who-tbl', 'mu-tbp-tbl', 'mu-cryp-tbl', 'umu-tbl','meta-tbl'];
         tables.forEach((tn) => {
             const tbl = document.getElementById(tn);
             $(tbl).bootstrapTable('destroy');
@@ -131,8 +130,6 @@ $(document).ready(function () {
             $("#content-main").css('visibility', 'hidden');
             $("#empty_msg").css('display', 'block');
 
-            selected_sample = undefined;
-            selected_drug_index = undefined;
         });
 
         $("#import-sel").click(function () {
@@ -496,37 +493,34 @@ $(document).ready(function () {
 
         reset_predictions(); // in case of double-click or delay in fetching data clean the prediction
 
-        update_predictions(data);
 
         let unverif_mutations = data['unverified_mutations'];
 
-        // reset some indexes and tables
-        selected_sample = sid;
-
         // Lineage
-        const lin_tbl = document.getElementById('lin-tbl');
-        $(lin_tbl).bootstrapTable("removeAll");
-        $(lin_tbl).bootstrapTable("insertRow", {index: 0, row: data.info.lineage});
+        fill_lineage(data.info.lineage);
 
+         update_predictions(data);
 
         fill_mu_catalogs(data);
+
+        fill_unverified_mu(unverif_mutations);
 
         //meta-data
         fill_metadata(data.info);
 
-        fill_unverified_mu(unverif_mutations);
 
         update_table_loading('hideLoading');
     }
-
+    function fill_lineage(data){
+        const lin_tbl = document.getElementById('lin-tbl');
+        $(lin_tbl).bootstrapTable("removeAll");
+        $(lin_tbl).bootstrapTable("insertRow", {index: 0, row: data});
+    }
     function fill_metadata(data) {
-        $('#info-sid').text(data.sample || 'N/A');
-        $('#info-tkt').text(data.ticket || 'N/A');
-        $('#info-sdt').text(data.submission_timestamp || 'N/A');
-        $('#info-cldt').text(data.collection_date || 'N/A');
-        $('#info-depth').text(data.genome_depth || 'N/A');
-        $('#info-mread').text(data.mapped_reads || 'N/A');
-        $('#info-pread').text(data.mapped_reads_pct + '%' || 'N/A');
+        const tbl = document.getElementById('meta-tbl');
+        $(tbl).bootstrapTable("removeAll");
+        data.mapped_reads = data.mapped_reads.toLocaleString()
+        $(tbl).bootstrapTable("insertRow", {index: 0, row: data});
     }
 
     function fill_mu_catalogs(data) {

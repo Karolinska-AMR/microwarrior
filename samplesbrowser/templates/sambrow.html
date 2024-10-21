@@ -188,38 +188,21 @@
                             <i class="fas fa-info"></i> meta-data
                         </div>
                         <div class="card-body">
-                            <div class="row mb-2">
-                                <div class="col-3">
-                                    <span class="text-muted">Sample Id:</span>
-                                    <span class="val fw-bold" id="info-sid"></span>
-                                </div>
-                                <div class="col-3">
-                                    <span class="text-muted">Ticket:</span>
-                                    <span class="val fw-bold" id="info-tkt"></span>
-                                </div>
-
-                                <div class="col-4">
-                                    <span class="text-muted">Submission timestamp:</span>
-                                    <span class="val fw-bold" id="info-sdt"></span>
-                                </div>
-                            </div>
                             <div class="row">
-                                <div class="col-3">
-                                    <span class="text-muted">Collection date:</span>
-                                    <span class="val fw-bold" id="info-cldt"></span>
-                                </div>
-                                <div class="col-2">
-                                    <span class="text-muted">Sequencing depth:</span>
-                                    <span class="val fw-bold" id="info-depth"></span>
-                                </div>
-                                <div class="col-3">
-                                    <span class="text-muted">Number of mapped reads:</span>
-                                    <span class="val fw-bold" id="info-mread"></span>
-                                </div>
-                                <div class="col-4">
-                                    <span class="text-muted">Percentage of mapped reads:</span>
-                                    <span class="val fw-bold" id="info-pread"></span>
-                                </div>
+                                <table id="meta-tbl" class="table table-sm text-sm text-center table-main"
+                                       data-toggle="table">
+                                    <thead>
+                                    <tr>
+
+                                        <th data-field="ticket" data-sortable="true">{% trans "Ärendenummer" %}</th>
+                                        <th data-field="sample" data-sortable="true">{% trans "Prov-id" %}</th>
+                                        <th data-field="submission_timestamp" data-sortable="true">{% trans "Tidstämpel för inlämning" %}</th>
+                                        <th data-field="genome_depth" data-sortable="true">{% trans "Median genomtäckning" %}</th>
+                                        <th data-field="mapped_reads" data-sortable="true">{% trans "Kartlagda läsningar" %}</th>
+                                        <th data-field="mapped_reads_pct" data-sortable="true">{% trans "Procentandel kartlagda läsningar" %}</th>
+                                    </tr>
+                                    </thead>
+                                </table>
                             </div>
                         </div>
                     </div>
