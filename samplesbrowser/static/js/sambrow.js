@@ -46,7 +46,7 @@ $(document).ready(function () {
 
         $(window).resize(adjust_viewbar);
 
-        let tables = ['lin-tbl', 'mu-who-tbl', 'mu-tbp-tbl', 'mu-cryp-tbl', 'umu-tbl','meta-tbl','search-tbl'];
+        let tables = ['lin-tbl', 'mu-who-tbl', 'mu-tbp-tbl', 'mu-cryp-tbl', 'umu-tbl', 'meta-tbl', 'search-tbl'];
         tables.forEach((tn) => {
             const tbl = document.getElementById(tn);
             $(tbl).bootstrapTable('destroy');
@@ -184,7 +184,7 @@ $(document).ready(function () {
     }
 
     function adjust_viewbar() {
-        $('#viewbar').css('height', $(window).height()-200).css('max-height', $(window).height()-200);
+        $('#viewbar').css('height', $(window).height() - 200).css('max-height', $(window).height() - 200);
     }
 
     function clean_search() {
@@ -499,7 +499,7 @@ $(document).ready(function () {
         // Lineage
         fill_lineage(data.info.lineage);
 
-         update_predictions(data);
+        update_predictions(data);
 
         fill_mu_catalogs(data);
 
@@ -511,11 +511,13 @@ $(document).ready(function () {
 
         update_table_loading('hideLoading');
     }
-    function fill_lineage(data){
+
+    function fill_lineage(data) {
         const lin_tbl = document.getElementById('lin-tbl');
         $(lin_tbl).bootstrapTable("removeAll");
         $(lin_tbl).bootstrapTable("insertRow", {index: 0, row: data});
     }
+
     function fill_metadata(data) {
         const tbl = document.getElementById('meta-tbl');
         $(tbl).bootstrapTable("removeAll");

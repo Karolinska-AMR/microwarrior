@@ -174,7 +174,6 @@ PIPELINE = {
                 'js/jquery-3.7.1.min.js',
                 'js/fw.all.min.js',
                 'js/bootstrap.bundle.min.js',
-                'js/bootstrap-datepicker.min.js',
                 'js/bootstrap-table.min.js',
                 'js/bootstrap-table-fixed-columns.min.js'
                 'js/query.easing.js',
