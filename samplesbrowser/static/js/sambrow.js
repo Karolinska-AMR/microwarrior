@@ -6,17 +6,17 @@ $(document).ready(function () {
     var selected_drug_index;
     var selected_sample;
     var TB_DRUGS = {
-            "first_line": {
-                "title": "First-line anti-TB agents",
-                "drugs": ["isoniazid", "rifampicin", "pyrazinamide", "ethambutol", "streptomycin"]
-            }, "second_line": {
-                "title": "Second-line anti-TB agents",
-                "drugs": ["linezolid", "ethionamide", "levofloxacin", "moxifloxacin"]
-            }, "other": {
-                "title": "Other anti-TB agents",
-                "drugs": ["bedaquiline", "delamanid", "amikacin", "capreomycin", "kanamycin", "clofazimine"]
-            }
-        };
+        "first_line": {
+            "title": gettext("Första linjens anti-TB-läkemedel"),
+            "drugs": ["isoniazid", "rifampicin", "pyrazinamide", "ethambutol", "streptomycin"]
+        }, "second_line": {
+            "title": gettext("Andra linjens anti-TB-läkemedel"),
+            "drugs": ["linezolid", "ethionamide", "levofloxacin", "moxifloxacin"]
+        }, "other": {
+            "title": gettext("Övriga anti-TB-läkemedel"),
+            "drugs": ["bedaquiline", "delamanid", "amikacin", "capreomycin", "kanamycin", "clofazimine"]
+        }
+    };
     let WHO_Drugs = Object.values(TB_DRUGS).flatMap(it => it.drugs);
 
     function init() {
@@ -47,13 +47,22 @@ $(document).ready(function () {
 
         $(window).resize(adjust_viewbar);
 
-        const umu_tbl = document.getElementById('umu-tbl');
-        $(umu_tbl).bootstrapTable('destroy');
-        $(umu_tbl).bootstrapTable({
-            formatNoMatches: function () {
-                return '<i class="fas fa-info"></i> No unverified mutations were identified.';
-            }
-
+        let tables = ['lin-tbl', 'mu-who-tbl', 'mu-tbp-tbl', 'mu-cryp-tbl', 'umu-tbl'];
+        tables.forEach((tn) => {
+            const tbl = document.getElementById(tn);
+            $(tbl).bootstrapTable('destroy');
+            $(tbl).bootstrapTable({
+                formatNoMatches: function () {
+                    return `<i class="fas fa-info"></i> ${gettext("Inga data att visa.")}`;
+                },
+                classes: "table table-sm text-sm table-main table-hover table-striped",
+                onResetView: function (e) {
+                    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+                    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                        return new bootstrap.Popover(popoverTriggerEl)
+                    })
+                }
+            });
         });
 
         $("#search-btn").click(function () {
@@ -73,7 +82,7 @@ $(document).ready(function () {
             });
 
             if (allFieldsEmpty) {
-                search_alert('Please fill in at least one field.');
+                search_alert(gettext('Vänligen fyll i minst ett fält.'));
 
             } else {
                 const search_tbl = document.getElementById('search-tbl');
@@ -101,7 +110,7 @@ $(document).ready(function () {
                 clean_search();
                 update_viewbar();
             } else {
-                search_alert("Please search and retrieve at least one sample.");
+                search_alert(gettext("Sök och hämta minst ett prov."));
             }
         });
 
@@ -144,7 +153,7 @@ $(document).ready(function () {
 
                 update_viewbar();
             } else {
-                search_alert("Please search and retrieve at least one sample.");
+                search_alert(gettext("Sök och hämta minst ett prov."));
             }
         });
 
@@ -165,6 +174,15 @@ $(document).ready(function () {
         cardBody.addEventListener('dblclick', function (event) {
             document.querySelectorAll('.collapse').forEach(collapse => $(collapse).collapse('hide'));
             event.stopPropagation();
+        });
+
+        $("#mu_card .nav-item").on("click", function (event) {
+            $("#mu_card .nav-link").removeClass('active');
+            let navlink = $(this).find('.nav-link')
+            navlink.addClass('active');
+            $('.panel').hide();
+            var panelId = $(navlink).attr('data-target');
+            $('#' + panelId).show();
         });
     }
 
@@ -226,7 +244,7 @@ $(document).ready(function () {
                     return value.info;
                 });
                 if (infoArray.length === 0) {
-                    search_alert('No Matches Found.');
+                    search_alert(gettext('Inga matchningar hittades.'));
                 }
                 const search_tbl = document.getElementById('search-tbl');
                 $(search_tbl).bootstrapTable('hideLoading');
@@ -322,7 +340,6 @@ $(document).ready(function () {
 
     }
 
-
     function sample_clicked() {
         $("#content-main").css('visibility', 'visible');
         $("#empty_msg").css('display', 'none');
@@ -330,10 +347,14 @@ $(document).ready(function () {
         $(this).addClass('active');
         let sid = $(this).data('sid');
         $("#isolate-id").html(`<i class="fas fa-info-circle"></i>
-                                Currently Displayed: 
+                                ${gettext("För närvarande Visas")}: 
                                 <span class="h5 text-${repo[sid].info.category.toLowerCase()}"> ${repo[sid].info.sample}</span>`);
+
+        $('a[data-target="who-panel"]').trigger('click');
+
         update_table_loading('showLoading');
         reset_predictions();
+
         setTimeout(function () {
             if (!repo[sid].dcheck) {
                 fetch_mutations(sid);
@@ -427,10 +448,9 @@ $(document).ready(function () {
     }
 
     function update_table_loading(status) {
-        let tables = ['lin-tbl', 'prd-tbl', 'umu-tbl'];
+        let tables = document.querySelectorAll('table');
         tables.forEach((tn) => {
-            const tbl = document.getElementById(tn);
-            $(tbl).bootstrapTable(status);
+            $(tn).bootstrapTable(status);
         });
     }
 
@@ -471,129 +491,31 @@ $(document).ready(function () {
     function update_page(sid) {
         // Data shortcuts
         let data = repo[sid];
-        let drug_cols = [];
+
+        console.log(data);
+
+        reset_predictions(); // in case of double-click or delay in fetching data clean the prediction
 
         update_predictions(data);
 
-        let preds = data['predictions'];
-        let mutations = data['mutations'];
         let unverif_mutations = data['unverified_mutations'];
-        let drugs = Object.keys(preds);
 
         // reset some indexes and tables
-        selected_drug_index = -1;
         selected_sample = sid;
-        reset_evidence();
 
-        //meta-data
-        fill_metadata(data.info);
         // Lineage
         const lin_tbl = document.getElementById('lin-tbl');
         $(lin_tbl).bootstrapTable("removeAll");
         $(lin_tbl).bootstrapTable("insertRow", {index: 0, row: data.info.lineage});
 
-        const prd_tbl = document.getElementById('prd-tbl');
-        $(prd_tbl).bootstrapTable("destroy");
 
-        if (drugs.length === 0) {
-            $(prd_tbl).bootstrapTable({
-                formatNoMatches: function () {
-                    return '<i class="fas fa-info"></i> No Resistance or Uncertain mutations were detected.';
-                }
-            });
-        } else {
-            // Define same sort based on line of drug
-            drugs.sort(function (a, b) {
-                return meta.drugs.indexOf(a) - meta.drugs.indexOf(b);
-            });
-            drug_cols.push({field: "cat", title: "Pred./Catalogues"});
-            $.each(drugs, function (_, v) {
-                drug_cols.push({
-                    field: v, title: v.charAt(0).toUpperCase() + v.slice(1),
-                });
-            });
+        fill_mu_catalogs(data);
 
-            $(prd_tbl).bootstrapTable({columns: drug_cols});
+        //meta-data
+        fill_metadata(data.info);
 
-            let rows = [{cat: "<span class=''>Predictions</span>"}, {cat: ""}];
-            meta.catalogs.forEach((d) => {
-                rows.push({'cat': d});
-            });
-
-
-            drugs.forEach((d) => {
-
-                rows[0][d] = parse_prediction(preds[d]);
-                rows[1][d] = '';
-                let idx = 2;
-                meta.catalogs.forEach((c) => {
-                    rows[idx][d] = parse_cataloge(mutations[d], c);
-                    idx++;
-
-                });
-            });
-            rows.reverse().forEach((r) => {
-                $(prd_tbl).bootstrapTable("insertRow", {index: 0, row: r});
-            });
-
-            let tbl_rows = prd_tbl.querySelectorAll('tr');
-            let idx = 0;
-            tbl_rows.forEach((r) => {
-                if (idx === 2) {
-                    r.classList.add('table-secondary');
-                }
-                if (idx > 2) {
-                    r.classList.add('table-light');
-                }
-                idx++;
-            });
-
-            function select_column(index, class_names = "") {
-                if (index === 0) return;
-                $('#prd-tbl tr').each(function () {
-                    if ($(this).data('index') !== 1) {
-                        $(this).find('th').eq(index).addClass(`col-highlight-header ${class_names}`);
-                        $(this).find('td').eq(index).addClass(`col-highlight ${class_names}`);
-                    }
-                });
-            }
-
-            function deselect_column(index, class_names = "") {
-                if (index === 0) return;
-                $('#prd-tbl tr').each(function () {
-                    $(this).find('th').eq(index).removeClass(`col-highlight-header ${class_names}`);
-                    $(this).find('td').eq(index).removeClass(`col-highlight ${class_names}`);
-                });
-            }
-
-            $('#prd-tbl th, #prd-tbl td').mouseenter(function () {
-                // Mouse enters the cell
-                select_column($(this).index());
-
-            }).mouseleave(function () {
-                // Mouse leaves the cell
-                let index = $(this).index();
-                if (index !== selected_drug_index) {
-                    deselect_column(index);
-                }
-            }).click(function () {
-                let index = $(this).index();
-                if (selected_drug_index > 0) {
-                    deselect_column(selected_drug_index, 'shadow-lg');
-                }
-                if (selected_drug_index === index) {
-                    selected_drug_index = -1;
-                    reset_evidence();
-
-                } else {
-                    selected_drug_index = index;
-                    select_column(index, 'shadow-lg');
-                    let drug = $('#prd-tbl thead th').eq(index).data('field');
-                    fill_evidence(drug);
-                }
-            });
-        }
         fill_unverified_mu(unverif_mutations);
+
         update_table_loading('hideLoading');
     }
 
@@ -607,25 +529,138 @@ $(document).ready(function () {
         $('#info-pread').text(data.mapped_reads_pct + '%' || 'N/A');
     }
 
-    function fill_evidence(drug) {
+    function fill_mu_catalogs(data) {
+        const whoTable = $('#mu-who-tbl');
+        const crypTable = $('#mu-cryp-tbl');
+        const tbpTable = $('#mu-tbp-tbl');
 
-        let evidence = repo[selected_sample]['evidence'][drug];
-        if (!evidence) {
-            reset_evidence();
-            return;
-        }
-        $("#evidence_row").css("display", "block");
-        const evd_tbl = document.getElementById('evd-tbl');
-        $(evd_tbl).bootstrapTable("removeAll");
-        let color_mapper = {'R': 'text-r', 'U': 'text-u'};
-        evidence.forEach((r) => {
-            let cl = r.pred ? color_mapper[r.pred] : 'text-o';
-            r.pred_icon = `<span class="${cl}"><i class="fas fa-circle"></i></span>`;
-            r.OR = r.OR === -999 ? '&#8734;' : r.OR;
-            $(evd_tbl).bootstrapTable("insertRow", {index: 0, row: r});
+        // Clear all tables before inserting new data
+        whoTable.bootstrapTable("removeAll");
+        crypTable.bootstrapTable("removeAll");
+        tbpTable.bootstrapTable("removeAll");
+
+        const mutations = data.mutations;
+        const drugs = sortDrugs(Object.keys(mutations), WHO_Drugs.map(d => d.toUpperCase()));
+
+        drugs.reverse().forEach((dname) => {
+            dname = dname.toUpperCase();
+
+            if (!(dname in mutations)) return;
+
+            Object.entries(mutations[dname]).forEach(([cat_name, mulst]) => {
+                const targetTable =
+                    cat_name.startsWith('WHO') ? whoTable :
+                        cat_name.startsWith('CRyPTIC') ? crypTable :
+                            cat_name.startsWith('TB-Profiler') ? tbpTable : null;
+
+                if (!targetTable) return;
+
+                mulst.forEach((m) => {
+                    // Add freq_icon if necessary (for WHO and TB-Profiler)
+                    if (cat_name.startsWith('WHO') || cat_name.startsWith('TB-Profiler')) {
+                        m.freq_icon = get_freq_badge(m.freq);
+                    }
+                    // Apply grade badge
+                    m = get_grade_badge(m);
+                    // Insert row into the relevant table
+                    targetTable.bootstrapTable("insertRow", {index: 0, row: m});
+                });
+            });
         });
+    }
+
+    function sortDrugs(drugs, referenceList) {
+        return drugs.sort((a, b) => {
+            const indexA = referenceList.indexOf(a);
+            const indexB = referenceList.indexOf(b);
+
+            // If both drugs are in the reference list, sort by their order in the reference list
+            if (indexA !== -1 && indexB !== -1) {
+                return indexA - indexB;
+            }
+
+            // If one drug is in the reference list and the other isn't, prioritize the one in the reference list
+            if (indexA !== -1) return -1;
+            if (indexB !== -1) return 1;
+
+            // If neither are in the reference list, leave them as they are
+            return 0;
+        });
+    }
+
+    function get_freq_badge(freq) {
+        // Define badge class based on frequency
+        let bg_cl;
+        if (freq >= 0.8) {
+            bg_cl = "badge-success";
+        } else if (freq >= 0.5) {
+            bg_cl = "badge-warning";
+        } else {
+            bg_cl = "badge-danger";
+            const msg = `<span class='text-muted'>${gettext("En lågfrevent mutation har hittats. Vänligen diskutera dess möjliga påverkan på resultaten.")}</span>`;
+            const titleText = gettext("Lågfrevent mutation upptäckt");
+
+            // Return badge with popover for low-frequency mutations
+            return `
+            <span class="table-info" tabindex="0" 
+                data-bs-toggle="popover" data-bs-trigger="hover focus" 
+                data-bs-content="${msg}" data-bs-title="${titleText}" data-bs-html="true">
+                <span class="badge ${bg_cl}">${(freq * 100).toFixed(1)}%</span> 
+                <i class="fas fa-exclamation-triangle text-warning"></i>
+            </span>`;
+        }
+
+        // Return badge without popover for higher frequencies
+        return `<span class="badge ${bg_cl}">${(freq * 100).toFixed(1)}%</span>`;
+    }
 
 
+    function get_grade_badge(d) {
+        // No grade available
+        if (!d.grade) {
+            const msg = `<span class='text-muted'>${gettext("Ingen exakt matchning för mutationen hittades i WHO:s katalog. Förutspådd funktionell påverkan: funktionsförlust")}</span>`;
+            const titleText = gettext("Länka mutation och bevis");
+
+            const popoverContent = (content) => `
+            <span class="table-info text-muted fst-italic" tabindex="0" 
+                data-bs-toggle="popover" data-bs-trigger="hover focus" 
+                data-bs-content="${msg}" data-bs-title="${titleText}" data-bs-html="true">
+                 ${content} <i class="fas fa-info-circle text-info"></i></span>`;
+
+            if (d.cat_pred === 'U') {
+                d.grade_icon = `<span class="badge text-bg-u fst-italic text-muted">3. ${gettext("Osäker signifikans")}</span>`;
+                d.effect = popoverContent('LOF');
+            } else if (d.cat_pred === 'R') {
+                d.grade_icon = `<span class="badge text-bg-r fst-italic text-muted">1. ${gettext("Associerad med resistens")}</span>`;
+                d.effect = popoverContent('LOF');
+            } else {
+                d.grade_icon = `<span class="badge text-bg-o">${d.cat_pred}</span>`;
+            }
+
+            return d;
+        }
+
+        // Grade is available
+        const gradeClasses = {
+            '1': "text-bg-r",
+            '2': "text-bg-ri",
+            '3': "text-bg-u",
+            '4': "text-bg-si",
+            '5': "text-bg-s"
+        };
+
+        const gradeKey = Object.keys(gradeClasses).find(key => d.grade.startsWith(key)) || 'default';
+
+        d.grade = d.grade.startsWith('1') ? "1. " + gettext("Associerad med resistens") :
+            d.grade.startsWith('2') ? "2. " + gettext("Associerad med resistens-interim") :
+                d.grade.startsWith('3') ? "3. " + gettext("Osäker signifikans") :
+                    d.grade.startsWith('4') ? "4. " + gettext("Känslig-intrim") :
+                        d.grade.startsWith('5') ? "5. " + gettext("Känslig") : null;
+
+        d.grade_icon = `<span class="badge ${gradeClasses[gradeKey] || ''}">${gettext(d.grade)}</span>`;
+        d.effect = d.effect;  // Assuming d.effect is already defined
+
+        return d;
     }
 
     function fill_unverified_mu(mutations) {
@@ -642,105 +677,6 @@ $(document).ready(function () {
             $(umu_tbl).bootstrapTable("insertRow", {index: 0, row: r});
         });
     }
-
-    function reset_evidence() {
-        $("#evidence_row").css("display", "none");
-        const evd_tbl = document.getElementById('evd-tbl');
-        $(evd_tbl).bootstrapTable("removeAll");
-    }
-
-    function parse_prediction(pred) {
-
-        let color_mapper = {'R': 'text-r', 'U': 'text-u'};
-        let header_icon = document.createElement('div');
-        header_icon.className = 'row';
-        let flexContainer = document.createElement('div');
-        flexContainer.className = 'd-flex justify-content-evenly';
-        let info = repo[selected_sample]["info"];
-        // Iterate over the icons array and create each icon
-        meta.catalogs.forEach(function (cat) {
-            let isErrorCondition = (!info["pass_cryptic"] && cat.startsWith("CRyPTIC")) || (!info["pass_tbprofiler"] && cat.startsWith("TB")) || (!info["pass_who"] && cat.startsWith("WHO"));
-
-            let pred_cat = pred[cat];
-            let link = document.createElement('a');
-            link.className = `cat-circle ${pred_cat ? color_mapper[pred_cat] : 'text-o'}`;
-
-            link.setAttribute('title', cat);
-            link.innerHTML = isErrorCondition ? `<i class="fas fa-question"></i>` : `<i class="fas fa-circle"></i>`;
-            flexContainer.appendChild(link);
-
-        });
-
-        // Append the flex container to the first row
-        header_icon.appendChild(flexContainer);
-
-        // Create the second row with the text final prediction
-        let countR = Object.values(pred).filter(value => value === "R").length;
-
-        let row2 = document.createElement('div');
-        row2.className = 'row';
-        let pf = pred['final_pred'];
-        let text_color = pf ? color_mapper[pf] : 'text-o';
-        // specifying only one cataloge is R
-        if (countR === 2) {
-            text_color = 'text-pattern-r';
-        }
-        row2.innerHTML = `<span class="text-center text-outlined ${text_color}">${pf}</span>`;
-
-        let hr = document.createElement('hr');
-        hr.className = 'p-0 m-0';
-
-        // Append the rows to the container
-        var container = document.createElement('div');
-        container.appendChild(row2);
-        container.appendChild(hr);
-        container.appendChild(header_icon);
-
-        return $(container).prop('outerHTML');
-    }
-
-    function parse_cataloge(mutations_drug, catalog) {
-
-        let mutations = mutations_drug[catalog];
-        let info = repo[selected_sample]["info"];
-        if (!mutations) {
-
-            let isErrorCondition = (!info["pass_cryptic"] && catalog.startsWith("CRyPTIC")) || (!info["pass_tbprofiler"] && catalog.startsWith("TB")) || (!info["pass_who"] && catalog.startsWith("WHO"));
-
-            if (isErrorCondition) {
-                return `<span class="text-secondary" title="Could not assess this catalogue due to errors in the pipeline.">
-                           <i class="far fa-question-circle"></i>
-                        </span>`;
-            }
-            return `<span class="text-secondary">-</span>`;
-
-        }
-        mutations.sort(function (a, b) {
-            return a - b;
-        });
-        let mu_tags = [];
-        mutations.forEach((mu) => {
-            let cl = mu.pred === "R" ? "text-r" : "text-u";
-            if (mu.format === 'GARC1') {
-                mu_tags.push(`<p class='${cl} text-mutation m-0 p-0'>${mu.gene}@${mu.variant}</p>`);
-            } else {
-                let bg_cl;
-                if (mu.freq >= 0.8) {
-                    bg_cl = "badge-success";
-                } else if (mu.freq >= 0.5) {
-                    bg_cl = "badge-warning";
-                } else {
-                    bg_cl = "badge-danger";
-                }
-                let badge = `<span class="badge rounded-pill opacity-75 ${bg_cl}" title="Depth: ${mu.depth}">${mu.freq} <span class="visually-hidden">Frequency</span></span>`;
-                mu_tags.push(`<p class='text-mutation ${cl} small text-mutated m-0 p-0'>${mu.gene}@${mu.variant} ${badge}</p>`);
-            }
-        });
-
-        return mu_tags.join("");
-
-    }
-
 
     //---------------
     function put_pred_layout() {
@@ -795,7 +731,7 @@ $(document).ready(function () {
 
         // Create the card header
         var cardHeader = document.createElement("div");
-        cardHeader.className = "card-header pred-box-header py-1";
+        cardHeader.className = "card-header pred-box-header bg-light py-1";
         card.appendChild(cardHeader);
 
         // Create the icon circle
@@ -854,8 +790,8 @@ $(document).ready(function () {
 
         // Create the resistance mutations paragraph
         var resistanceMutationsParagraph = document.createElement("p");
-        resistanceMutationsParagraph.className = "my-1 text-center fs-6 fw-lighter";
-        resistanceMutationsParagraph.textContent = "Resistance Mutations";
+        resistanceMutationsParagraph.className = "my-1 text-center fs-6 fw-bold";
+        resistanceMutationsParagraph.textContent = gettext("Resistansmutationer");
         container.appendChild(resistanceMutationsParagraph);
 
         // Create the mubadges div
@@ -870,8 +806,8 @@ $(document).ready(function () {
 
         // Create the notes paragraph
         var notesParagraph = document.createElement("p");
-        notesParagraph.className = "my-1 text-center fs-6 fw-lighter";
-        notesParagraph.textContent = "Notes";
+        notesParagraph.className = "my-1 text-center fs-6 fw-bold";
+        notesParagraph.textContent = gettext("Anteckningar");
         container.appendChild(notesParagraph);
 
         cardBodyInner.append(container);
@@ -894,10 +830,8 @@ $(document).ready(function () {
                 who_cat = cat;
             }
         });
-        console.log(prds)
-        $.each(WHO_Drugs, function (idx,dname) {
 
-
+        $.each(WHO_Drugs, function (idx, dname) {
             let card = document.getElementById(`${dname}-card`);
             let circle_icon = document.getElementById(`${dname}-predcircle`);
             let info_icon = document.getElementById(`${dname}-info`);
@@ -913,9 +847,9 @@ $(document).ready(function () {
             });
             let key = dname.toUpperCase();
 
-            let dprd='N';
-            if(key in prds){
-              dprd = prds[key][who_cat];
+            let dprd = 'N';
+            if (key in prds) {
+                dprd = prds[key][who_cat];
             }
 
             if (dprd === 'R') {
@@ -924,24 +858,25 @@ $(document).ready(function () {
                 $(info_header).show();
                 $(circle_icon).text(dprd);
                 add_mu_badges(mu_badges_tag, muts[key][who_cat]);
-                add_notes(mu_notes_tag,[]);
+                add_notes(mu_notes_tag, []);
             } else if (dprd === 'U') {
                 $(card).addClass('border-left-ds');
                 $(circle_icon).addClass('text-bg-s');
                 $(circle_icon).text('S');
                 $(info_header).hide();
-                $(info_icon).prepend('<i class="fas fa-question-circle text-u" title="mutations with unspecific outcomes" style="cursor:help;"></i>');
+                $(info_icon).prepend('<span class="u-icon">U</span>');
                 add_notes(mu_notes_tag, [{
                     'title': "",
-                    "text": "Mutations with uncertain significance were found. Check the table below for more info."
+                    "text": gettext("Mutationer med osäker signifikans hittades. Se tabellen nedan för mer information.")
                 }])
-            } else if (dprd==='N' || !dprd) {
+            } else if (dprd === 'N' || !dprd) {
                 $(card).addClass('border-left-ds');
                 $(circle_icon).addClass('text-bg-s');
                 $(circle_icon).text('S');
                 $(info_header).hide();
-                let note_txt = !dprd ? `No mutations associated with resistance or uncertain significance from <em>${who_cat}</em> catalogue were found.`:
-                    'No mutations associated with resistance or uncertain significance from any catalogues were found.';
+                let note_txt = !dprd ? gettext('Inga mutationer associerade med resistens eller osäker signifikans från') +
+                    `<em>${who_cat}</em> ` + gettext('katalog hittades.') :
+                    gettext('Inga mutationer associerade med resistens eller osäker signifikans från några kataloger hittades.');
                 add_notes(mu_notes_tag, [{
                     'title': "",
                     "text": note_txt
@@ -980,19 +915,19 @@ $(document).ready(function () {
 
     function add_mu_badges(ptag, mutations) {
         mutations.forEach(function (m) {
-            if (m.pred === 'R') {
-                $(ptag).append(`<span class="badge text-bg-light text-danger fw-light fs-6 mx-1">${m.gene}@${m.variant}</span>`);
+            if (m.cat_pred === 'R') {
+                $(ptag).append(`<span class="badge text-bg-light text-danger fw-light fs-6 mx-1">${m.mutation}</span>`);
             }
         });
     }
 
     function add_notes(ptag, notes) {
         if (notes.length === 0) {
-            $(ptag).append('<span class="text-center fw-light-lighter fs-6">No recorded notes.</span>')
+            $(ptag).append(`<span class="text-center fw-light-lighter fs-6">${gettext("Inga anteckningar.")}</span>`)
         } else {
             notes.forEach(function (note) {
                 $(ptag).append(`
-                            <div class="alert alert-light border shadow-sm fw-light mb-1 mx-1" role="alert">
+                            <div class="alert alert-light border fw-light mb-1 mx-1" role="alert">
                                 <h6 class="alert-heading">${note.title}</h6>
                                 <p class="mb-1">${note.text}</p>
                             </div>`)

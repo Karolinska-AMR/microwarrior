@@ -1,6 +1,6 @@
 body {
     color: #16365f;
-    font-family: "Poppins", sans-serif;;
+    font-family: sans-serif;
     background-color: #f7f8fb;
 }
 
@@ -132,14 +132,16 @@ body {
     color: #79084a;
     font-weight: 700;
 }
+
 .sidebar.collapsed .menu-text {
-  opacity: 0;
-  visibility: hidden;
+    opacity: 0;
+    visibility: hidden;
 }
+
 .menu-text {
-  display: inline-block;
-  margin-left: 10px;
-  transition: opacity 0.3s ease;
+    display: inline-block;
+    margin-left: 10px;
+    transition: opacity 0.3s ease;
 }
 
 .sidebar #sidebarToggle {
@@ -317,9 +319,11 @@ body {
         overflow: visible;
         width: 6rem !important;
     }
-    .sidebar.toggled .nav-item{
+
+    .sidebar.toggled .nav-item {
         font-size: 1.25rem;
     }
+
     .sidebar.toggled .nav-item .collapse {
         position: absolute;
         left: calc(6rem + 1.5rem / 2);
@@ -608,13 +612,60 @@ body {
     background-color: #fff;
     border-bottom: 1px solid #e3e6f0;
 }
-.loading-text{
-    font-size: 1rem!important;
-    color: #16365f!important;
+
+.loading-text {
+    font-size: 1rem !important;
+    color: #16365f !important;
 }
-.pagination-detail{
-    color: #16365f!important;
+
+.pagination-detail {
+    color: #16365f !important;
 }
-.no-records-found td{
-    color: #16365f!important;
+
+.no-records-found td {
+    color: #16365f !important;
 }
+
+/* Title/Headline */
+h1, h2 {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Subtitle/Secondary Headings */
+h3, h4, h5 {
+    font-family: 'Lato', sans-serif;
+}
+
+/* Table Headers */
+table th {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+/* Table Content */
+table td {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 0.9rem;
+}
+
+/* Body Text/Paragraphs */
+body, p {
+    font-family: 'Nunito', sans-serif;
+}
+
+/* Buttons/Small Labels */
+button, label {
+    font-family: 'Roboto', sans-serif;
+}
+
+.section-header {
+    font-size: 1rem;
+    font-family: "Poppins", sans-serif;
+    color: #16365f;
+    font-weight: 600;
+}
+.table-main th {
+    background-color: #f8f9fa;
+}
+
+

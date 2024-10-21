@@ -1,13 +1,15 @@
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from .models import Sample, Evidence, Mutation, Drug, Meta
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from django.db.models import Count
 from itertools import chain
+
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count
 from django.db.models import Q
 from django.db.models.functions import ExtractWeek, ExtractYear
-from flowrunner.models import Task
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.shortcuts import render
+
+from .models import Sample, Evidence, Mutation, Drug, Meta
+
 
 @login_required
 def samplesbrowser(request):
@@ -39,7 +41,7 @@ def fetch_samples(request):
         query &= Q(task__ticket=ticket)
 
     if ids:
-        id_lst = list(map(int,ids.split(',')))
+        id_lst = list(map(int, ids.split(',')))
         query &= Q(id__in=id_lst)
 
     if sample_id:
@@ -61,7 +63,7 @@ def fetch_samples(request):
         query &= Q(lineage__lin__icontains=lineage)
 
     if mutation:
-        gene,variant = mutation.split('@')
+        gene, variant = mutation.split('@')
         query &= Q(s_mutations__variant__icontains=variant) & Q(s_mutations__gene__icontains=gene)
 
     if drug:
@@ -84,16 +86,17 @@ def fetch_samples(request):
         } if lineage else {}
         data[sample.id] = {}
         data[sample.id]["info"] = {"id": sample.id, "sample": sample.sample,
-                                   "ticket":sample.task.ticket if sample.task is not None else None,
+                                   "ticket": sample.task.ticket if sample.task is not None else None,
                                    "collection_date": sample.collection_date,
-                                   'submission_timestamp':sample.task.submission_timestamp.strftime('%Y-%m-%d %H:%M') if sample.task is not None else None,
+                                   'submission_timestamp': sample.task.submission_timestamp.strftime(
+                                       '%Y-%m-%d %H:%M') if sample.task is not None else None,
                                    "category": sample.category,
                                    "lineage": lineage_data,
                                    "pass_tbprofiler": sample.passed_tbprofiler,
                                    "pass_cryptic": sample.passed_cryptic,
                                    "pass_who": sample.passed_who,
-                                   "mapped_reads_pct":sample.mapped_reads_pct,
-                                   "mapped_reads":sample.mapped_reads,
+                                   "mapped_reads_pct": sample.mapped_reads_pct,
+                                   "mapped_reads": sample.mapped_reads,
                                    "genome_depth": sample.genome_depth
                                    }
 
@@ -116,11 +119,10 @@ def fetch_mutations(request):
             id=id)
 
         catalogs = list(Meta.objects.filter(type__exact='catalog').values_list('name').distinct())
-        data = {"mutations": {c[0]: [] for c in catalogs},
+        data = {"mutations": {},
                 "unverified_mutations": [], "evidence": {}, "qc": {}, 'predictions': {}}
 
         ptr_mu = data["mutations"]
-        ptr_ev = data["evidence"]
         for mu in sample.s_mutations.all():
             cat = mu.catalog
             if mu.prediction in ['R', 'U']:
@@ -130,38 +132,41 @@ def fetch_mutations(request):
                 if cat not in ptr_mu[drug]:
                     ptr_mu[drug][cat] = []
 
-                ptr_mu[drug][cat].append({
+                tmp_mu = {
                     "id": mu.id,
                     "freq": mu.freq,
                     "depth": mu.depth,
-                    "gene": mu.gene,
-                    "variant": mu.variant,
-                    "pred": mu.prediction,
+                    "mutation": f"{mu.gene}@{mu.variant}",
+                    "drug": drug,
+                    "cat_pred": mu.prediction,
+                    "note_pred": None,
                     'format': ['HGSV', 'GARC1'][cat.startswith('CRyPTIC')]
-                })
+                }
                 if cat.startswith('WHO'):
-                    if mu.drug.name not in ptr_ev:
-                        ptr_ev[mu.drug.name] = []
-                    evi = Evidence.objects.filter(name=cat,gene=mu.gene,variant=mu.variant,drug_id=mu.drug.id).first()
+                    # if mu.drug.name not in ptr_ev:
+                    #     ptr_ev[mu.drug.name] = []
+                    evi = Evidence.objects.filter(name=cat, gene=mu.gene, variant=mu.variant,
+                                                  drug_id=mu.drug.id).first()
                     if evi is not None:
-                        ptr_ev[mu.drug.name].append({'id': evi.id,
-                                                  "mutation": f"{evi.gene}@{evi.variant}",
-                                                  "drug": mu.drug.name,
-                                                  'ppv': evi.ppv,
-                                                  'OR': evi.odd_ratio,
-                                                  'sens': evi.sensitivity,
-                                                  'spec': evi.specificity,
-                                                  'present_solo_r': evi.present_solo_r,
-                                                  'present_solo_s': evi.present_solo_s,
-                                                  'present_r': evi.present_r,
-                                                  'present_s': evi.present_s,
-                                                  'absent_r': evi.absent_r,
-                                                  'absent_s': evi.absent_s,
-                                                  'grade': evi.grade,
-                                                  "pred": evi.prediction,
-                                                  'effect': evi.effect, })
+                        tmp_mu = { **tmp_mu, **{'evi_id': evi.id,
+
+                              'ppv': evi.ppv,
+                              'OR': evi.odd_ratio,
+                              'sens': evi.sensitivity,
+                              'spec': evi.specificity,
+                              'present_solo_r': evi.present_solo_r,
+                              'present_solo_s': evi.present_solo_s,
+                              'present_r': evi.present_r,
+                              'present_s': evi.present_s,
+                              'absent_r': evi.absent_r,
+                              'absent_s': evi.absent_s,
+                              'grade': evi.grade,
+                              'effect': evi.effect, }}
                     else:
                         print(mu.variant)
+
+                ptr_mu[drug][cat].append(tmp_mu)
+
         ptr_umu = data["unverified_mutations"]
         for umu in sample.s_umutations.all():
             evi = umu.variant

@@ -95,22 +95,27 @@
     color: #adb5bd !important;
 }
 
+table .badge {
+    font-size: 0.9rem;
+    color: #000;
+}
+
 .badge-success {
-    background-color: #33BBC5;
+    background-color: #73EC8B;
     color: #fff;
-    border: 1px solid #3a3b45;
+
 }
 
 .badge-warning {
-    background-color: #FEFFAC;
+    background-color: #FFDB5C;
     color: #000;
-    border: 1px solid #3a3b45;
+
 }
 
 .badge-danger {
-    background-color: #FF9BD2;
+    background-color: #EE4E4E;
     color: #000;
-    border: 1px solid #3a3b45;
+
 }
 
 .text-outlined {
@@ -135,42 +140,8 @@ td {
     font-size: 0.8rem;
 }
 
-.table-main th {
-    background-color: #16365f;
-    color: #fff !important;
-}
-
-.table-sub th {
-    background-color: #f8f9fa;
-    color: #000 !important;
-    font-size: 0.9rem;
-}
-
-.table-sub {
-    font-size: 0.8rem;
-}
-
-.col-highlight {
-    background-color: #EEF5FF !important;
-    cursor: pointer;
-    font-size: 0.9rem !important;
-}
-
-.col-highlight .cat-circle {
-    -webkit-text-stroke: 1px #16365f !important;
-}
-
-.col-highlight-header {
-    background-color: #EEF5FF !important;
-    cursor: pointer;
-    color: #16365f !important;
-    -webkit-text-stroke: 1px #16365f !important;
-
-}
-
 .val {
     color: #16365f;
-
 }
 
 .pin-btn {
@@ -216,11 +187,15 @@ td {
 .text-bg-r {
     background-color: #dc3545 !important;
 }
-
+.text-bg-ri {
+    background-color: #FF407D !important;
+}
 .text-bg-u {
     background-color: #ffc107 !important;
 }
-
+.text-bg-si {
+    background-color: #B6FFA1 !important;
+}
 .text-bg-s {
     background-color: #4dd4ac !important;
 }
@@ -243,4 +218,22 @@ td {
 
 .border-left-o {
     border-left: .25rem solid #adb5bd !important;
+}
+
+#mu_card .nav-item {
+    cursor: pointer;
+}
+.u-icon{
+    display: inline-block;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 14px;
+    line-height: 22px; /* set to same size as width, height */
+    width: 21px;
+    height: 20px;
+    text-align: center;
+    background-color: #ffc107 !important;
+}
+.table-info{
+ cursor: pointer;
 }

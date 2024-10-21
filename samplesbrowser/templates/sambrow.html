@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
 {% load pipeline %}
-{% block title %}ResHub: Explorer{% endblock %}
+{% load i18n %}
+{% block title %}ResHub: {% trans "Analysresultat" %}{% endblock %}
 
 {% block cssblock %}
     <link rel="stylesheet" href="{% static "css/sambrow.css" %}"/>
@@ -20,29 +21,28 @@
 
             <div class="col-lg-10 col-md-8 col-sm-7">
                 <div id="empty_msg"><p class="text-center text-mutated"><i class="fas fa-info-circle"></i>
-                    Please add your isolates first, then select one from the 'View List' to see more details.</p></div>
+                    {% trans "Vänligen lägg till dina isolat först, och välj sedan ett från 'Visa Lista' för att se mer information." %}
+                </p></div>
                 <div id="content-main" style="visibility:hidden;">
                     <div class="row">
                         <div class="col-12">
                             <p class="text-center text-mutated" id="isolate-id">
-                                <i class="fas fa-info-circle"></i>
-                                Currently Displayed: <span class="h5"></span>
                             </p>
                         </div>
                     </div>
                     <div id='lin_card' class="card shadow-sm mb-2">
                         <div class="card-header section-header text-uppercase py-2 bg-white">
-                            <i class="fas fa-sitemap"></i> Coll's Classification
+                            <i class="fas fa-sitemap"></i> {% trans "Colls klassificering" %}
                         </div>
                         <div class="card-body">
                             <table id="lin-tbl" class="table table-sm text-sm text-center table-main"
                                    data-search-align="left" data-toggle="table">
                                 <thead>
                                 <tr>
-                                    <th data-field="lineage">Lineage</th>
-                                    <th data-field="family">Family</th>
+                                    <th data-field="lineage">{% trans "Släkten" %}</th>
+                                    <th data-field="family">{% trans "Familj" %}</th>
                                     <th data-field="rd">RD</th>
-                                    <th data-field="spoligotype">Spoligotype</th>
+                                    <th data-field="spoligotype">{% trans "Spoligotyp" %}</th>
                                 </tr>
                                 </thead>
                             </table>
@@ -50,42 +50,93 @@
                     </div>
                     <div id='pred_card' class="card shadow-sm mb-2">
                         <div class="card-header section-header text-uppercase py-2 bg-white">
-                            <i class="fas fa-dna"></i> Drug resistance predictions
+                            <i class="fas fa-prescription-bottle-alt"></i> {% trans "Läkemedelsresistensprediktioner" %}
+                        </div>
+                        <div class="card-body"></div>
+                    </div>
+                    <div id='mu_card' class="card shadow-sm mb-2">
+                        <div class="card-header section-header text-uppercase py-2 bg-white">
+                            <i class="fas fa-dna"></i> {% trans "Identifierade mutationer" %}
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                                <table id="prd-tbl" class="table table-sm text-sm text-center table-main"
-                                       data-toggle="table"
-                                       data-virtual-scroll="true"
-                                       data-fixed-columns="true"
-                                       data-fixed-number="1"></table>
-                            </div>
+                            <ul class="nav nav-tabs nav-fill">
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" data-target="who-panel">WHO-UCN-2023.5
+                                        {% trans "Katalog" %}</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-target="cryptic-panel">CRyPTIC {% trans "Katalog" %}</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-target="tbprofiler-panel">TB-Profiler {% trans "Katalog" %}</a>
+                                </li>
 
-                            <div class="row" id="evidence_row" style="display: none;">
-                                <p class="mb-1 mt-2"><i class="fas fa-info-circle"></i> <span class="text-muted">The evidence is provided from the WHO catalogue.</span>
-                                </p>
-                                <table id="evd-tbl" class="table table-sm text-sm text-center table-sub"
+                            </ul>
+                            <div class="panel" id="who-panel">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <table id="mu-who-tbl" class="table table-sm text-sm table-main"
+                                               data-toggle="table"
+                                               data-virtual-scroll="true"
+                                               data-search="true"
+                                               data-search-align="left"
+                                               data-search-highlight="true"
+                                               data-pagination="true"
+                                               data-fixed-columns="true"
+                                               data-fixed-number="2">
+                                            <thead>
+                                            <tr>
+                                                <th data-field="drug" data-sortable="true">{% trans "Läkemedel" %}</th>
+                                                <th data-field="mutation" data-sortable="true">{% trans "Mutation" %}</th>
+                                                <th data-field="depth" data-sortable="true">{% trans "Variantläsdjup" %}</th>
+                                                <th data-field="freq_icon" data-sortable="true">{% trans "Variantfrekvens" %} (%)
+                                                </th>
+                                                <th data-field="effect" data-sortable="true">{% trans "Effekt" %}</th>
+                                                <th data-field="grade_icon" data-sortable="true">{% trans "Grad" %}</th>
+
+                                            </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel" id="cryptic-panel" style="display: none;">
+                                <table id="mu-cryp-tbl" class="table table-sm text-sm table-main"
                                        data-toggle="table"
                                        data-virtual-scroll="true"
+                                       data-search="true"
+                                       data-search-align="left"
+                                       data-search-highlight="true"
+                                       data-pagination="true"
                                        data-fixed-columns="true"
-                                       data-fixed-number="3">
+                                       data-fixed-number="2">
                                     <thead>
                                     <tr>
-                                        <th data-field="pred_icon"></th>
-                                        <th data-field="drug">Drug</th>
-                                        <th data-field="mutation">Mutation</th>
-                                        <th data-field="effect">Effect</th>
-                                        <th data-field="grade">Grade</th>
-                                        <th data-field="ppv">PPV (%)</th>
-                                        <th data-field="sens">Sensitivity (%)</th>
-                                        <th data-field="spec">Specificity (%)</th>
-                                        <th data-field="OR">Odd-Ratio</th>
-                                        <th data-field="present_solo_r">Present Solo R</th>
-                                        <th data-field="present_solo_s">Present Solo S</th>
-                                        <th data-field="present_r">Present R</th>
-                                        <th data-field="present_s">Present S</th>
-                                        <th data-field="absent_r">Absent R</th>
-                                        <th data-field="absent_s">Absent S</th>
+                                        <th data-field="drug" data-sortable="true">{% trans "Läkemedel" %}</th>
+                                        <th data-field="mutation" data-sortable="true">{% trans "Mutation" %}</th>
+                                        <th data-field="grade_icon" data-sortable="true">{% trans "Grad" %}</th>
+
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <div class="panel" id="tbprofiler-panel" style="display: none;">
+                                <table id="mu-tbp-tbl" class="table table-sm text-sm table-main"
+                                       data-toggle="table"
+                                       data-virtual-scroll="true"
+                                       data-search="true"
+                                       data-search-align="left"
+                                       data-search-highlight="true"
+                                       data-pagination="true"
+                                       data-fixed-columns="true"
+                                       data-fixed-number="2">
+                                    <thead>
+                                    <tr>
+                                        <th data-field="drug" data-sortable="true">{% trans "Läkemedel" %}</th>
+                                        <th data-field="mutation" data-sortable="true">{% trans "Mutation" %}</th>
+                                        <th data-field="depth" data-sortable="true">{% trans "Variantläsdjup" %}</th>
+                                        <th data-field="freq_icon" data-sortable="true">{% trans "Variantfrekvens" %} (%)</th>
+                                        <th data-field="grade_icon" data-sortable="true">{% trans "Grad" %}</th>
                                     </tr>
                                     </thead>
                                 </table>
@@ -94,7 +145,7 @@
                     </div>
                     <div id='umu_card' class="card shadow-sm mb-2">
                         <div class="card-header section-header text-uppercase py-2 bg-white">
-                            <i class="fas fa-exclamation-triangle"></i> Unverified Mutations
+                            <i class="fas fa-exclamation-triangle"></i> {% trans "overifierade mutationer" %}
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -110,10 +161,10 @@
                                     <thead>
                                     <tr>
                                         <th data-field="pred_icon"></th>
-                                        <th data-field="drug" data-sortable="true">Drug</th>
-                                        <th data-field="mutation" data-sortable="true">Mutation</th>
-                                        <th data-field="effect" data-sortable="true">Effect</th>
-                                        <th data-field="grade" data-sortable="true">Grade</th>
+                                        <th data-field="drug" data-sortable="true">{% trans "Läkemedel" %}</th>
+                                        <th data-field="mutation" data-sortable="true">{% trans "Mutation" %}</th>
+                                        <th data-field="effect" data-sortable="true">{% trans "Effekt" %}</th>
+                                        <th data-field="grade" data-sortable="true">{% trans "Grad" %}</th>
                                         <th data-field="ppv" data-sortable="true">PPV (%)</th>
                                         <th data-field="sens" data-sortable="true">Sensitivity (%)</th>
                                         <th data-field="spec" data-sortable="true">Specificity (%)</th>
@@ -132,7 +183,6 @@
 
                         </div>
                     </div>
-
                     <div id="meta-card" class="card shadow-sm mb-2">
                         <div class="card-header section-header text-uppercase py-2 bg-white">
                             <i class="fas fa-info"></i> meta-data
@@ -154,7 +204,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                 <div class="col-3">
+                                <div class="col-3">
                                     <span class="text-muted">Collection date:</span>
                                     <span class="val fw-bold" id="info-cldt"></span>
                                 </div>
@@ -180,25 +230,25 @@
                 <div class="card bg-white shadow-sm">
                     <div class="card-title section-header text-center text-uppercase p-0 m-0 bg-white border-2 border-bottom">
                         <p class="pt-2"><i class="fas fa-stream"></i>
-                            View List</p>
+                           {% trans "Visa Lista" %}</p>
                         <hr class="w-75 mx-auto my-0">
                         <nav class="navbar navbar-expand py-0 my-0">
                             <ul class="navbar-nav me-auto mb-md-0">
                                 <li class="nav-item">
-                                    <a class="nav-link pr-0" href="#" title="Import sample" data-bs-toggle="modal"
+                                    <a class="nav-link pr-0" href="#" title="{% trans "Importera isolat" %}" data-bs-toggle="modal"
                                        data-bs-target="#searchModal">
                                         <i class="fas fa-search-plus fa-lg"></i>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#" title="Export">
+                                    <a class="nav-link" href="#" title="{% trans "Exportera" %}">
                                         <i class="fas fa-download fa-lg"></i>
                                     </a>
                                 </li>
                             </ul>
                             <ul class="navbar-nav ml-auto mb-md-0">
                                 <li class="nav-item">
-                                    <a class="nav-link pin-btn" href="#" id="toggle-pin-all" title="Pin/Unpin all" >
+                                    <a class="nav-link pin-btn" href="#" id="toggle-pin-all" title="{% trans "Fäst/lossa alla" %}">
                                         <i class="fas fa-thumbtack"></i>
                                     </a>
                                 </li>
@@ -206,9 +256,9 @@
                                 <li class="nav-item">
 
 
-                                        <a class="nav-link pr-0" id="del-samples" href="#" title="Delete all">
-                                            <i class="fa fa-fw fa-trash-alt fa-lg"></i>
-                                        </a>
+                                    <a class="nav-link pr-0" id="del-samples" href="#" title="{% trans "Ta bort alla" %}">
+                                        <i class="fa fa-fw fa-trash-alt fa-lg"></i>
+                                    </a>
 
 
                                 </li>
@@ -368,6 +418,7 @@
 {% endblock %}
 
 {% block jscontent %}
+    <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
     {% javascript 'sambrow_js' %}
     <script src="{% static 'js/bootstrap-table-fixed-columns.min.js' %} "></script>
 {% endblock %}
