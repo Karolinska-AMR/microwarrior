@@ -639,6 +639,7 @@ h3, h4, h5 {
 /* Table Headers */
 table th {
     font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
     font-weight: 700;
 }
 
@@ -666,6 +667,12 @@ button, label {
 }
 .table-main th {
     background-color: #f8f9fa;
+}
+.table-modal th {
+    background-color: #f8f9fa;
+    font-family: 'lato', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
 }
 
 

@@ -47,6 +47,8 @@ $(document).ready(function () {
         $(window).resize(adjust_viewbar);
 
         let tables = ['lin-tbl', 'mu-who-tbl', 'mu-tbp-tbl', 'mu-cryp-tbl', 'umu-tbl', 'meta-tbl', 'search-tbl'];
+        let table_type= (name)=> name.startsWith('search')?'table-modal':'table-main';
+
         tables.forEach((tn) => {
             const tbl = document.getElementById(tn);
             $(tbl).bootstrapTable('destroy');
@@ -54,7 +56,7 @@ $(document).ready(function () {
                 formatNoMatches: function () {
                     return `<i class="fas fa-info"></i> ${gettext("Inga data att visa.")}`;
                 },
-                classes: "table table-sm text-sm table-main table-hover table-striped",
+                classes: "table table-sm text-sm table-hover table-striped " + table_type(tn) ,
                 onResetView: function (e) {
                     var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
                     var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
