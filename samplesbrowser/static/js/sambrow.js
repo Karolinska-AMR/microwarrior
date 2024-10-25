@@ -652,7 +652,7 @@ $(document).ready(function () {
         d.grade = d.grade.startsWith('1') ? "1. " + gettext("Associerad med resistens") :
             d.grade.startsWith('2') ? "2. " + gettext("Associerad med resistens-interim") :
                 d.grade.startsWith('3') ? "3. " + gettext("Osäker signifikans") :
-                    d.grade.startsWith('4') ? "4. " + gettext("Känslig-intrim") :
+                    d.grade.startsWith('4') ? "4. " + gettext("Känslig-interim") :
                         d.grade.startsWith('5') ? "5. " + gettext("Känslig") : null;
 
         d.grade_icon = `<span class="badge ${gradeClasses[gradeKey] || ''}">${gettext(d.grade)}</span>`;

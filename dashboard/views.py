@@ -9,7 +9,7 @@ from django.db.models.functions import Concat, Round
 from iomanager.models import File
 from django.db.models import Sum, F, ExpressionWrapper, FloatField
 from samplesbrowser.models import Sample, Lineage, Mutation, Drug
-from django.utils import translation
+
 
 
 def home(request):

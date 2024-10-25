@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+{% load static %}
+{% load pipeline %}
+{% load i18n %}
+{% block title %}ResHub: {% trans "Mutationskatalog" %}{% endblock %}
+
+{% block cssblock %}
+{% endblock %}
+
+{% block menubarcontent %}
+    <link rel="stylesheet" href="{% static "css/cata.css" %}"/>
+{% endblock %}
+
+{% block maincontent %}
+    <div class="container-fluid">
+        <div class="row m-1">
+            <div class="card">
+                <div class="card-header section-header text-uppercase py-2 bg-white">
+                    <i class="fas fa-filter"></i> {% trans "Filteralternativ" %}
+                </div>
+                <div class="card-body p-1">
+                    <form id="filter-form">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="gene-input">{% trans "Gennamn" %}:</label>
+                                <input type="text" class="form-control form-control-sm" id="gene-input" name="gene"
+                                       placeholder="katG">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="variant-input">{% trans "Mutation" %}:</label>
+                                <input type="text" class="form-control form-control-sm" id="variant-input"
+                                       name="variant" placeholder="p.Cys538Gly">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="grade-select">{% trans "Grad" %}:</label>
+                                <select class="form-select form-select-sm" id="grade-select" name="grade">
+                                    <option value="">{% trans "Välj" %} {% trans "Grad" %}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="drugs-select">{% trans "Läkemedel" %}:</label>
+                                <select class="form-select form-select-sm" id="drug-select" name="drugs">
+                                    <option value="">{% trans "Välj" %} {% trans "Läkemedel" %}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="d-flex flex-row-reverse p-3">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-light" id="cls-form"><i
+                                            class="fas fa-broom"></i>
+                                        {% trans "Rensa" %}
+                                    </button>
+                                    <button type="button" class="btn btn-primary" id="search-btn"><i
+                                            class="fas fa-search"></i> {% trans "Sök" %}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <hr class="mt-1"/>
+                    <div class="row my-2">
+                        <table id="result-tbl" class="table table-sm text-sm table-main"
+                               data-search-align="left"
+                               data-toggle="table"
+                               data-click-to-select="true"
+                               data-pagination="true"
+                               data-page-size="10"
+                               data-id-field="id">
+                            <thead>
+                            <tr>
+                                <th data-field="action"></th>
+                                <th data-field="gene" data-sortable="True">{% trans "Gennamn" %}</th>
+                                <th data-field="variant" data-sortable="True">{% trans "Mutation" %}</th>
+                                <th data-field="drug" data-sortable="True">{% trans "Läkemedel" %}</th>
+                                <th data-field="grade_badge" data-sortable="True">{% trans "Grad" %}</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row m-1">
+            <div class="card">
+                <div class="card-header section-header text-uppercase py-2 bg-white">
+                    <i class="fas fa-sticky-note"></i> {% trans "detaljer om mutationer" %}
+                </div>
+                <div class="card-body p-1">
+                    <div class="container py-2">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+                            <div class="me-3">
+                                <span>{% trans "Mutation" %}:</span> <span class="dynamic-content fw-bold fst-italic"
+                                                             id="mutation-lbl">-</span>
+                            </div>
+                            <div class="me-3">
+                                <span>{% trans "Läkemedel" %}:</span> <span class="dynamic-content text-uppercase fw-bold fst-italic"
+                                                         id="drug-lbl">-</span>
+                            </div>
+                            <div class="me-3">
+                                <span>{% trans "WHO grad" %}:</span> <span class="dynamic-content"
+                                                                    id="grade-lbl">-</span>
+                            </div>
+                            <div class="me-3">
+                                <span>{% trans "Förutsägelse" %}:</span> <span class="dynamic-content"
+                                                                     id="pred-lbl">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row my-2">
+                        <table id="muinfo-tbl" class="table table-sm text-sm text-center table-main"
+                               data-toggle="table"
+                               data-virtual-scroll="true"
+                               data-search-highlight="true"
+                               data-pagination="true"
+                               data-fixed-columns="true"
+                               data-fixed-number="3"
+                               data-page-size="25">
+
+                            <thead>
+                            <tr>
+                                <th data-field="effect" data-sortable="true">{% trans "Effekt" %}</th>
+                                <th data-field="ppv" data-sortable="true">PPV (%)</th>
+                                <th data-field="sens" data-sortable="true">Sensitivity (%)</th>
+                                <th data-field="spec" data-sortable="true">Specificity (%)</th>
+                                <th data-field="OR" data-sortable="true">Odd-Ratio</th>
+                                <th data-field="present_solo_r" data-sortable="true">Present Solo R</th>
+                                <th data-field="present_solo_s" data-sortable="true">Present Solo S</th>
+                                <th data-field="present_r" data-sortable="true">Present R</th>
+                                <th data-field="present_s" data-sortable="true">Present S</th>
+                                <th data-field="absent_r" data-sortable="true">Absent R</th>
+                                <th data-field="absent_s" data-sortable="true">Absent S</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="container">
+                            <div class="col-md-8">
+                                <div class="d-flex justify-content-between">
+                                    <h3>{% trans "Noteringar" %}</h3>
+                                    <div class="mb-3">
+                                        <button class="btn btn-primary" data-bs-toggle="modal"
+                                                data-bs-target="#noteModal">
+                                            <i class="fas fa-plus"></i> {% trans "Lägg till ny notering" %}</button>
+                                    </div>
+                                </div>
+                                <div id="empty_msg"><p class="text-center text-mutated"><i
+                                        class="fas fa-info-circle"></i>
+                                    {% trans "Inga noteringar att visa" %}
+                                </p></div>
+                                <div class="list-group" id="note-group">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block modalcontent %}
+    <div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog  modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-uppercase">
+                        <i class="fas fa-plus"></i> {% trans "ny notering" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pb-1">
+                    <div id="alertPlaceholder" style="display: none;">
+
+                    </div>
+                    <div class="row">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap text-muted">
+                            <div class="me-3">
+                                <span>{% trans "Mutation" %}:</span><span class="dynamic-content badge text-bg-light"
+                                                            id="mutation-dg-lbl">-</span>
+                            </div>
+                            <div class="me-3">
+                                <span>{% trans "Läkemedel" %}:</span><span class="dynamic-content badge text-bg-light text-uppercase"
+                                                        id="drug-dg-lbl">-</span>
+                            </div>
+                            <div class="me-3">
+                                <span>{% trans "WHO Grad" %}:</span>
+                                <span id="grade-dg-lbl" class="dynamic-content badge text-bg-light">-</span>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <hr>
+                    <form id="note-form">
+                        <div class="row mb-3">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <label for="pred-select"
+                                           class="form-label mb-0">{% trans "Föreslagit resultat" %}:</label>
+                                </div>
+                                <div class="col-2">
+                                    <select class="form-select form-select-sm" id="pred-dg-select" name="prediction">
+                                        <option value="S">S</option>
+                                        <option value="U">U</option>
+                                        <option value="R">R</option>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <span id="pred-dg-msg" class="text-dark" style="display: none;">
+                                        <i class="fas fa-lg fa-exclamation-triangle text-warning"></i>
+                                        {% trans "Mutationsresultaten skiljer sig från WHO katalog." %}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-8">
+
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label for="note-input" class="form-label">{% trans "Notering" %}:</label>
+                                <textarea class="form-control" id="note-input" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer p-1">
+                            <div class="row">
+                                <div class="d-flex flex-row-reverse">
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-light" id="cls-dg-form"><i
+                                                class="fas fa-broom"></i>
+                                            {% trans "Rensa" %}
+                                        </button>
+                                        <button type="button" class="btn btn-primary" id="save-btn">
+                                            <i class="far fa-save"></i> {% trans "Spara" %}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block jscontent %}
+    <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+    {% javascript 'catmgr_js' %}
+    <script src="{% static 'js/bootstrap-table-fixed-columns.min.js' %} "></script>
+{% endblock %}
+

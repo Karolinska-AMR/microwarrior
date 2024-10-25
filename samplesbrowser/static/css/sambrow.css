@@ -178,57 +178,6 @@ td {
     justify-content: space-between;
 }
 
-.pred-circle {
-    display: inline-block;
-    color: #fff;
-    border-radius: 50%;
-    font-size: 22px;
-    line-height: 30px; /* set to same size as width, height */
-    width: 30px;
-    height: 30px;
-    text-align: center;
-}
-
-.text-bg-r {
-    background-color: #dc3545 !important;
-}
-
-.text-bg-ri {
-    background-color: #FF407D !important;
-}
-
-.text-bg-u {
-    background-color: #ffc107 !important;
-}
-
-.text-bg-si {
-    background-color: #B6FFA1 !important;
-}
-
-.text-bg-s {
-    background-color: #4dd4ac !important;
-}
-
-.text-bg-o {
-    background-color: #adb5bd !important;
-}
-
-.border-left-ds {
-    border-left: .25rem solid #4dd4ac !important;
-}
-
-.border-left-r {
-    border-left: .25rem solid #dc3545 !important;
-}
-
-.border-left-u {
-    border-left: .25rem solid #ffc107 !important;
-}
-
-.border-left-o {
-    border-left: .25rem solid #adb5bd !important;
-}
-
 #mu_card .nav-item {
     cursor: pointer;
 }

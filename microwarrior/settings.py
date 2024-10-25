@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'dashboard',
     'iomanager',
     'flowrunner',
+    'catalogmanager'
 ]
 
 MIDDLEWARE = [
@@ -207,6 +208,14 @@ PIPELINE = {
                 'js/d3.v7.min.js',
                 'js/base.js',
                 'js/sambrow.js',
+            ),
+        },
+        'catmgr_js': {
+            'output_filename': 'js/catmgr.min.js',
+            'source_filenames': (
+                'js/d3.v7.min.js',
+                'js/base.js',
+                'js/cata.js',
             ),
         },
         'user_js': {

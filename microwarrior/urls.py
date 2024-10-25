@@ -29,4 +29,5 @@ urlpatterns = [
                   path('', include('dashboard.urls')),
                   path('iom/', include('iomanager.urls')),
                   path('', include('samplesbrowser.urls')),
+                  path('', include('catalogmanager.urls')),
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
