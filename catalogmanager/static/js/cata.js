@@ -43,7 +43,7 @@ $(document).ready(function () {
             });
 
             if (allFieldsEmpty) {
-                //search_alert(gettext('Vänligen fyll i minst ett fält.'));
+                show_message(gettext('Vänligen fyll i minst ett fält.'), "message-container");
 
             } else {
                 const result_tbl = document.getElementById('result-tbl');
@@ -51,6 +51,7 @@ $(document).ready(function () {
                 fetch_evidences(formData);
             }
         });
+
         $("#pred-dg-select").change(function () {
 
             var selprd = $(this).val();
@@ -65,6 +66,13 @@ $(document).ready(function () {
         $("#save-btn").click(function () {
             add_new_note();
         });
+        $("#cls-form").click(function () {
+            document.getElementById('filter-form').reset();
+            $("#result-tbl").bootstrapTable("removeAll");
+            reset_mu_details();
+            SEARCH_DATA = null;
+        });
+
     }
 
     function create_note_alert(d) {
@@ -246,7 +254,7 @@ $(document).ready(function () {
         };
 
         xhr.onerror = function () {
-            console.error('Network error');
+            show_message(gettext('Nätverksfel'), "message-container");
         };
 
         xhr.send();
@@ -263,11 +271,11 @@ $(document).ready(function () {
                 add_drug_names(data.drug_names);
                 add_grads(data.grades);
             } else {
-                console.error('Error fetching samples:', xhr.statusText);
+                show_message(gettext('Fel vid hämtning av metadata'), "message-container");
             }
         };
         xhr.onerror = function () {
-            console.error('Network error');
+            show_message(gettext('Nätverksfel'), "message-container");
         };
 
         xhr.send();
@@ -324,6 +332,7 @@ $(document).ready(function () {
                     }
                 }
                 reset_mu_details();
+                $("#detail-card").show();
                 $('html, body').animate({
                     scrollTop: $('#detail-card').offset().top
                 }, 500);
@@ -414,7 +423,9 @@ $(document).ready(function () {
     }
 
     function reset_mu_details() {
-        $('.dynamic-content').text('-');
+        SELECTED_MU_ID = -1;
+        $("#detail-card").hide();
+        $(".dynamic-content").text('-');
         $("#mutation-lbl").attr('data-muid', '-1');
         $("#muinfo-tbl").bootstrapTable('removeAll');
         $("#empty_msg").show()
@@ -450,6 +461,18 @@ $(document).ready(function () {
                 alert('An unexpected error occurred.');
             }
         });
+    }
+
+    function show_message(message, tag) {
+        $("#" + tag).html(`<div id="message-alert" class="text-danger fade show" role="alert">
+                             <i class="fas fa-exclamation-circle "></i> ${message}
+                                 </div>`).show();
+
+        setTimeout(function () {
+            const el = document.getElementById('message-alert');
+            var bsAlert = new bootstrap.Alert(el);
+            bsAlert.close();
+        }, 3000);
     }
 
     init();

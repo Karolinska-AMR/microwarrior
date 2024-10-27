@@ -24,12 +24,12 @@
                             <div class="col-md-3">
                                 <label for="gene-input">{% trans "Gennamn" %}:</label>
                                 <input type="text" class="form-control form-control-sm" id="gene-input" name="gene"
-                                       placeholder="katG">
+                                       placeholder="t.ex. katG">
                             </div>
                             <div class="col-md-3">
                                 <label for="variant-input">{% trans "Mutation" %}:</label>
                                 <input type="text" class="form-control form-control-sm" id="variant-input"
-                                       name="variant" placeholder="p.Cys538Gly">
+                                       name="variant" placeholder="t.ex. p.Cys538Gly">
                             </div>
 
                             <div class="col-md-3">
@@ -46,7 +46,10 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="d-flex flex-row-reverse p-3">
+                            <div class="d-flex justify-content-between p-3">
+                                <span></span>
+                                <div id="message-container" style="display: none;"></div>
+
                                 <div class="btn-group" role="group">
                                     <button type="button" class="btn btn-light" id="cls-form"><i
                                             class="fas fa-broom"></i>
@@ -56,6 +59,7 @@
                                             class="fas fa-search"></i> {% trans "Sök" %}
                                     </button>
                                 </div>
+
                             </div>
                         </div>
                     </form>
@@ -92,19 +96,20 @@
                         <div class="d-flex justify-content-between align-items-center flex-wrap">
                             <div class="me-3">
                                 <span>{% trans "Mutation" %}:</span> <span class="dynamic-content fw-bold fst-italic"
-                                                             id="mutation-lbl">-</span>
+                                                                           id="mutation-lbl">-</span>
                             </div>
                             <div class="me-3">
-                                <span>{% trans "Läkemedel" %}:</span> <span class="dynamic-content text-uppercase fw-bold fst-italic"
-                                                         id="drug-lbl">-</span>
+                                <span>{% trans "Läkemedel" %}:</span> <span
+                                    class="dynamic-content text-uppercase fw-bold fst-italic"
+                                    id="drug-lbl">-</span>
                             </div>
                             <div class="me-3">
-                                <span>{% trans "WHO grad" %}:</span> <span class="dynamic-content"
-                                                                    id="grade-lbl">-</span>
+                                <span>{% trans "WHO Grad" %}:</span> <span class="dynamic-content"
+                                                                           id="grade-lbl">-</span>
                             </div>
                             <div class="me-3">
                                 <span>{% trans "Förutsägelse" %}:</span> <span class="dynamic-content"
-                                                                     id="pred-lbl">-</span>
+                                                                               id="pred-lbl">-</span>
                             </div>
                         </div>
                     </div>
@@ -183,11 +188,12 @@
                         <div class="d-flex justify-content-between align-items-center flex-wrap text-muted">
                             <div class="me-3">
                                 <span>{% trans "Mutation" %}:</span><span class="dynamic-content badge text-bg-light"
-                                                            id="mutation-dg-lbl">-</span>
+                                                                          id="mutation-dg-lbl">-</span>
                             </div>
                             <div class="me-3">
-                                <span>{% trans "Läkemedel" %}:</span><span class="dynamic-content badge text-bg-light text-uppercase"
-                                                        id="drug-dg-lbl">-</span>
+                                <span>{% trans "Läkemedel" %}:</span><span
+                                    class="dynamic-content badge text-bg-light text-uppercase"
+                                    id="drug-dg-lbl">-</span>
                             </div>
                             <div class="me-3">
                                 <span>{% trans "WHO Grad" %}:</span>
