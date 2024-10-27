@@ -305,6 +305,13 @@ $(document).ready(function () {
             result_tbl.bootstrapTable("insertRow", {index: 0, row: m});
         });
 
+        if (Object.keys(data).length === 1) {
+            setTimeout(function () {
+                const tr_elm = $(`#result-tbl tr[data-index="0"]`);
+                tr_elm.trigger("click");
+            }, 500);
+
+        }
 
     }
 
@@ -315,8 +322,6 @@ $(document).ready(function () {
             const icon = tr_elm.find(".action-col i:first-child");
             if (icon.length) {
                 icon.removeClass("fa-circle").addClass("fa-arrow-alt-circle-right");
-            } else {
-                console.error("Icon element not found.");
             }
         }
 
@@ -326,11 +331,13 @@ $(document).ready(function () {
             let index = $(this).closest('tr').data('index');
 
             if (!selected_id) return;
+            console.log([selected_id, SELECTED_MU_ID]);
             if (selected_id !== SELECTED_MU_ID) {
                 const icons = document.querySelectorAll("#result-tbl .action-col svg:first-child");
                 let tid;
                 for (const icon of icons) {
                     tid = $(icon).closest("span").attr("data-id");
+                    console.log(tid);
                     if (tid === selected_id) {
                         $(icon).removeClass("fa-circle").addClass("fa-arrow-alt-circle-right");
                         $(icon).closest("tr").addClass("selected-row");
