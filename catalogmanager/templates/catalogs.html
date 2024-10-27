@@ -149,7 +149,7 @@
                                     <h3>{% trans "Noteringar" %}</h3>
                                     <div class="mb-3">
                                         <button class="btn btn-primary" data-bs-toggle="modal"
-                                                data-bs-target="#noteModal">
+                                                data-bs-target="#add-note-modal">
                                             <i class="fas fa-plus"></i> {% trans "Lägg till ny notering" %}</button>
                                     </div>
                                 </div>
@@ -171,7 +171,7 @@
 {% endblock %}
 
 {% block modalcontent %}
-    <div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel"
+    <div class="modal fade" id="add-note-modal" tabindex="-1" role="dialog"
          aria-hidden="true">
         <div class="modal-dialog  modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -231,25 +231,28 @@
                         </div>
                         <div class="row mb-3">
                             <div class="col-12">
-                                <label for="note-input" class="form-label">{% trans "Notering" %}:</label>
-                                <textarea class="form-control" id="note-input" rows="3"></textarea>
+                                <label for="note-dg-input" class="form-label">{% trans "Notering" %}:</label>
+                                <textarea class="form-control" id="note-dg-input" rows="3"></textarea>
                             </div>
                         </div>
-                        <div class="modal-footer p-1">
-                            <div class="row">
-                                <div class="d-flex flex-row-reverse">
-                                    <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-light" id="cls-dg-form"><i
-                                                class="fas fa-broom"></i>
-                                            {% trans "Rensa" %}
-                                        </button>
-                                        <button type="button" class="btn btn-primary" id="save-btn">
-                                            <i class="far fa-save"></i> {% trans "Spara" %}
-                                        </button>
-                                    </div>
+                        <hr>
+                        <div class="row">
+                            <div class="d-flex justify-content-between">
+
+                                <div id="message-dg-container" style="display: none;"></div>
+                                <span></span>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-light" id="cls-dg-form"><i
+                                            class="fas fa-broom"></i>
+                                        {% trans "Rensa" %}
+                                    </button>
+                                    <button type="button" class="btn btn-primary" id="save-dg-btn">
+                                        <i class="far fa-save"></i> {% trans "Spara" %}
+                                    </button>
                                 </div>
                             </div>
                         </div>
+
                     </form>
 
                 </div>

@@ -1,7 +1,7 @@
 $(document).ready(function () {
 
     var SEARCH_DATA;
-    var SELECTED_MU_ID;
+    var SELECTED_MU_ID, SELECTED_ROW_INDEX = -2;
 
     function init() {
         fetch_drgr();
@@ -63,20 +63,28 @@ $(document).ready(function () {
             }
         });
 
-        $("#save-btn").click(function () {
+        $("#save-dg-btn").click(function () {
+            $(this).prop("disabled", true);
             add_new_note();
         });
+        $('#add-note-modal').on('hidden.bs.modal', function () {
+            reset_add_modal();
+        });
+
         $("#cls-form").click(function () {
             document.getElementById('filter-form').reset();
             $("#result-tbl").bootstrapTable("removeAll");
             reset_mu_details();
             SEARCH_DATA = null;
         });
+        $("#cls-dg-form").click(function () {
+            reset_add_modal();
+        });
+
 
     }
 
     function create_note_alert(d) {
-        console.log(d)
         // Create the outermost div (alert-light)
         let alertDiv = document.createElement('div');
         alertDiv.className = "alert alert-light";
@@ -218,7 +226,6 @@ $(document).ready(function () {
     }
 
     function fetch_evidences(params, direct_import = false) {
-        console.log(params)
         let queryString = Object.entries(params).map(([k, v]) => `${k}=${v}`).join('&');
 
         var xhr = new XMLHttpRequest();
@@ -232,20 +239,6 @@ $(document).ready(function () {
                 const result_tbl = document.getElementById('result-tbl');
                 $(result_tbl).bootstrapTable('hideLoading');
                 document.getElementById('filter-form').reset();
-
-                // let infoArray = $.map(search_repo, function (value, key) {
-                //     return value.info;
-                // });
-                // if (infoArray.length === 0) {
-                //     search_alert(gettext('Inga matchningar hittades.'));
-                // }
-                // const search_tbl = document.getElementById('search-tbl');
-                // $(search_tbl).bootstrapTable('hideLoading');
-                // document.getElementById('searchForm').reset();
-                // update_search_tbl(infoArray);
-                // if (direct_import) {
-                //     $("#import-all").trigger("click");
-                // }
             } else {
                 const result_tbl = document.getElementById('result-tbl');
                 $(result_tbl).bootstrapTable('hideLoading');
@@ -316,8 +309,23 @@ $(document).ready(function () {
     }
 
     function connect_row_event() {
+        if (SELECTED_ROW_INDEX > -1) {
+            const tr_elm = $(`#result-tbl tr[data-index="${SELECTED_ROW_INDEX}"]`);
+            tr_elm.addClass("selected-row");
+            const icon = tr_elm.find(".action-col i:first-child");
+            if (icon.length) {
+                icon.removeClass("fa-circle").addClass("fa-arrow-alt-circle-right");
+            } else {
+                console.error("Icon element not found.");
+            }
+        }
+
         $("#result-tbl tbody tr").click(function () {
+
             let selected_id = $(this).find('.action-col').attr('data-id');
+            let index = $(this).closest('tr').data('index');
+
+            if (!selected_id) return;
             if (selected_id !== SELECTED_MU_ID) {
                 const icons = document.querySelectorAll("#result-tbl .action-col svg:first-child");
                 let tid;
@@ -340,13 +348,14 @@ $(document).ready(function () {
                     fill_details(selected_id);
                 }, 400);
                 SELECTED_MU_ID = selected_id;
+                SELECTED_ROW_INDEX = index;
             }
         });
     }
 
     function fill_details(id) {
-        const data = SEARCH_DATA[id];
 
+        const data = SEARCH_DATA[id];
         if (!data) {
             return; // Handle potential missing data
         }
@@ -367,7 +376,7 @@ $(document).ready(function () {
         $("#grade-dg-lbl").text($(gradeLabel).text());
 
         $("#pred-lbl").html(predIcon);
-        $("#pred-dg-select").val($(predIcon).text());
+        $("#pred-dg-select").val($(predIcon).text()).change();
 
         const muinfoTbl = $('#muinfo-tbl');
         data.OR = data.OR === -999 ? '&#8734;' : data.OR;
@@ -375,10 +384,14 @@ $(document).ready(function () {
 
         const noteGroup = $("#note-group");
         noteGroup.empty();
+        update_note_groups(data.notes, noteGroup);
 
-        if (data.notes.length > 0) {
+    }
+
+    function update_note_groups(notes, noteGroup) {
+        if (notes.length > 0) {
             $("#empty_msg").hide();
-            data.notes.forEach(note => noteGroup.append(create_note_alert(note)));
+            notes.forEach(note => noteGroup.append(create_note_alert(note)));
         } else {
             $("#empty_msg").show();
         }
@@ -424,6 +437,7 @@ $(document).ready(function () {
 
     function reset_mu_details() {
         SELECTED_MU_ID = -1;
+        SELECTED_ROW_INDEX = -2;
         $("#detail-card").hide();
         $(".dynamic-content").text('-');
         $("#mutation-lbl").attr('data-muid', '-1');
@@ -431,41 +445,97 @@ $(document).ready(function () {
         $("#empty_msg").show()
     }
 
-    function add_new_note() {
-        var formData = new FormData();
-        formData.append("prediction", $("#pred-dg-select").val());
-        formData.append("note", $("#note-input").val());
-        formData.append("mutation_id", $("#mutation-lbl").attr('data-muid'))
-        $.ajaxSetup({
-            // make sure to send the header
-            headers: {
-                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
-            }
-        });
-        $.ajax({
-            url: '/add-note/',
-            type: 'POST',
-            dataType: 'json',
-            cache: false,
-            processData: false,
-            contentType: false,
-            data: formData,
-            success: function (response) {
-                if (response.success) {
-                    alert(response.message);  // "Note saved successfully."
-                } else {
-                    alert('Error: ' + response.message);
-                }
-            },
-            error: function () {
-                alert('An unexpected error occurred.');
-            }
-        });
+    function reset_add_modal() {
+        let pred = $("#pred-lbl .pred-circle").text();
+        $("#pred-dg-select").val(pred).change();
+        $("#note-dg-input").val("");
+        $("#save-dg-btn").prop("disabled", false);
     }
 
-    function show_message(message, tag) {
-        $("#" + tag).html(`<div id="message-alert" class="text-danger fade show" role="alert">
-                             <i class="fas fa-exclamation-circle "></i> ${message}
+    function add_new_note() {
+
+        let note = $("#note-dg-input").val();
+        if (note === null || note.trim() === '') {
+            show_message(gettext('Vänligen ange text till noten.'), "message-dg-container");
+            $("#save-dg-btn").prop("disabled", false);
+        } else {
+            var formData = new FormData();
+            formData.append("prediction", $("#pred-dg-select").val());
+            formData.append("note", note);
+            formData.append("mutation_id", $("#mutation-lbl").attr('data-muid'));
+
+            $.ajaxSetup({
+                headers: {
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+                }
+            });
+            $.ajax({
+                url: '/add-note/',
+                type: 'POST',
+                dataType: 'json',
+                cache: false,
+                processData: false,
+                contentType: false,
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        add_note_local(response.note);
+                        show_message(gettext('Noten har sparats.'), "message-dg-container", type = "success");
+                        setTimeout(function () {
+                            $('#add-note-modal').modal('hide');
+                        }, 1000);
+
+                    } else {
+                        show_message(gettext('Ett oväntat fel inträffade.') + response.message, "message-dg-container");
+
+                        $("#save-dg-btn").prop("disabled", false);
+                    }
+                },
+                error: function () {
+                    show_message(gettext('Ett oväntat fel inträffade.'), "message-dg-container");
+                    $("#save-dg-btn").prop("disabled", false);
+                }
+            });
+        }
+    }
+
+    function add_note_local(data) {
+        const mutationData = SEARCH_DATA[data.mutation_id];
+        const isFirstNote = mutationData.notes.length === 0;
+
+        // Add new note at the beginning of notes array
+        mutationData.notes.unshift(data);
+
+        // Refresh the note group display
+        const noteGroup = $("#note-group").empty();
+        update_note_groups(mutationData.notes, noteGroup);
+
+        // Update table cell if it's the first note
+        if (isFirstNote) {
+            $("#result-tbl").bootstrapTable('updateCell', {
+                index: SELECTED_ROW_INDEX,
+                field: 'action',
+                value: `
+            <span class="action-col" data-id='${data.mutation_id}'>
+                <i class="fas text-white fa-lg fa-circle"></i>
+                <i class="fas fa-receipt"></i>
+            </span>`
+            });
+        }
+    }
+
+
+    function show_message(message, tag, type = 'error') {
+
+        let mpr = {
+            "error": {txt: "text-danger", ico: 'fa-exclamation-circle'},
+            "warning": {txt: "text-warning", ico: "fa-exclamation-triangle"},
+            "success": {txt: "text-success", ico: "fa-check-circle"}
+        }
+
+
+        $("#" + tag).html(`<div id="message-alert" class="${mpr[type].txt} fade show" role="alert">
+                             <i class="fas ${mpr[type].ico}"></i> ${message}
                                  </div>`).show();
 
         setTimeout(function () {
@@ -476,4 +546,5 @@ $(document).ready(function () {
     }
 
     init();
-});
+})
+;

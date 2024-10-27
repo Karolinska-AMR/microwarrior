@@ -62,7 +62,7 @@ def fetch_evidence(request):
         ptr = data[evi.id]["notes"]
         notes = evi.ev_notes.filter(is_del=False).order_by('-last_edit')
         for note in notes:
-            ptr.append({"id":note.id,"note": note.note, "prediction": note.prediction,
+            ptr.append({"id": note.id, "note": note.note, "prediction": note.prediction,
                         "last_edit": note.last_edit,
                         "author": f"{note.author.first_name} {note.author.last_name}"})
 
@@ -76,8 +76,6 @@ def add_note(request):
     note_content = request.POST.get('note')
     prediction = request.POST.get('prediction')
     mutation_id = request.POST.get('mutation_id')
-
-
 
     if not prediction or not mutation_id:
         return JsonResponse({'success': False, 'message': 'Prediction, mutation, and author are required fields.'})
@@ -105,7 +103,14 @@ def add_note(request):
             is_del=False
         )
         note.save()
-        return JsonResponse({'success': True, 'message': 'Note saved successfully.'})
+
+        snote = Note.objects.get(id=note.id)
+
+        return JsonResponse(
+            {'success': True, 'message': 'Note saved successfully.',
+             "note": {"id": snote.id,"mutation_id": snote.mutation_id, "note": snote.note, "prediction": snote.prediction,
+                      "last_edit": snote.last_edit,
+                      "author": f"{snote.author.first_name} {snote.author.last_name}"}})
     except Exception as e:
         # Handle any errors that occur during saving
         return JsonResponse({'success': False, 'message': f'An error occurred while saving the note: {str(e)}'})
