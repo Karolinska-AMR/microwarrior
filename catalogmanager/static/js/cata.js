@@ -111,7 +111,7 @@ $(document).ready(function () {
 
         // Create the user info section
         let userInfoDiv = document.createElement('div');
-        userInfoDiv.classList.add('d-flex', 'justify-content-end', 'align-items-center', 'flex-wrap','fs-small');
+        userInfoDiv.classList.add('d-flex', 'justify-content-end', 'align-items-center', 'flex-wrap', 'fs-small');
 
         let editDateDiv = document.createElement('div');
         editDateDiv.classList.add('me-3');
@@ -220,7 +220,6 @@ $(document).ready(function () {
             if (xhr.status >= 200 && xhr.status < 300) {
                 // Parse the response JSON
                 SEARCH_DATA = JSON.parse(xhr.responseText);
-                console.log(SEARCH_DATA);
                 fill_mutation(SEARCH_DATA);
                 const result_tbl = document.getElementById('result-tbl');
                 $(result_tbl).bootstrapTable('hideLoading');
@@ -299,7 +298,8 @@ $(document).ready(function () {
         const result_tbl = $('#result-tbl');
         result_tbl.bootstrapTable("removeAll");
         $.each(data, function (k, m) {
-            m.action = `<span class="action-col" data-id='${k}'><i class="fas fa-lg fa-arrow-alt-circle-down"></i><span>`
+            let note_icon = m.notes.length > 0 ? '<i class="fas fa-receipt"></i>' : '';
+            m.action = `<span class="action-col" data-id='${k}'><i class="fas text-white fa-lg fa-circle"></i> ${note_icon}<span>`
             m.grade_badge = add_grade_badge(m.grade, "text-dark");
             result_tbl.bootstrapTable("insertRow", {index: 0, row: m});
         });
@@ -311,19 +311,22 @@ $(document).ready(function () {
         $("#result-tbl tbody tr").click(function () {
             let selected_id = $(this).find('.action-col').attr('data-id');
             if (selected_id !== SELECTED_MU_ID) {
-                const icons = document.querySelectorAll("#result-tbl .action-col svg");
+                const icons = document.querySelectorAll("#result-tbl .action-col svg:first-child");
                 let tid;
                 for (const icon of icons) {
                     tid = $(icon).closest("span").attr("data-id");
                     if (tid === selected_id) {
-                        $(icon).removeClass("fa-arrow-alt-circle-down").addClass("fa-arrow-alt-circle-right");
+                        $(icon).removeClass("fa-circle").addClass("fa-arrow-alt-circle-right");
                         $(icon).closest("tr").addClass("selected-row");
                     } else {
-                        $(icon).removeClass("fa-arrow-alt-circle-right").addClass("fa-arrow-alt-circle-down");
+                        $(icon).removeClass("fa-arrow-alt-circle-right").addClass("fa-circle");
                         $(icon).closest("tr").removeClass("selected-row");
                     }
                 }
                 reset_mu_details();
+                $('html, body').animate({
+                    scrollTop: $('#detail-card').offset().top
+                }, 500);
                 setTimeout(function () {
                     fill_details(selected_id);
                 }, 400);

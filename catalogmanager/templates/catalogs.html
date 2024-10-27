@@ -39,7 +39,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <label for="drugs-select">{% trans "Läkemedel" %}:</label>
+                                <label for="drug-select">{% trans "Läkemedel" %}:</label>
                                 <select class="form-select form-select-sm" id="drug-select" name="drugs">
                                     <option value="">{% trans "Välj" %} {% trans "Läkemedel" %}</option>
                                 </select>
@@ -83,7 +83,7 @@
             </div>
         </div>
         <div class="row m-1">
-            <div class="card">
+            <div class="card" id="detail-card">
                 <div class="card-header section-header text-uppercase py-2 bg-white">
                     <i class="fas fa-sticky-note"></i> {% trans "detaljer om mutationer" %}
                 </div>
@@ -202,7 +202,7 @@
                         <div class="row mb-3">
                             <div class="row align-items-center">
                                 <div class="col-auto">
-                                    <label for="pred-select"
+                                    <label for="pred-dg-select"
                                            class="form-label mb-0">{% trans "Föreslagit resultat" %}:</label>
                                 </div>
                                 <div class="col-2">
