@@ -331,13 +331,11 @@ $(document).ready(function () {
             let index = $(this).closest('tr').data('index');
 
             if (!selected_id) return;
-            console.log([selected_id, SELECTED_MU_ID]);
             if (selected_id !== SELECTED_MU_ID) {
                 const icons = document.querySelectorAll("#result-tbl .action-col svg:first-child");
                 let tid;
                 for (const icon of icons) {
                     tid = $(icon).closest("span").attr("data-id");
-                    console.log(tid);
                     if (tid === selected_id) {
                         $(icon).removeClass("fa-circle").addClass("fa-arrow-alt-circle-right");
                         $(icon).closest("tr").addClass("selected-row");

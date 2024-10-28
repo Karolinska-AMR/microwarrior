@@ -216,25 +216,6 @@
 {% block modalcontent %}
     <div id="tooltip" class="bg-secondary border rounded border-1 border-secondary"
          style="position: absolute; opacity: 0; pointer-events: none;">
-
-    </div>
-
-    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="exampleModalLabel" style="display: none;"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">{% trans "Klar att avsluta?" %}</h5>
-                </div>
-                <div class="modal-body">{% trans "Din nuvarande session kommer att avslutas." %}<br/>
-                    <small class="text-muted">{% trans "Om du håller på att ladda upp filer, säkerställ att dina jobb har skickats in helt innan du loggar ut." %}</small>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">{% trans "Avbryt" %}</button>
-                    <a class="btn btn-primary" href="{% url "logout" %}">{% trans "Fortsätt" %}</a>
-                </div>
-            </div>
-        </div>
     </div>
     <div class="modal fade" id="logmodal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -267,7 +248,8 @@
             </div>
         </div>
 
-    </div> {% endblock %}
+    </div>
+{% endblock %}
 {% block jscontent %}
     <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
     {% javascript 'dashboard_js' %}

@@ -396,26 +396,7 @@
                 </div>
             </div>
         </div>
-    <div class="modal fade" id="logoutModal" tabindex="-1" style="display: none;"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                </div>
-                <div class="modal-body">
-                    Your current session will be terminated.<br/>
-                    <small class="text-muted"> If you are in the process of uploading files, please ensure that your
-                        jobs
-                        have been fully submitted before proceeding with the logout.</small>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="{% url "logout" %}">Proceed</a>
-                </div>
-            </div>
-        </div>
-    </div>
+
 {% endblock %}
 
 {% block jscontent %}
