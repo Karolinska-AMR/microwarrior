@@ -108,9 +108,30 @@ def add_note(request):
 
         return JsonResponse(
             {'success': True, 'message': 'Note saved successfully.',
-             "note": {"id": snote.id,"mutation_id": snote.mutation_id, "note": snote.note, "prediction": snote.prediction,
+             "note": {"id": snote.id, "mutation_id": snote.mutation_id, "note": snote.note,
+                      "prediction": snote.prediction,
                       "last_edit": snote.last_edit,
                       "author": f"{snote.author.first_name} {snote.author.last_name}"}})
+    except Exception as e:
+        # Handle any errors that occur during saving
+        return JsonResponse({'success': False, 'message': f'An error occurred while saving the note: {str(e)}'})
+
+
+def del_note(request):
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Invalid request method. Only POST requests are allowed.'})
+
+    note_id = request.POST.get("note_id")
+    if not note_id:
+        return JsonResponse({"success": False, "message": "Note ID is required"}, status=400)
+    try:
+        note = Note.objects.get(id=note_id)
+        note.is_del = True
+        note.save()
+
+        return JsonResponse({"success": True, "message": "Note marked as deleted.",
+                             "note": {"note_id": note.id, "mutation_id": note.mutation_id}})
+
     except Exception as e:
         # Handle any errors that occur during saving
         return JsonResponse({'success': False, 'message': f'An error occurred while saving the note: {str(e)}'})
