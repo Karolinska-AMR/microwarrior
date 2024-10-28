@@ -127,6 +127,7 @@ def del_note(request):
     try:
         note = Note.objects.get(id=note_id)
         note.is_del = True
+        note.last_edit = timezone.now()
         note.save()
 
         return JsonResponse({"success": True, "message": "Note marked as deleted.",
