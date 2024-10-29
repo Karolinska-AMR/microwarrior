@@ -100,7 +100,8 @@ def add_note(request):
             note=note_content,
             prediction=prediction,
             author=author,
-            is_del=False
+            is_del=False,
+            action="created"
         )
         note.save()
 
@@ -128,10 +129,56 @@ def del_note(request):
         note = Note.objects.get(id=note_id)
         note.is_del = True
         note.last_edit = timezone.now()
+        note.author = request.user
+        note.action = 'deleted'
         note.save()
 
         return JsonResponse({"success": True, "message": "Note marked as deleted.",
                              "note": {"note_id": note.id, "mutation_id": note.mutation_id}})
+
+    except Exception as e:
+        # Handle any errors that occur during saving
+        return JsonResponse({'success': False, 'message': f'An error occurred while saving the note: {str(e)}'})
+
+
+def edit_note(request):
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Invalid request method. Only POST requests are allowed.'})
+
+    note_id = request.POST.get("note_id")
+    prediction = request.POST.get("prediction")
+    note_content = request.POST.get("note")
+
+    if not note_id:
+        return JsonResponse({"success": False, "message": "Note ID is required"}, status=400)
+    try:
+        # archive the note
+        enote = Note.objects.get(id=note_id)
+        enote.last_edit = timezone.now()
+        enote.is_del = True
+        enote.action = 'edit_to'
+        enote.save()
+
+        mutation = Evidence.objects.get(id=enote.mutation_id)
+        author = request.user
+
+        # create a new one
+        note = Note.objects.create(
+            mutation=mutation,
+            last_edit=timezone.now(),
+            note=note_content,
+            prediction=prediction,
+            author=author,
+            action='edit',
+            is_del=False
+        )
+        note.save()
+        return JsonResponse({"success": True, "message": "Note marked as deleted.",
+                             "note": {"id": note.id, "oid": enote.id, "mutation_id": note.mutation_id,
+                                      "note": note.note,
+                                      "prediction": note.prediction,
+                                      "last_edit": note.last_edit,
+                                      "author": f"{note.author.first_name} {note.author.last_name}"}})
 
     except Exception as e:
         # Handle any errors that occur during saving

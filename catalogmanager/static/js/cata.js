@@ -62,11 +62,20 @@ $(document).ready(function () {
                 $("#pred-dg-msg").show();
             }
         });
+        $("#add-note-btn").click(function (event) {
+            add_onclick(event);
+        });
+        $("#edit-dg-btn").click(function (event) {
+            let noteid = $(this).closest(".modal").data('noteid');
+            $(this).prop("disabled", true);
+            post_edit_note(noteid);
+        });
 
         $("#save-dg-btn").click(function () {
             $(this).prop("disabled", true);
             post_add_note();
         });
+
         $('#add-note-modal').on('hidden.bs.modal', function () {
             reset_add_modal();
         });
@@ -221,17 +230,33 @@ $(document).ready(function () {
         return $.inArray(p, ['r', 'u', 's']) !== -1 ? 'text-bg-' + p : 'text-bg-o';
     }
 
+    function add_onclick(event) {
+
+        $("#save-btn-group").show();
+        $("#edit-btn-group").hide();
+        $("#ad-modal-title").html(`<i class="fas fa-plus"></i> ${gettext("ny notering")}</h5>`);
+        let pred = $("#pred-lbl .pred-circle").text();
+        $("#pred-dg-select").val(pred).change();
+        $("#add-note-modal").data('noteid', '').modal('show');
+    }
+
     function edit_onclick(event) {
         const id = $(this).data('noteid');
 
         $("#save-btn-group").hide();
         $("#edit-btn-group").show();
+        $("#edit-dg-btn").prop("disabled", false);
         $("#ad-modal-title").html(`<i class="fas fa-edit"></i> ${gettext("Ändra notering")}</h5>`);
+
+
+        const idx = SEARCH_DATA[SELECTED_MU_ID].notes.findIndex(item => item.id === id);
+        const note = SEARCH_DATA[SELECTED_MU_ID].notes[idx];
+
+        $("#pred-dg-select").val(note.prediction).change();
+        $("#note-dg-input").val(note.note);
+
+
         $("#add-note-modal").data('noteid', id).modal('show');
-
-
-
-
     }
 
     function del_onclick(event) {
@@ -482,7 +507,7 @@ $(document).ready(function () {
             var formData = new FormData();
             formData.append("prediction", $("#pred-dg-select").val());
             formData.append("note", note);
-            formData.append("mutation_id", $("#mutation-lbl").attr('data-muid'));
+            formData.append("mutation_id", SELECTED_MU_ID);
 
             $.ajaxSetup({
                 headers: {
@@ -608,6 +633,67 @@ $(document).ready(function () {
         }
 
 
+    }
+
+    function post_edit_note(note_id) {
+
+        let note = $("#note-dg-input").val();
+        if (note === null || note.trim() === '') {
+            show_message(gettext('Vänligen ange text till noten.'), "ad-message-dg-container");
+            $("#edit-dg-btn").prop("disabled", false);
+        } else {
+            var formData = new FormData();
+            formData.append("prediction", $("#pred-dg-select").val());
+            formData.append("note", note);
+            formData.append("note_id", note_id);
+            formData.append("mutation_id", SELECTED_MU_ID);
+
+            $.ajaxSetup({
+                headers: {
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+                }
+            });
+            $.ajax({
+                url: '/edit-note/',
+                type: 'POST',
+                dataType: 'json',
+                cache: false,
+                processData: false,
+                contentType: false,
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        edit_note_onpage(response.note);
+                        show_message(gettext('Noten har sparats.'), "ad-message-dg-container", type = "success");
+                        setTimeout(function () {
+                            $('#add-note-modal').modal('hide');
+                        }, 1000);
+
+                    } else {
+                        show_message(gettext('Ett oväntat fel inträffade.') + response.message, "ad-message-dg-container");
+                        $("#edit-dg-btn").prop("disabled", false);
+                    }
+                },
+                error: function () {
+                    show_message(gettext('Ett oväntat fel inträffade.'), "ad-message-dg-container");
+                    $("#edit-dg-btn").prop("disabled", false);
+                }
+            });
+        }
+    }
+
+    function edit_note_onpage(note) {
+        const mutationData = SEARCH_DATA[note.mutation_id];
+        let idx = mutationData.notes.findIndex(item => item.id === note.oid);
+        if (idx !== -1) {
+            mutationData.notes.splice(idx, 1);
+        }
+        mutationData.notes.unshift(note);
+
+
+        // Refresh the note group display
+        const noteGroup = $("#note-group").empty();
+        update_note_groups(mutationData.notes, noteGroup);
     }
 
     function show_message(message, tag, type = 'error', timer = 3000) {

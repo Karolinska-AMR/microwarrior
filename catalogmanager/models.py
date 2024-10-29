@@ -7,6 +7,6 @@ class Note(models.Model):
     last_edit = models.DateTimeField()
     note = models.CharField(max_length=500, null=True, blank=True)
     prediction = models.CharField(max_length=10)
-    author= models.ForeignKey(User,on_delete=models.SET_NULL,null=True,related_name='usr_notes')
+    author = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,related_name='usr_notes')
     is_del = models.BooleanField(default=False)
-
+    action = models.CharField(max_length=10,null=True)
