@@ -128,14 +128,6 @@ table .badge {
 
 }
 
-.text-pattern-r {
-    background: linear-gradient(45deg, #dc3545 40%, transparent 60%);
-    background-size: 2px 2px;
-    -webkit-background-clip: text;
-    color: transparent;
-    background-clip: text;
-}
-
 td {
     white-space: nowrap;
 }

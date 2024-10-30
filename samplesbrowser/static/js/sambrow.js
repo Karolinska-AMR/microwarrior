@@ -47,7 +47,7 @@ $(document).ready(function () {
         $(window).resize(adjust_viewbar);
 
         let tables = ['lin-tbl', 'mu-who-tbl', 'mu-tbp-tbl', 'mu-cryp-tbl', 'umu-tbl', 'meta-tbl', 'search-tbl'];
-        let table_type= (name)=> name.startsWith('search')?'table-modal':'table-main';
+        let table_type = (name) => name.startsWith('search') ? 'table-modal' : 'table-main';
 
         tables.forEach((tn) => {
             const tbl = document.getElementById(tn);
@@ -56,7 +56,7 @@ $(document).ready(function () {
                 formatNoMatches: function () {
                     return `<i class="fas fa-info"></i> ${gettext("Inga data att visa.")}`;
                 },
-                classes: "table table-sm text-sm table-hover table-striped " + table_type(tn) ,
+                classes: "table table-sm text-sm table-hover table-striped " + table_type(tn),
                 onResetView: function (e) {
                     var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
                     var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
@@ -360,7 +360,7 @@ $(document).ready(function () {
             } else {
                 update_page(sid);
             }
-        }, 500);
+        }, 100);
     }
 
     function sample_pin_clicked(event) {
@@ -686,7 +686,7 @@ $(document).ready(function () {
             cardBody.append(`<h5 class="mt-2 text-center text-muted">${v.title}</h5>`)
             names = v.drugs
             for (let index = 0; index < names.length; index++) {
-                if (index % 2 == 0) {
+                if (index % 2 === 0) {
                     if (index > 0) {
                         cardBody.append(active_row);
                     }
@@ -739,7 +739,7 @@ $(document).ready(function () {
 
         // Create the pred-circle
         var predCircle = document.createElement("div");
-        predCircle.className = "pred-circle text-capitalize text-bg-o";
+        predCircle.className = "pred-circle text-capitalize shadow-text text-bg-o";
         predCircle.id = `${dname}-predcircle`
         predCircle.textContent = "?";
         iconCircle.appendChild(predCircle);
@@ -801,14 +801,14 @@ $(document).ready(function () {
         var horizontalLine = document.createElement("hr");
         horizontalLine.className = "m-1";
         container.appendChild(horizontalLine);
+        cardBodyInner.append(container);
 
         // Create the notes paragraph
         var notesParagraph = document.createElement("p");
         notesParagraph.className = "my-1 text-center fs-6 fw-bold";
-        notesParagraph.textContent = gettext("Anteckningar");
-        container.appendChild(notesParagraph);
+        notesParagraph.textContent = gettext("Noteringar");
+        cardBodyInner.appendChild(notesParagraph);
 
-        cardBodyInner.append(container);
 
         // Create the notes div
         var notesDiv = document.createElement("div");
@@ -823,11 +823,13 @@ $(document).ready(function () {
         let who_cat;
         let prds = data.predictions;
         let muts = data.mutations;
-        Object.keys(prds[Object.keys(prds)[0]]).forEach(function (cat, _) {
+        data.catalogues.forEach(function (cat, _) {
             if (cat.startsWith('WHO')) {
                 who_cat = cat;
             }
         });
+
+        //TODO: Check if WHO passed, Don't show S for all
 
         $.each(WHO_Drugs, function (idx, dname) {
             let card = document.getElementById(`${dname}-card`);
@@ -846,40 +848,47 @@ $(document).ready(function () {
             let key = dname.toUpperCase();
 
             let dprd = 'N';
+            let source;
             if (key in prds) {
-                dprd = prds[key][who_cat];
+                dprd = prds[key]['prediction'];
+                source = prds[key]['source'];
+                add_mutations_notes(mu_notes_tag, muts[key][who_cat]);
             }
 
             if (dprd === 'R') {
                 $(card).addClass('border-left-r');
-                $(circle_icon).addClass('text-bg-r');
+                $(circle_icon).addClass(source.startsWith('cata') ? 'text-bg-r' : "text-outlined-r");
                 $(info_header).show();
                 $(circle_icon).text(dprd);
+                if (source.startsWith('notes')) {
+                    $(circle_icon).parent().append(`<sub class="fw-bold text-muted"> ${gettext("Enligt Noteringar")}</sub>`);
+                }
                 add_mu_badges(mu_badges_tag, muts[key][who_cat]);
-                add_notes(mu_notes_tag, []);
+
             } else if (dprd === 'U') {
                 $(card).addClass('border-left-ds');
-                $(circle_icon).addClass('text-bg-s');
+                $(circle_icon).addClass(source.startsWith('cata') ? 'text-bg-s' : "text-outlined-s");
                 $(circle_icon).text('S');
                 $(info_header).hide();
-                $(info_icon).prepend('<span class="u-icon">U</span>');
-                add_notes(mu_notes_tag, [{
-                    'title': "",
-                    "text": gettext("Mutationer med osäker signifikans hittades. Se tabellen nedan för mer information.")
-                }])
+                $(info_icon).prepend('<span class="u-icon shadow-text">U</span> ');
+
+            } else if (dprd === 'K') {
+                $(card).addClass('border-left-k');
+                $(circle_icon).addClass('text-bg-k blinking-text');
+                $(info_header).show();
+                $(circle_icon).text('!');
+                $(circle_icon).parent().append(`<sub class="fw-bold text-muted"> ${gettext("Motstridiga Noteringar")}</sub>`);
+                add_mu_badges(mu_badges_tag, muts[key][who_cat]);
+
             } else if (dprd === 'N' || !dprd) {
                 $(card).addClass('border-left-ds');
                 $(circle_icon).addClass('text-bg-s');
                 $(circle_icon).text('S');
                 $(info_header).hide();
-                let note_txt = !dprd ? gettext('Inga mutationer associerade med resistens eller osäker signifikans från') +
-                    `<em>${who_cat}</em> ` + gettext('katalog hittades.') :
-                    gettext('Inga mutationer associerade med resistens eller osäker signifikans från några kataloger hittades.');
-                add_notes(mu_notes_tag, [{
-                    'title': "",
-                    "text": note_txt
-                }])
+
             }
+            add_comments(mu_notes_tag, dprd)
+
 
         });
     }
@@ -891,12 +900,18 @@ $(document).ready(function () {
         });
         cardBody.find('.pred-circle').each(function () {
             $(this).text('-');
+            $(this).parent().find('sub').remove();
+
             $(this).closest('.card').removeClass(function (index, className) {
                 return (className.match(/(^|\s)border-left\S+/g) || []).join(' ');
             }).addClass("border-left-o");
-            $(this).removeClass(function (index, className) {
-                return (className.match(/(^|\s)text-bg\S+/g) || []).join(' ');
-            }).addClass("text-bg-o");
+
+            this.classList.forEach((cl) => {
+                if(cl.startsWith("text-bg") || cl.startsWith("text-out") || cl.startsWith('blinking')){
+                    $(this).removeClass(cl);
+                }
+            })
+            $(this).addClass("text-bg-o");
         });
 
         cardBody.find('.info-icons').each(function () {
@@ -919,20 +934,155 @@ $(document).ready(function () {
         });
     }
 
-    function add_notes(ptag, notes) {
-        if (notes.length === 0) {
-            $(ptag).append(`<span class="text-center fw-light-lighter fs-6">${gettext("Inga anteckningar.")}</span>`)
-        } else {
-            notes.forEach(function (note) {
-                $(ptag).append(`
-                            <div class="alert alert-light border fw-light mb-1 mx-1" role="alert">
-                                <h6 class="alert-heading">${note.title}</h6>
-                                <p class="mb-1">${note.text}</p>
-                            </div>`)
-            });
-        }
+    function add_comments(ptag, type) {
+        const comments = {
+            'U': gettext("Mutationer med osäker signifikans hittades. Se tabellen nedan för mer information."),
+            'S': gettext("Inga mutationer associerade med resistens eller osäker signifikans från WHO katalog hittades."),
+            '': gettext("Inga mutationer associerade med resistens eller osäker signifikans från några kataloger hittades.")
+        };
+
+        if (type === 'R') return;
+
+        const comment = comments[type] || comments[''];
+        $(ptag).prepend(`<p class="mx-2 my-1"><i class="fas fa-info-circle text-info"></i> <span class="text-muted">${comment}</span></p>`);
     }
 
+    function add_mutations_notes(ptag, mutations) {
+        if (!mutations) return;
+
+        let has_note = false;
+        mutations.forEach(function (m) {
+            if (m.notes.length > 0) {
+                has_note = true;
+            }
+            m.notes.forEach(function (note) {
+                $(ptag).append(create_note_alert(m.mutation, m.cat_pred, note));
+            })
+        });
+        if (!has_note) {
+            $(ptag).append(`<span class="text-center fw-light-lighter fs-6 fst-italic">${gettext("Inga sparade noteringar.")}</span>`)
+        } else {
+            let icon_info = $(ptag).closest('.card').find('.card-header .info-icons');
+            icon_info.prepend('<i class="fas fa-lg fa-receipt text-info"></i> ');
+        }
+
+    }
+
+    function get_pred_bg(p) {
+        p = p.toLowerCase();
+        return $.inArray(p, ['r', 'u', 's']) !== -1 ? 'text-bg-' + p : 'text-bg-o';
+    }
+
+    function get_pred_txt(p) {
+        p = p.toLowerCase();
+        return $.inArray(p, ['r', 'u', 's']) !== -1 ? 'text-' + p : 'text-dark';
+    }
+
+    function create_note_alert(mu, pred, d) {
+        // Create the outermost div (alert-light)
+        let alertDiv = document.createElement('div');
+        alertDiv.className = "alert alert-light p-1 mx-2 my-1";
+
+        // Create the alert heading div
+        let alertHeadingDiv = document.createElement('h6');
+        alertHeadingDiv.className = "alert-heading text-center";
+        $(alertHeadingDiv).html(`<strong>${mu}</strong> [<small class="${get_pred_txt(pred)}">${pred}</small>]`);
+        // alertHeadingDiv.setAttribute("style","font-size:0.7rem");
+        // Create the first inner div with buttons and user info
+        let innerDiv1 = document.createElement('div');
+        innerDiv1.classList.add('d-flex', 'justify-content-between');
+        innerDiv1.setAttribute("style", "font-size:0.7rem");
+
+        // Create the user info section
+        let userInfoDiv = document.createElement('div');
+        userInfoDiv.classList.add('d-flex', 'justify-content-end', 'align-items-center', 'flex-wrap', 'fs-small');
+
+        let editDateDiv = document.createElement('div');
+        editDateDiv.classList.add('me-3');
+        let editDateLabel = document.createElement('span');
+        editDateLabel.innerText = `${gettext('Redigerades på')}: `;
+        let editDateValue = document.createElement('span');
+        editDateValue.classList.add('fst-italic');
+        editDateValue.id = 'date-lbl';
+        editDateValue.innerText = d.last_edit;
+
+        editDateDiv.appendChild(editDateLabel);
+        editDateDiv.appendChild(editDateValue);
+
+        let editedByDiv = document.createElement('div');
+        editedByDiv.classList.add('me-3');
+        let editedByLabel = document.createElement('span');
+        editedByLabel.innerText = `${gettext('Av')}: `;
+        let editedByValue = document.createElement('span');
+        editedByValue.classList.add('text-uppercase', 'fst-italic');
+        editedByValue.id = 'usr-lbl';
+        editedByValue.innerText = d.author;
+
+        editedByDiv.appendChild(editedByLabel);
+        editedByDiv.appendChild(editedByValue);
+
+        // Append user info to the user info div
+        userInfoDiv.appendChild(editDateDiv);
+        userInfoDiv.appendChild(editedByDiv);
+
+        // Append button group and user info to the first inner div
+        innerDiv1.appendChild(userInfoDiv);
+
+        // Append first inner div to the alert heading
+
+        // alertHeadingDiv.appendChild(innerDiv1);
+
+        // Create the <hr> separator
+        let hr1 = document.createElement('hr');
+        hr1.className = "my-1"
+
+        let hr2 = document.createElement('hr');
+        hr2.className = "my-1"
+        // Create the row for note and predicted outcome
+        let rowDiv = document.createElement('div');
+        rowDiv.classList.add('row');
+
+        // Create the note column
+        let noteCol = document.createElement('div');
+        noteCol.classList.add('col-9');
+        let noteText = document.createElement('p');
+        noteText.classList.add('text-dark');
+        noteText.id = 'note-text';
+        noteText.innerText = gettext(d.note);
+        noteCol.appendChild(noteText);
+
+        // Create the prediction column
+        let predCol = document.createElement('div');
+        predCol.classList.add('col-3');
+
+        let predTitle = document.createElement('h6');
+        predTitle.classList.add('text-center', 'text-capitalize');
+        let strongTitle = document.createElement('strong');
+        strongTitle.innerText = `${gettext('föreslagit resultat')}:`;
+        predTitle.appendChild(strongTitle);
+
+
+        let predCircle = document.createElement('div');
+        predCircle.className = 'pred-circle text-capitalize d-flex ' + get_pred_bg(d.prediction) +
+            ' justify-content-center align-items-center mx-auto';
+        predCircle.id = 'note-pred';
+        predCircle.innerText = d.prediction;
+
+        predCol.appendChild(predTitle);
+        predCol.appendChild(predCircle);
+
+        // Append columns to the row
+        rowDiv.appendChild(noteCol);
+        rowDiv.appendChild(predCol);
+
+        // Append everything to the main alert div
+        alertDiv.appendChild(alertHeadingDiv);
+        alertDiv.appendChild(hr1);
+        alertDiv.appendChild(rowDiv);
+        alertDiv.appendChild(hr2);
+        alertDiv.appendChild(innerDiv1);
+        return alertDiv
+    }
 
     init();
 

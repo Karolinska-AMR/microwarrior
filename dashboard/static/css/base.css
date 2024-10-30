@@ -537,7 +537,6 @@ body {
 }
 
 .text-ds {
-
     color: #4dd4ac;
 }
 
@@ -611,18 +610,34 @@ body {
     color: #fff;
     border-radius: 50%;
     font-size: 22px;
-    line-height: 30px; /* set to same size as width, height */
+    line-height: 31px;
     width: 30px;
     height: 30px;
     text-align: center;
 }
 
+.shadow-text {
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+.text-outlined-r {
+    color:#dc3545 ;
+    background-clip: text;
+}
+.text-outlined-s {
+    color:#4dd4ac ;
+    background-clip: text;
+}
 .text-bg-r {
     background-color: #dc3545 !important;
+
 }
 
 .text-bg-ri {
     background-color: #FF407D !important;
+}
+
+.text-bg-k {
+    background-color: #FF0000 !important;
 }
 
 .text-bg-u {
@@ -647,6 +662,10 @@ body {
 
 .border-left-r {
     border-left: .25rem solid #dc3545 !important;
+}
+
+.border-left-k {
+    border-left: .25rem dotted #FF0000 !important;
 }
 
 .border-left-u {
@@ -716,9 +735,11 @@ button, label {
     color: #16365f;
     font-weight: 600;
 }
+
 .table-main th {
     background-color: #f8f9fa;
 }
+
 .table-modal th {
     background-color: #f8f9fa;
     font-family: 'lato', sans-serif;
@@ -726,4 +747,23 @@ button, label {
     font-weight: 700;
 }
 
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
 
+.blinking-text {
+    text-align: center;
+    margin-top: 20%;
+    font-size: 24px;
+    color: white;
+    animation: blink 1.5s infinite;
+    margin: auto;
+}

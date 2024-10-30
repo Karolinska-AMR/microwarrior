@@ -1,14 +1,15 @@
 from itertools import chain
 
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count
+from django.db.models import Prefetch
 from django.db.models import Q
 from django.db.models.functions import ExtractWeek, ExtractYear
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 
-from .models import Sample, Evidence, Mutation, Drug, Meta
+from catalogmanager.models import Note
+from .models import Sample, Evidence, Drug, Meta
 
 
 @login_required
@@ -118,17 +119,19 @@ def fetch_mutations(request):
             Sample.objects.prefetch_related('s_mutations__drug', 's_umutations__variant__drug'),
             id=id)
 
-        catalogs = list(Meta.objects.filter(type__exact='catalog').values_list('name').distinct())
         data = {"mutations": {},
-                "unverified_mutations": [], "evidence": {}, "qc": {}, 'predictions': {}}
+                "unverified_mutations": [], "evidence": {}, "qc": {}, 'predictions': {}, 'catalogues': set()}
 
         ptr_mu = data["mutations"]
+        ptr_prd = data["predictions"]
         for mu in sample.s_mutations.all():
             cat = mu.catalog
+            data['catalogues'].add(cat)
             if mu.prediction in ['R', 'U']:
                 drug = mu.drug.name
                 if drug not in ptr_mu:
                     ptr_mu[drug] = {}
+
                 if cat not in ptr_mu[drug]:
                     ptr_mu[drug][cat] = []
 
@@ -140,29 +143,49 @@ def fetch_mutations(request):
                     "drug": drug,
                     "cat_pred": mu.prediction,
                     "note_pred": None,
+                    "notes": [],
                     'format': ['HGSV', 'GARC1'][cat.startswith('CRyPTIC')]
                 }
                 if cat.startswith('WHO'):
-                    # if mu.drug.name not in ptr_ev:
-                    #     ptr_ev[mu.drug.name] = []
-                    evi = Evidence.objects.filter(name=cat, gene=mu.gene, variant=mu.variant,
-                                                  drug_id=mu.drug.id).first()
-                    if evi is not None:
-                        tmp_mu = { **tmp_mu, **{'evi_id': evi.id,
+                    # just for the WHO catalogue
+                    if drug not in ptr_prd:
+                        ptr_prd[drug] = {}
 
-                              'ppv': evi.ppv,
-                              'OR': evi.odd_ratio,
-                              'sens': evi.sensitivity,
-                              'spec': evi.specificity,
-                              'present_solo_r': evi.present_solo_r,
-                              'present_solo_s': evi.present_solo_s,
-                              'present_r': evi.present_r,
-                              'present_s': evi.present_s,
-                              'absent_r': evi.absent_r,
-                              'absent_s': evi.absent_s,
-                              'grade': evi.grade,
-                              'effect': evi.effect, }}
+                    evi = Evidence.objects.filter(name=cat, gene=mu.gene, variant=mu.variant,
+                                                  drug_id=mu.drug.id).prefetch_related(
+                        Prefetch('ev_notes', queryset=Note.objects.filter(is_del=False))
+                    ).first()
+
+                    if evi is not None:
+                        ptr_prd[drug][evi.id] = {'catalog': None, "notes": []}
+                        tptr = ptr_prd[drug][evi.id]
+                        tptr['catalog'] = evi.prediction
+                        # Fetch notes
+                        notes = []
+                        for note in evi.ev_notes.all():
+                            notes.append({"id": note.id,
+                                          "note": note.note,
+                                          "prediction": note.prediction,
+                                          "last_edit": note.last_edit,
+                                          "author": f"{note.author.first_name} {note.author.last_name}"})
+                            tptr['notes'].append(note.prediction)
+
+                        tmp_mu = {**tmp_mu, **{'evi_id': evi.id,
+                                               'ppv': evi.ppv,
+                                               'OR': evi.odd_ratio,
+                                               'sens': evi.sensitivity,
+                                               'spec': evi.specificity,
+                                               'present_solo_r': evi.present_solo_r,
+                                               'present_solo_s': evi.present_solo_s,
+                                               'present_r': evi.present_r,
+                                               'present_s': evi.present_s,
+                                               'absent_r': evi.absent_r,
+                                               'absent_s': evi.absent_s,
+                                               'grade': evi.grade,
+                                               'effect': evi.effect,
+                                               'notes': notes, }}
                     else:
+                        ptr_prd[drug][f'{mu.gene}@{mu.variant}'] = {'catalog': mu.prediction, "notes": []}
                         print(mu.variant)
 
                 ptr_mu[drug][cat].append(tmp_mu)
@@ -188,7 +211,11 @@ def fetch_mutations(request):
                                     'grade': evi.grade,
                                     "pred": evi.prediction,
                                     'effect': evi.effect})
-        data['predictions'] = get_ensemble_prediction(id)
+
+        # data['predictions'] = get_ensemble_prediction(id)
+        for drug, predictions in data['predictions'].items():
+            data['predictions'][drug] = merge_predictions(predictions)
+        data['catalogues'] = list(data['catalogues'])
         sample_data[id] = data
     return JsonResponse(sample_data)
 
@@ -199,33 +226,36 @@ def get_meta():
     return {'catalogs': catalogs, 'drugs': drugs}
 
 
-def get_ensemble_prediction(sample_id):
-    queryset = Mutation.objects.filter(
-        sample_id=sample_id,
-        prediction__in=['R', 'U']
-    ).values(
-        'catalog',
-        'drug__name',
-        'prediction'
-    ).annotate(
-        count=Count('id')
-    )
-    data = {}
-    for item in queryset:
-        drg = item['drug__name']
-        cat_name = item['catalog']
-        pred = item['prediction']
+def merge_predictions(predictions):
+    has_R = False
+    has_U = False
+    for content in predictions.values():
+        catalog_pred = content["catalog"]
+        notes = content["notes"]
+        # At least one R mutation with no or aligning notes
+        if catalog_pred == "R":
+            has_R = True
+            if len(notes)==0 or all(note not in ["U", "S"] for note in notes):
+                return {"prediction": "R", "source": "catalogue"}
 
-        if drg not in data:
-            data[drg] = {c[0]: None for c in Meta.objects.filter(type='catalog').values_list('name').distinct()}
-            data[drg]['final_pred'] = None
+    # there is a contradictory R prediction
+    if has_R:
+        return {"prediction": "K", "source": "note"}
 
-        if pred == 'R':
-            data[drg][cat_name] = 'R'
-            data[drg]['final_pred'] = 'R'
-        elif pred == 'U':
-            if data[drg][cat_name] != 'R':
-                data[drg][cat_name] = 'U'
-            if data[drg]['final_pred'] != 'R':
-                data[drg]['final_pred'] = 'U'
-    return data
+    for content in predictions.values():
+        catalog_pred = content["catalog"]
+        notes = content["notes"]
+        # no R and at least one U with notes indicating R
+        if catalog_pred == "U":
+            has_U = True
+            if len(notes)>0 and all(note not in ["U", "S"] for note in notes):
+                return {"prediction": "R", "source": "notes"}
+
+    pred = 'K'
+    if has_R:
+        pred = 'R'
+    elif has_U:
+        pred = 'U'
+
+    return {"prediction": pred, "source": "catalogue"}
+
