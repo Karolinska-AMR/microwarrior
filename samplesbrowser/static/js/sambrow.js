@@ -603,13 +603,13 @@ $(document).ready(function () {
             <span class="table-info" tabindex="0" 
                 data-bs-toggle="popover" data-bs-trigger="hover focus" 
                 data-bs-content="${msg}" data-bs-title="${titleText}" data-bs-html="true">
-                <span class="badge ${bg_cl}">${(freq * 100).toFixed(1)}%</span> 
+                <span class="badge ${bg_cl}">${(freq * 100).toFixed(1)}</span> 
                 <i class="fas fa-exclamation-triangle text-warning"></i>
             </span>`;
         }
 
         // Return badge without popover for higher frequencies
-        return `<span class="badge ${bg_cl}">${(freq * 100).toFixed(1)}%</span>`;
+        return `<span class="badge ${bg_cl}">${(freq * 100).toFixed(1)}</span>`;
     }
 
 
