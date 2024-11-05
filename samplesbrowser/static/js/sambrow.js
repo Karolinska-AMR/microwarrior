@@ -169,12 +169,6 @@ $(document).ready(function () {
 
         });
 
-        let cardBody = document.querySelector("#pred_card .card-body");
-        cardBody.addEventListener('dblclick', function (event) {
-            document.querySelectorAll('.collapse').forEach(collapse => $(collapse).collapse('hide'));
-            event.stopPropagation();
-        });
-
         $("#mu_card .nav-item").on("click", function (event) {
             $("#mu_card .nav-link").removeClass('active');
             let navlink = $(this).find('.nav-link')
@@ -491,8 +485,6 @@ $(document).ready(function () {
         // Data shortcuts
         let data = repo[sid];
 
-        console.log(data);
-
         reset_predictions(); // in case of double-click or delay in fetching data clean the prediction
 
 
@@ -612,8 +604,7 @@ $(document).ready(function () {
         return `<span class="badge ${bg_cl}">${(freq * 100).toFixed(1)}</span>`;
     }
 
-
-    function get_grade_badge(d) {
+    function get_grade_badge(d, oclass = "") {
         // No grade available
         if (!d.grade) {
             const msg = `<span class='text-muted'>${gettext("Ingen exakt matchning för mutationen hittades i WHO:s katalog. Förutspådd funktionell påverkan: funktionsförlust")}</span>`;
@@ -626,19 +617,18 @@ $(document).ready(function () {
                  ${content} <i class="fas fa-info-circle text-info"></i></span>`;
 
             if (d.cat_pred === 'U') {
-                d.grade_icon = `<span class="badge text-bg-u fst-italic text-muted">3. ${gettext("Osäker signifikans")}</span>`;
+                d.grade_icon = `<span class="badge text-bg-u fst-italic text-muted ${oclass}">3. ${gettext("Osäker signifikans")}</span>`;
                 d.effect = popoverContent('LOF');
             } else if (d.cat_pred === 'R') {
-                d.grade_icon = `<span class="badge text-bg-r fst-italic text-muted">1. ${gettext("Associerad med resistens")}</span>`;
+                d.grade_icon = `<span class="badge text-bg-r fst-italic text-muted ${oclass}">1. ${gettext("Associerad med resistens")}</span>`;
                 d.effect = popoverContent('LOF');
             } else {
-                d.grade_icon = `<span class="badge text-bg-o">${d.cat_pred}</span>`;
+                d.grade_icon = `<span class="badge text-bg-o ${oclass}">${d.cat_pred}</span>`;
             }
 
             return d;
         }
 
-        // Grade is available
         const gradeClasses = {
             '1': "text-bg-r",
             '2': "text-bg-ri",
@@ -646,19 +636,23 @@ $(document).ready(function () {
             '4': "text-bg-si",
             '5': "text-bg-s"
         };
-
         const gradeKey = Object.keys(gradeClasses).find(key => d.grade.startsWith(key)) || 'default';
 
-        d.grade = d.grade.startsWith('1') ? "1. " + gettext("Associerad med resistens") :
-            d.grade.startsWith('2') ? "2. " + gettext("Associerad med resistens-interim") :
-                d.grade.startsWith('3') ? "3. " + gettext("Osäker signifikans") :
-                    d.grade.startsWith('4') ? "4. " + gettext("Känslig-interim") :
-                        d.grade.startsWith('5') ? "5. " + gettext("Känslig") : null;
-
-        d.grade_icon = `<span class="badge ${gradeClasses[gradeKey] || ''}">${gettext(d.grade)}</span>`;
+        d.grade = trans_grades(d.grade);
+        d.grade_icon = `<span class="badge ${gradeClasses[gradeKey] || ''} ${oclass}">${gettext(d.grade)}</span>`;
         d.effect = d.effect;  // Assuming d.effect is already defined
 
         return d;
+    }
+
+    function trans_grades(g) {
+        if (!g) return null;
+        return g.startsWith('1') ? "1. " + gettext("Associerad med resistens") :
+            g.startsWith('2') ? "2. " + gettext("Associerad med resistens-interim") :
+                g.startsWith('3') ? "3. " + gettext("Osäker signifikans") :
+                    g.startsWith('4') ? "4. " + gettext("Känslig-interim") :
+                        g.startsWith('5') ? "5. " + gettext("Känslig") : null;
+
     }
 
     function fill_unverified_mu(mutations) {
@@ -694,6 +688,7 @@ $(document).ready(function () {
                     active_row.className = "row";
                 }
                 active_row.append(create_drug_card(names[index]));
+                create_drug_tabs(names[index]);
             }
             cardBody.append(active_row);
         });
@@ -819,10 +814,136 @@ $(document).ready(function () {
 
     }
 
+    function create_drug_tabs(dname, active = false) {
+
+        dname = dname.toLowerCase();
+        const listItem = $('<li></li>');
+        const navLinkDiv = $('<div>', {
+            class: 'nav-link d-flex justify-content-between',
+            'aria-controls': 'home',
+            'data-bs-target': `#${dname}-content`,
+            role: 'tab',
+            'data-bs-toggle': 'tab',
+            type: 'button'
+        });
+
+        const drugName = $('<span>', {
+            class: 'pt-1',
+            text: dname
+        });
+
+        const iconsContainer = $('<div>', {
+            class: 'icons-container'
+        });
+
+        const predCircle = $('<span>', {
+            class: 'pred-circle ml-2 text-capitalize shadow-text text-bg-o',
+            id: `${dname}-predicon`,
+            text: '-'
+        });
+
+        iconsContainer.append(predCircle);
+        navLinkDiv.append(drugName, iconsContainer);
+        listItem.append(navLinkDiv);
+
+        $('#drug-list').append(listItem);
+
+        const tabPanel = $('<div>', {
+            role: 'tabpanel',
+            class: 'tab-pane fade',
+            tabindex: 0,
+            id: `${dname}-content`
+        });
+
+        const tabHeader = $('<div>', {
+            class: 'tab-header d-flex justify-content-between align-items-center'
+        });
+
+        const drugHeader = $('<h3>', {
+            class: 'text-uppercase',
+            text: dname
+        });
+
+        const predictionHeader = $('<h5>', {
+            class: 'text-pred text-o',
+            text: '-'
+        });
+
+
+        tabHeader.append(drugHeader, predictionHeader);
+
+
+        const panelBody = $('<div>', {
+            class: 'panel-body'
+        });
+        const messageContainer = $('<div>', {
+            class: 'messages-container'
+        });
+        const messageHeader = $('<div>', {
+            class: 'within-title',
+            text: gettext("Meddelanden")
+        });
+        const messageBody = $('<div>', {
+            class: 'messages-body'
+
+        });
+        const meBodyContainer = $('<div>', {
+            class: 'container-lg'
+        });
+        messageBody.append(meBodyContainer);
+        messageContainer.append(messageHeader, messageBody);
+
+        const mutationContainer = $('<div>', {
+            class: 'mutations-container'
+        });
+        const mutationHeader = $('<div>', {
+            class: 'within-title',
+            text: gettext("Resistansmutationer")
+        });
+
+        const mutationBody = $('<div>', {
+            class: 'mutations-body'
+
+        });
+        const muBodyContainer = $('<div>', {
+            class: 'container d-flex justify-content-evenly'
+
+        });
+        mutationBody.append(muBodyContainer);
+        mutationContainer.append(mutationHeader, mutationBody);
+
+        const notesContainer = $('<div>', {
+            class: 'notes-container'
+        });
+        const notesHeader = $('<div>', {
+            class: 'within-title',
+            text: gettext("noteringar")
+        });
+
+        const notesBody = $('<div>', {
+            class: 'notes-body'
+
+        });
+        const noBodyContainer = $('<div>', {
+            class: 'container-lg'
+        });
+        notesBody.append(noBodyContainer);
+        notesContainer.append(notesHeader, notesBody);
+
+
+        panelBody.append(messageContainer, mutationContainer, notesContainer);
+
+        tabPanel.append(tabHeader, panelBody);
+
+        $('#drug-content').append(tabPanel);
+
+    }
+
     function update_predictions(data) {
         let who_cat;
         let prds = data.predictions;
         let muts = data.mutations;
+        let msgs = data.messages;
         data.catalogues.forEach(function (cat, _) {
             if (cat.startsWith('WHO')) {
                 who_cat = cat;
@@ -832,19 +953,22 @@ $(document).ready(function () {
         //TODO: Check if WHO passed, Don't show S for all
 
         $.each(WHO_Drugs, function (idx, dname) {
-            let card = document.getElementById(`${dname}-card`);
-            let circle_icon = document.getElementById(`${dname}-predcircle`);
-            let info_icon = document.getElementById(`${dname}-info`);
-            let info_header = $(card).find('.info-header-cont');
-            let mu_badges_tag = $(card).find('.mubadges');
-            let mu_notes_tag = $(card).find('.notes');
+            const card = $(`#${dname}-card`);
+            const pred_icon = $(`#${dname}-predicon`);
+            const content_h5 = $(`#${dname}-content .tab-header h5`);
 
-            $(card).removeClass(function (index, className) {
-                return (className.match(/(^|\s)border-left\S+/g) || []).join(' ');
-            });
-            $(circle_icon).removeClass(function (index, className) {
+            const muBody = $(`#${dname}-content .panel-body .mutations-body .container`);
+            const noBody = $(`#${dname}-content .panel-body .notes-body .container-lg`);
+            const meBody = $(`#${dname}-content .panel-body .messages-body .container-lg`);
+
+            content_h5.removeClass(function (index, className) {
+                return (className.match(/(^|\s)text-\S+/g) || []).join(' ')
+            }).addClass('text-pred');
+
+            $(pred_icon).removeClass(function (index, className) {
                 return (className.match(/(^|\s)text-bg\S+/g) || []).join(' ');
             });
+
             let key = dname.toUpperCase();
 
             let dprd = 'N';
@@ -852,103 +976,121 @@ $(document).ready(function () {
             if (key in prds) {
                 dprd = prds[key]['prediction'];
                 source = prds[key]['source'];
-                add_mutations_notes(mu_notes_tag, muts[key][who_cat]);
+                add_mutations_notes(noBody, muts[key][who_cat]);
+            } else {
+                add_mutations_notes(noBody, null);
+                add_messages(meBody, [{
+                    "text": gettext("Inga mutationer associerade med resistens eller osäker signifikans från WHO katalog hittades."),
+                    type: "info"
+                }]);
+            }
+            if (key in msgs) {
+                add_messages(meBody, msgs[key]);
             }
 
+
             if (dprd === 'R') {
-                $(card).addClass('border-left-r');
-                $(circle_icon).addClass(source.startsWith('cata') ? 'text-bg-r' : "text-outlined-r");
-                $(info_header).show();
-                $(circle_icon).text(dprd);
-                if (source.startsWith('notes')) {
-                    $(circle_icon).parent().append(`<sub class="fw-bold text-muted"> ${gettext("Enligt Noteringar")}</sub>`);
-                }
-                add_mu_badges(mu_badges_tag, muts[key][who_cat]);
+
+                $(pred_icon).addClass(source.startsWith('cata') ? 'text-bg-r' : "text-outlined-r");
+                $(pred_icon).text('R');
+                content_h5.text(gettext("resistant"));
+                content_h5.addClass('text-r');
+                add_resisance_mutations(muBody, muts[key][who_cat]);
+
 
             } else if (dprd === 'U') {
                 $(card).addClass('border-left-ds');
-                $(circle_icon).addClass(source.startsWith('cata') ? 'text-bg-s' : "text-outlined-s");
-                $(circle_icon).text('S');
-                $(info_header).hide();
-                $(info_icon).prepend('<span class="u-icon shadow-text">U</span> ');
+                $(pred_icon).addClass(source.startsWith('cata') ? 'text-bg-s' : "text-outlined-s");
+                $(pred_icon).text('S');
+                $(pred_icon).parent().prepend('<span class="u-icon shadow-text">U</span> ');
 
-            } else if (dprd === 'K') {
-                $(card).addClass('border-left-k');
-                $(circle_icon).addClass('text-bg-k blinking-text');
-                $(info_header).show();
-                $(circle_icon).text('!');
-                $(circle_icon).parent().append(`<sub class="fw-bold text-muted"> ${gettext("Motstridiga Noteringar")}</sub>`);
-                add_mu_badges(mu_badges_tag, muts[key][who_cat]);
+                content_h5.text(gettext("känslig"));
+                content_h5.addClass('text-s');
+                muBody.append(`<p class="empty-info text-dark my-2 text-capitalize"><i class="fas fa-info-circle"></i> ${gettext("inga resistensmutationer hittades")}</p>`);
+
+            } else if (dprd === 'F') {
+                $(pred_icon).addClass('text-bg-k pulse-text');
+                $(pred_icon).text('!');
+                content_h5.text(gettext("inte övertygande"));
+                content_h5.addClass('text-o');
+
+                add_resisance_mutations(muBody, muts[key][who_cat]);
+
 
             } else if (dprd === 'N' || !dprd) {
-                $(card).addClass('border-left-ds');
-                $(circle_icon).addClass('text-bg-s');
-                $(circle_icon).text('S');
-                $(info_header).hide();
+                $(pred_icon).addClass('text-bg-s');
+                $(pred_icon).text('S');
+                content_h5.text(gettext("känslig"));
+                content_h5.addClass('text-s');
+                muBody.append(`<p class="empty-info text-dark my-2 text-capitalize"><i class="fas fa-info-circle"></i> ${gettext("inga resistensmutationer hittades.")}</p>`);
 
             }
-            add_comments(mu_notes_tag, dprd)
 
 
         });
     }
 
     function reset_predictions() {
-        let cardBody = $("#pred_card .card-body");
-        cardBody.find('.collapse').each(function () {
-            $(this).collapse('hide');
-        });
-        cardBody.find('.pred-circle').each(function () {
-            $(this).text('-');
-            $(this).parent().find('sub').remove();
 
-            $(this).closest('.card').removeClass(function (index, className) {
-                return (className.match(/(^|\s)border-left\S+/g) || []).join(' ');
-            }).addClass("border-left-o");
+        //     reset list headers
 
-            this.classList.forEach((cl) => {
-                if(cl.startsWith("text-bg") || cl.startsWith("text-out") || cl.startsWith('blinking')){
-                    $(this).removeClass(cl);
-                }
-            })
-            $(this).addClass("text-bg-o");
-        });
-
-        cardBody.find('.info-icons').each(function () {
+        $("#drug-list .icons-container").each(function () {
             $(this).children().not(":last-child").remove();
+            $(this).find('.pred-circle').removeClass(function (index, className) {
+                return (className.match(/(^|\s)(pulse\S*|text-outlined\S*|text-bg\S*)/g) || []).join(' ');
+            }).addClass('text-bg-o').text('-');
         });
-        cardBody.find('.mubadges').each(function () {
-            $(this).children().remove();
-        });
-        cardBody.find('.notes').each(function () {
-            $(this).children().remove();
-        });
+        // reset panel-content
+
+        $('.panel-body .empty-info').remove();
+        $('.panel-body .mutations-body .container').empty();
+        $('.panel-body .notes-body .container-lg').empty();
+        $('.panel-body .messages-body .container-lg').empty();
 
     }
 
-    function add_mu_badges(ptag, mutations) {
+    function add_resisance_mutations(ptag, mutations) {
+
         mutations.forEach(function (m) {
             if (m.cat_pred === 'R') {
-                $(ptag).append(`<span class="badge text-bg-light text-danger fw-light fs-6 mx-1">${m.mutation}</span>`);
+                $(ptag).append(`<div class="card my-1 p-1">
+                                     <div class="d-flex flex-column text-center mx-1">
+                                        <span class="fs-6 fw-semibold text-r">${m.mutation}</span>
+                                        <small class="text-muted">${m.effect ? m.effect : "-"}</small>
+                                        <small class="text-primary fw-semibold">${m.grade ? trans_grades(m.grade) : gettext("Associerad med resistens")}</small>
+                                     </div>
+                               </div>`);
             }
         });
     }
 
-    function add_comments(ptag, type) {
-        const comments = {
-            'U': gettext("Mutationer med osäker signifikans hittades. Se tabellen nedan för mer information."),
-            'S': gettext("Inga mutationer associerade med resistens eller osäker signifikans från WHO katalog hittades."),
-            '': gettext("Inga mutationer associerade med resistens eller osäker signifikans från några kataloger hittades.")
+    function add_messages(ptag, messages) {
+        function sortByType(a, b) {
+            const types = ['info', 'warning', 'danger'];
+            return types.indexOf(a.type) - types.indexOf(b.type);
+        }
+
+        messages.sort(sortByType);
+        const icons = {
+            'info': '<i class="fas fa-lg fa-info-circle text-info"></i>',
+            'warning': '<i class="fas fa-lg fa-exclamation-triangle text-warning"></i>',
+            'danger': '<i class="fas fa-lg fa-exclamation-circle text-danger"></i>',
+            '': '<i class="fas fa-lg fa-question-circle text-secondary"></i>',
         };
+        messages.forEach(function (m) {
+            const icon = icons[m.type] || icons[''];
+            const anim = m.type === 'danger' ? "alert-danger-highlight" : "";
+            $(ptag).prepend(`<div class="alert alert-${m.type} ${anim} d-flex align-items-center my-1 py-1" role="alert">
+                          <span>${icon} ${m.text}</span></div>`);
+        });
 
-        if (type === 'R') return;
-
-        const comment = comments[type] || comments[''];
-        $(ptag).prepend(`<p class="mx-2 my-1"><i class="fas fa-info-circle text-info"></i> <span class="text-muted">${comment}</span></p>`);
     }
 
     function add_mutations_notes(ptag, mutations) {
-        if (!mutations) return;
+        if (!mutations) {
+            $(ptag).append(`<p class="empty-info text-dark my-2 text-center text-capitalize"><i class="fas fa-info-circle"></i> ${gettext("Inga sparade noteringar.")}</p>`);
+            return;
+        }
 
         let has_note = false;
         mutations.forEach(function (m) {
@@ -956,14 +1098,17 @@ $(document).ready(function () {
                 has_note = true;
             }
             m.notes.forEach(function (note) {
-                $(ptag).append(create_note_alert(m.mutation, m.cat_pred, note));
+                $(ptag).append(create_note_card(m.mutation, m.grade, note));
             })
         });
         if (!has_note) {
-            $(ptag).append(`<span class="text-center fw-light-lighter fs-6 fst-italic">${gettext("Inga sparade noteringar.")}</span>`)
+            $(ptag).append(`<p class="empty-info text-dark my-2 text-center text-capitalize"><i class="fas fa-info-circle"></i> ${gettext("Inga sparade noteringar.")}</p>`);
         } else {
-            let icon_info = $(ptag).closest('.card').find('.card-header .info-icons');
-            icon_info.prepend('<i class="fas fa-lg fa-receipt text-info"></i> ');
+            let id = $(ptag).closest('.tab-pane').attr('id');
+            if (id) {
+                let drug = id.split('-')[0];
+                $(`#${drug}-predicon`).parent().prepend('<i class="fas fa-lg fa-receipt text-info"></i> ');
+            }
         }
 
     }
@@ -978,110 +1123,34 @@ $(document).ready(function () {
         return $.inArray(p, ['r', 'u', 's']) !== -1 ? 'text-' + p : 'text-dark';
     }
 
-    function create_note_alert(mu, pred, d) {
-        // Create the outermost div (alert-light)
-        let alertDiv = document.createElement('div');
-        alertDiv.className = "alert alert-light p-1 mx-2 my-1";
+    function create_note_card(mu, grade, note) {
 
-        // Create the alert heading div
-        let alertHeadingDiv = document.createElement('h6');
-        alertHeadingDiv.className = "alert-heading text-center";
-        $(alertHeadingDiv).html(`<strong>${mu}</strong> [<small class="${get_pred_txt(pred)}">${pred}</small>]`);
-        // alertHeadingDiv.setAttribute("style","font-size:0.7rem");
-        // Create the first inner div with buttons and user info
-        let innerDiv1 = document.createElement('div');
-        innerDiv1.classList.add('d-flex', 'justify-content-between');
-        innerDiv1.setAttribute("style", "font-size:0.7rem");
+        const d = get_grade_badge({"grade": grade}, 'shadow-text');
+        const pred_class = get_pred_bg(note.prediction);
+        return $(`
+        <div class="card mb-2 shadow-sm">
+            <!-- Card Header with Mutation Title -->
+            <div class="card-header d-flex justify-content-between text-primary py-1 px-2">
+                <h6 class="mb-0 mutation-title">${mu}</h6>
+                ${d.grade_icon}
+            </div>
 
-        // Create the user info section
-        let userInfoDiv = document.createElement('div');
-        userInfoDiv.classList.add('d-flex', 'justify-content-end', 'align-items-center', 'flex-wrap', 'fs-small');
+            <!-- Card Body with Note Content and Suggested Prediction -->
+            <div class="card-body py-2 px-3">
+                <p class="note-content mb-2">${note.note}</p>
+                <div class="suggested-prediction text-dark small">
+                    Föreslagen Prediktion: <span class="pred-circle ml-2 text-capitalize shadow-text ${pred_class}">${note.prediction}</span>
+                </div>
+            </div>
 
-        let editDateDiv = document.createElement('div');
-        editDateDiv.classList.add('me-3');
-        let editDateLabel = document.createElement('span');
-        editDateLabel.innerText = `${gettext('Redigerades på')}: `;
-        let editDateValue = document.createElement('span');
-        editDateValue.classList.add('fst-italic');
-        editDateValue.id = 'date-lbl';
-        editDateValue.innerText = d.last_edit;
+            <!-- Card Footer with User Info and Last Edit Date -->
+            <div class="card-footer d-flex justify-content-between align-items-center py-1 px-2">
+                <span class="user-name small text-muted"><i class="bi bi-person-circle"></i> ${note.author}</span>
+                <small class="text-muted">Redigerad: ${note.last_edit}</small>
+            </div>
+        </div>
+    `);
 
-        editDateDiv.appendChild(editDateLabel);
-        editDateDiv.appendChild(editDateValue);
-
-        let editedByDiv = document.createElement('div');
-        editedByDiv.classList.add('me-3');
-        let editedByLabel = document.createElement('span');
-        editedByLabel.innerText = `${gettext('Av')}: `;
-        let editedByValue = document.createElement('span');
-        editedByValue.classList.add('text-uppercase', 'fst-italic');
-        editedByValue.id = 'usr-lbl';
-        editedByValue.innerText = d.author;
-
-        editedByDiv.appendChild(editedByLabel);
-        editedByDiv.appendChild(editedByValue);
-
-        // Append user info to the user info div
-        userInfoDiv.appendChild(editDateDiv);
-        userInfoDiv.appendChild(editedByDiv);
-
-        // Append button group and user info to the first inner div
-        innerDiv1.appendChild(userInfoDiv);
-
-        // Append first inner div to the alert heading
-
-        // alertHeadingDiv.appendChild(innerDiv1);
-
-        // Create the <hr> separator
-        let hr1 = document.createElement('hr');
-        hr1.className = "my-1"
-
-        let hr2 = document.createElement('hr');
-        hr2.className = "my-1"
-        // Create the row for note and predicted outcome
-        let rowDiv = document.createElement('div');
-        rowDiv.classList.add('row');
-
-        // Create the note column
-        let noteCol = document.createElement('div');
-        noteCol.classList.add('col-9');
-        let noteText = document.createElement('p');
-        noteText.classList.add('text-dark');
-        noteText.id = 'note-text';
-        noteText.innerText = gettext(d.note);
-        noteCol.appendChild(noteText);
-
-        // Create the prediction column
-        let predCol = document.createElement('div');
-        predCol.classList.add('col-3');
-
-        let predTitle = document.createElement('h6');
-        predTitle.classList.add('text-center', 'text-capitalize');
-        let strongTitle = document.createElement('strong');
-        strongTitle.innerText = `${gettext('föreslagit resultat')}:`;
-        predTitle.appendChild(strongTitle);
-
-
-        let predCircle = document.createElement('div');
-        predCircle.className = 'pred-circle text-capitalize d-flex ' + get_pred_bg(d.prediction) +
-            ' justify-content-center align-items-center mx-auto';
-        predCircle.id = 'note-pred';
-        predCircle.innerText = d.prediction;
-
-        predCol.appendChild(predTitle);
-        predCol.appendChild(predCircle);
-
-        // Append columns to the row
-        rowDiv.appendChild(noteCol);
-        rowDiv.appendChild(predCol);
-
-        // Append everything to the main alert div
-        alertDiv.appendChild(alertHeadingDiv);
-        alertDiv.appendChild(hr1);
-        alertDiv.appendChild(rowDiv);
-        alertDiv.appendChild(hr2);
-        alertDiv.appendChild(innerDiv1);
-        return alertDiv
     }
 
     init();

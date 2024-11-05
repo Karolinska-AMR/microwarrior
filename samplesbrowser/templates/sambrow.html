@@ -37,7 +37,7 @@
                                    data-search-align="left" data-toggle="table">
                                 <thead>
                                 <tr>
-                                    <th data-field="lineage">{% trans "Släkten" %}</th>
+                                    <th data-field="lineage">{% trans "Släktlinje" %}</th>
                                     <th data-field="family">{% trans "Familj" %}</th>
                                     <th data-field="rd">RD</th>
                                     <th data-field="spoligotype">{% trans "Spoligotyp" %}</th>
@@ -46,11 +46,29 @@
                             </table>
                         </div>
                     </div>
-                    <div id='pred_card' class="card shadow-sm mb-2">
+                    <div id='pred_card2' class="card shadow-sm mb-2">
                         <div class="card-header section-header text-uppercase py-2 bg-white">
                             <i class="fas fa-prescription-bottle-alt"></i> {% trans "Läkemedelsresistensprediktioner" %}
                         </div>
-                        <div class="card-body"></div>
+                        <div class="card-body">
+                            <div class="vertical-tab container-fluid">
+                                <div class="row">
+                                    <!-- Left Column: Nav Tabs -->
+                                    <div class="col-md-4 col-12">
+                                        <ul class="nav nav-tabs flex-column" id="drug-list" role="tablist">
+                                        </ul>
+                                    </div>
+
+                                    <!-- Right Column: Tab Content -->
+                                    <div class="col-md-8 col-12">
+                                        <div class="tab-content" id="drug-content">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                     <div id='mu_card' class="card shadow-sm mb-2">
                         <div class="card-header section-header text-uppercase py-2 bg-white">
@@ -277,125 +295,126 @@
 {% endblock %}
 
 {% block modalcontent %}
-        <div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog  modal-lg modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title text-uppercase" id="searchModalLabel"><i
-                                class="fas fa-search"></i> {% trans "sök prover" %}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog  modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-uppercase" id="searchModalLabel"><i
+                            class="fas fa-search"></i> {% trans "sök prover" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="alertPlaceholder" style="display: none;">
+
                     </div>
-                    <div class="modal-body">
-                        <div id="alertPlaceholder" style="display: none;">
-
+                    <form id="searchForm">
+                        <div class="row">
+                            <div class="form-group col-6">
+                                <label for="ticketId">{% trans "Ärendenummer" %}</label>
+                                <input type="text" class="form-control" id="ticketId"
+                                       placeholder="{% trans "Ärendenummer" %}">
+                            </div>
                         </div>
-                        <form id="searchForm">
-                            <div class="row">
-                                <div class="form-group col-6">
-                                    <label for="ticketId">{% trans "Ärendenummer" %}</label>
-                                    <input type="text" class="form-control" id="ticketId"
-                                           placeholder="{% trans "Ärendenummer" %}">
-                                </div>
+                        <div class="row">
+                            <div class="form-group col-6">
+                                <label for="sampleId">{% trans "Prov-id" %}</label>
+                                <input type="text" class="form-control" id="sampleId"
+                                       placeholder="{% trans "Prov-id" %}">
                             </div>
-                            <div class="row">
-                                <div class="form-group col-6">
-                                    <label for="sampleId">{% trans "Prov-id" %}</label>
-                                    <input type="text" class="form-control" id="sampleId"
-                                           placeholder="{% trans "Prov-id" %}">
-                                </div>
-                                <div class="form-group col-6">
-                                    <label for="weekNumber">{% trans "Veckans nummer" %}</label>
-                                    <input type="week" class="form-control" id="weekNumber">
+                            <div class="form-group col-6">
+                                <label for="weekNumber">{% trans "Veckans nummer" %}</label>
+                                <input type="week" class="form-control" id="weekNumber">
 
-                                </div>
                             </div>
-                            <div class="row">
-                                <div class="form-group col-6">
-                                    <label for="dateFrom">{% trans "Datum från" %}</label>
-                                    <input type="date" class="form-control" id="dateFrom">
-                                </div>
-                                <div class="form-group col-6">
-                                    <label for="dateTo">{% trans "Datum till" %}</label>
-                                    <input type="date" class="form-control" id="dateTo">
-                                </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-6">
+                                <label for="dateFrom">{% trans "Datum från" %}</label>
+                                <input type="date" class="form-control" id="dateFrom">
                             </div>
-                            <div class="row">
-                                <div class="form-group col-6">
-                                    <label for="lineage">{% trans "Släkten" %}</label>
-                                    <input type="text" class="form-control" id="lineage"
-                                           placeholder="{% trans "Släkten" %}">
-                                </div>
-                                <div class="form-group col-6">
-                                    <label for="mutation">{% trans "Mutation" %}</label>
-                                    <input type="text" class="form-control" id="mutation"
-                                           placeholder="{% trans "Mutation" %}: katG@p.Ser315Thr">
-                                </div>
+                            <div class="form-group col-6">
+                                <label for="dateTo">{% trans "Datum till" %}</label>
+                                <input type="date" class="form-control" id="dateTo">
                             </div>
-                            <div class="row">
-                                <div class="form-group col-6">
-                                    <label for="drug">{% trans "Resistent mot" %}</label>
-                                    <input type="text" class="form-control" id="drug" placeholder="{% trans "Läkemedel" %}">
-                                </div>
-                                <div class="form-group col-6">
-                                    <label for="resistanceCategory">{% trans "Resistenskategori" %}</label>
-                                    <input type="text" class="form-control" id="resistanceCategory"
-                                           placeholder="{% trans "Resistenskategori" %}: DS, MDR, {% trans "osv." %}">
-                                </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-6">
+                                <label for="lineage">{% trans "Släktlinje" %}</label>
+                                <input type="text" class="form-control" id="lineage"
+                                       placeholder="{% trans "Släktlinje" %}">
                             </div>
-                            <div class="d-flex flex-row-reverse p-2">
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <button type="button" class="btn btn-light" id="cls-form"><i class="fas fa-broom"></i>
-                                        {% trans "Rensa" %}
-                                    </button>
-                                    <button type="button" class="btn btn-primary" id="search-btn"><i
-                                            class="fas fa-search"></i> {% trans "Sök" %}
-                                    </button>
-                                </div>
+                            <div class="form-group col-6">
+                                <label for="mutation">{% trans "Mutation" %}</label>
+                                <input type="text" class="form-control" id="mutation"
+                                       placeholder="{% trans "Mutation" %}: katG@p.Ser315Thr">
                             </div>
-                            <hr class="m-0 p-1"/>
-                            <div class="d-flex justify-content-between">
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <button type="button" class="btn btn-light btn-sm" id="import-sel"><i
-                                            class="fas fa-check"></i> {% trans "Importera Utvalda" %}
-                                    </button>
-                                    <button type="button" class="btn btn-light" id="del-all"><i class="fas fa-trash"></i>
-                                        {% trans "Ta Bort Alla" %}
-                                    </button>
-                                </div>
-                                <button type="button" class="btn btn-primary btn-sm" id="import-all"><i
-                                        class="fas fa-arrow-circle-right"></i> {% trans "Importera Alla" %}
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-6">
+                                <label for="drug">{% trans "Resistent mot" %}</label>
+                                <input type="text" class="form-control" id="drug" placeholder="{% trans "Läkemedel" %}">
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="resistanceCategory">{% trans "Resistenskategori" %}</label>
+                                <input type="text" class="form-control" id="resistanceCategory"
+                                       placeholder="{% trans "Resistenskategori" %}: DS, MDR, {% trans "osv." %}">
+                            </div>
+                        </div>
+                        <div class="d-flex flex-row-reverse p-2">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-light" id="cls-form"><i class="fas fa-broom"></i>
+                                    {% trans "Rensa" %}
+                                </button>
+                                <button type="button" class="btn btn-primary" id="search-btn"><i
+                                        class="fas fa-search"></i> {% trans "Sök" %}
                                 </button>
                             </div>
-                            <div class="row p-1">
-                                <div class="col-12">
-                                    <table id="search-tbl" class="table table-sm text-sm table-modal"
-                                           data-search-align="left" data-toggle="table"
-                                           data-height="400"
-                                           data-click-to-select="true"
-                                           data-pagination="true"
-                                           data-page-size="10">
-                                        <thead>
-                                        <tr>
-                                            <th data-field="state" data-checkbox="True"></th>
-                                            <th data-field="ticket" data-sortable="True">{% trans "Ärendenummer" %}</th>
-                                            <th data-field="sample" data-sortable="True">{% trans "Prov-id" %}</th>
-                                            <th data-field="submission_timestamp"
-                                                data-sortable="True">{% trans "Tidstämpel för inlämning" %}
-                                            </th>
-                                            <th data-field="lineage.lineage" data-sortable="True">{% trans "Släkten" %}</th>
-                                            <th data-field="category">{% trans "Resistenskategori" %}</th>
-                                        </tr>
-                                        </thead>
-                                    </table>
-                                </div>
+                        </div>
+                        <hr class="m-0 p-1"/>
+                        <div class="d-flex justify-content-between">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-light btn-sm" id="import-sel"><i
+                                        class="fas fa-check"></i> {% trans "Importera Utvalda" %}
+                                </button>
+                                <button type="button" class="btn btn-light" id="del-all"><i class="fas fa-trash"></i>
+                                    {% trans "Ta Bort Alla" %}
+                                </button>
                             </div>
-                        </form>
-                    </div>
-
+                            <button type="button" class="btn btn-primary btn-sm" id="import-all"><i
+                                    class="fas fa-arrow-circle-right"></i> {% trans "Importera Alla" %}
+                            </button>
+                        </div>
+                        <div class="row p-1">
+                            <div class="col-12">
+                                <table id="search-tbl" class="table table-sm text-sm table-modal"
+                                       data-search-align="left" data-toggle="table"
+                                       data-height="400"
+                                       data-click-to-select="true"
+                                       data-pagination="true"
+                                       data-page-size="10">
+                                    <thead>
+                                    <tr>
+                                        <th data-field="state" data-checkbox="True"></th>
+                                        <th data-field="ticket" data-sortable="True">{% trans "Ärendenummer" %}</th>
+                                        <th data-field="sample" data-sortable="True">{% trans "Prov-id" %}</th>
+                                        <th data-field="submission_timestamp"
+                                            data-sortable="True">{% trans "Tidstämpel för inlämning" %}
+                                        </th>
+                                        <th data-field="lineage.lineage"
+                                            data-sortable="True">{% trans "Släktlinje" %}</th>
+                                        <th data-field="category">{% trans "Resistenskategori" %}</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </form>
                 </div>
+
             </div>
         </div>
+    </div>
 
 {% endblock %}
 

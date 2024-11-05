@@ -7,6 +7,7 @@ from django.db.models.functions import ExtractWeek, ExtractYear
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
+from django.utils.translation import gettext as _
 
 from catalogmanager.models import Note
 from .models import Sample, Evidence, Drug, Meta
@@ -120,20 +121,39 @@ def fetch_mutations(request):
             id=id)
 
         data = {"mutations": {},
-                "unverified_mutations": [], "evidence": {}, "qc": {}, 'predictions': {}, 'catalogues': set()}
+                "unverified_mutations": [], 'predictions': {}, "messages": {}, 'catalogues': set()}
 
         ptr_mu = data["mutations"]
         ptr_prd = data["predictions"]
+        ptr_msgs = data["messages"]
+        info_RU = {}
         for mu in sample.s_mutations.all():
             cat = mu.catalog
             data['catalogues'].add(cat)
+
+            drug = mu.drug.name
+
             if mu.prediction in ['R', 'U']:
-                drug = mu.drug.name
+
                 if drug not in ptr_mu:
                     ptr_mu[drug] = {}
 
+                if drug not in ptr_msgs:
+                    ptr_msgs[drug] = []
+                    info_RU[drug] = {"r": False, "u": False}
+
                 if cat not in ptr_mu[drug]:
                     ptr_mu[drug][cat] = []
+
+                if mu.prediction == 'R' and not info_RU[drug]['r']:
+                    info_RU[drug]['r'] = True
+                    ptr_msgs[drug].append({"text": _("Minst en resistensmutation hittades."), "type": 'info'})
+                if mu.prediction == 'U' and not info_RU[drug]['u']:
+                    info_RU[drug]['u'] = True
+                    ptr_msgs[drug].append(
+                        {"text": _(
+                            "Mutationer med osäker signifikans hittades. Se tabellen nedan för mer information."),
+                         "type": 'warning'})
 
                 tmp_mu = {
                     "id": mu.id,
@@ -144,6 +164,7 @@ def fetch_mutations(request):
                     "cat_pred": mu.prediction,
                     "note_pred": None,
                     "notes": [],
+                    "comments": [],
                     'format': ['HGSV', 'GARC1'][cat.startswith('CRyPTIC')]
                 }
                 if cat.startswith('WHO'):
@@ -185,15 +206,36 @@ def fetch_mutations(request):
                                                'effect': evi.effect,
                                                'notes': notes, }}
                     else:
-                        ptr_prd[drug][f'{mu.gene}@{mu.variant}'] = {'catalog': mu.prediction, "notes": []}
+                        mutation = f'{mu.gene}@{mu.variant}'
+                        ptr_prd[drug][mutation] = {'catalog': mu.prediction,
+                                                   "notes": []}
+                        ptr_msgs[drug].append(
+                            {"text": f"{mutation}: {_('kunde inte länka mutationen tillbaka till WHO-katalogen')}",
+                             "type": "warning"})
                         print(mu.variant)
 
                 ptr_mu[drug][cat].append(tmp_mu)
 
+        for drug, prediction in data['predictions'].items():
+            data['predictions'][drug] = merge_predictions(prediction, ptr_msgs[drug])
+
         ptr_umu = data["unverified_mutations"]
+
         for umu in sample.s_umutations.all():
             evi = umu.variant
+            drug = evi.drug.name
             if evi.prediction in ['R', 'U']:
+                # R mutation cannot be assessed
+                if evi.prediction == 'R':
+                    if drug in data['predictions']:
+                        data['predictions'][drug]["prediction"] = "F"
+                    else:
+                        data['predictions'][drug]["prediction"] = "F"
+
+                    if drug in data['messages']:
+                        data['messages'][drug].append({
+                                                  "text": f"{evi.gene}@{evi.variant}: {_('närvaron av resistensmutationen kan inte utvärderas.')}",
+                                                     "type": "danger"})
                 if evi.name.startswith('WHO'):
                     ptr_umu.append({'id': umu.id,
                                     "mutation": f"{evi.gene}@{evi.variant}",
@@ -212,11 +254,9 @@ def fetch_mutations(request):
                                     "pred": evi.prediction,
                                     'effect': evi.effect})
 
-        # data['predictions'] = get_ensemble_prediction(id)
-        for drug, predictions in data['predictions'].items():
-            data['predictions'][drug] = merge_predictions(predictions)
         data['catalogues'] = list(data['catalogues'])
         sample_data[id] = data
+
     return JsonResponse(sample_data)
 
 
@@ -226,7 +266,7 @@ def get_meta():
     return {'catalogs': catalogs, 'drugs': drugs}
 
 
-def merge_predictions(predictions):
+def merge_predictions(predictions, messages):
     has_R = False
     has_U = False
     for content in predictions.values():
@@ -235,12 +275,14 @@ def merge_predictions(predictions):
         # At least one R mutation with no or aligning notes
         if catalog_pred == "R":
             has_R = True
-            if len(notes)==0 or all(note not in ["U", "S"] for note in notes):
+            if len(notes) == 0 or all(note not in ["U", "S"] for note in notes):
                 return {"prediction": "R", "source": "catalogue"}
 
     # there is a contradictory R prediction
     if has_R:
-        return {"prediction": "K", "source": "note"}
+        messages.append({"text": _("Ofullständiga resultat på grund av inkonsekvenser i WHO katalog och noteringar."),
+                         "type": 'danger'})
+        return {"prediction": "F", "source": "note"}
 
     for content in predictions.values():
         catalog_pred = content["catalog"]
@@ -248,7 +290,10 @@ def merge_predictions(predictions):
         # no R and at least one U with notes indicating R
         if catalog_pred == "U":
             has_U = True
-            if len(notes)>0 and all(note not in ["U", "S"] for note in notes):
+            if len(notes) > 0 and all(note not in ["U", "S"] for note in notes):
+                messages.append({"text": _(
+                    "En mutation med osäker signifikans från WHO-katalogen har markerats som en resistensmutation i noteringar."),
+                    "type": 'info'})
                 return {"prediction": "R", "source": "notes"}
 
     pred = 'K'
@@ -258,4 +303,3 @@ def merge_predictions(predictions):
         pred = 'U'
 
     return {"prediction": pred, "source": "catalogue"}
-
