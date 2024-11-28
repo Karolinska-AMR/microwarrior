@@ -84,6 +84,14 @@
         </li>
 
         <hr class="sidebar-divider"/>
+        {% if is_staff %}
+            <li class="nav-item">
+            <a class="nav-link" href="{% url "settings_page" %}" title="{% trans "Inställningar" %}">
+                <i class="fas fa-fw fa-cogs"></i>
+                <span>{% trans "Inställningar" %}</span></a
+            >
+            </li>
+        {% endif %}
 
         <li class="nav-item">
             <a class="nav-link" href="{% url "help" %}" title="{% trans "Hjälp" %}">
@@ -180,22 +188,22 @@
     </div>
 </footer>
 <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModallabel" style="display: none;"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="logoutModallabel">{% trans "Klar att avsluta?" %}</h5>
-                </div>
-                <div class="modal-body">{% trans "Din nuvarande session kommer att avslutas." %}<br/>
-                    <small class="text-muted">{% trans "Om du håller på att ladda upp filer, säkerställ att dina jobb har skickats in helt innan du loggar ut." %}</small>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">{% trans "Avbryt" %}</button>
-                    <a class="btn btn-primary" href="{% url "logout" %}">{% trans "Fortsätt" %}</a>
-                </div>
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="logoutModallabel">{% trans "Klar att avsluta?" %}</h5>
+            </div>
+            <div class="modal-body">{% trans "Din nuvarande session kommer att avslutas." %}<br/>
+                <small class="text-muted">{% trans "Om du håller på att ladda upp filer, säkerställ att dina jobb har skickats in helt innan du loggar ut." %}</small>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">{% trans "Avbryt" %}</button>
+                <a class="btn btn-primary" href="{% url "logout" %}">{% trans "Fortsätt" %}</a>
             </div>
         </div>
     </div>
+</div>
 {% block modalcontent %}
 
 {% endblock %}

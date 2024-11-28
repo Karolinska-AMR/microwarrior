@@ -61,7 +61,8 @@ INSTALLED_APPS = [
     'dashboard',
     'iomanager',
     'flowrunner',
-    'catalogmanager'
+    'catalogmanager',
+    'settings',
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+{% load pipeline %}
+{% load i18n %}
+{% block title %}ResHub: {% trans "Inställningar" %}{% endblock %}
+
+{% block cssblock %}
+
+{% endblock %}
+
+{% block menubarcontent %}
+
+{% endblock %}
+
+{% block maincontent %}
+    <div class="container-fluid">
+
+
+    </div>
+{% endblock %}
+
+{% block modalcontent %}
+
+{% endblock %}
+
+{% block jscontent %}
+    <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+    <script src="{% static 'js/bootstrap-table-fixed-columns.min.js' %} "></script>
+{% endblock %}
+
