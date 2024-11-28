@@ -59,11 +59,18 @@ class Mutation(models.Model):
     drug = models.ForeignKey(Drug, on_delete=models.CASCADE)
     catalog = models.CharField(max_length=150, null=True, blank=True)
     gene = models.CharField(max_length=100)
+    change = models.CharField(max_length=500)
+    nucleotide_change = models.CharField(max_length=100)
+    protein_change = models.CharField(max_length=100)
     variant = models.CharField(max_length=500)
     prediction = models.CharField(max_length=10)
     freq = models.FloatField(null=True, blank=True)
     depth = models.IntegerField(null=True, blank=True)
-
+    effect = models.CharField(max_length=150, null=True, blank=True)
+    comment = models.CharField(max_length=150, null=True, blank=True)
+    source = models.CharField(max_length=150, null=True, blank=True)
+    grade = models.CharField(max_length=100, null=True, blank=True)
+    position = models.IntegerField(null=True, blank=True)
 
 class UnverifiedMutation(models.Model):
     sample = models.ForeignKey(Sample, on_delete=models.CASCADE, related_name='s_umutations')
