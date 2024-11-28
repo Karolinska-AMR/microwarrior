@@ -1,18 +1,21 @@
 from __future__ import absolute_import, unicode_literals
 
 import glob
-import subprocess
-from celery import Task
-from microwarrior.celery import app
-from .models import Task as djTask
-from datetime import datetime
-import os, time
-from glob import glob
 import json
-from samplesbrowser.models import Sample, Lineage, Evidence, Mutation, UnverifiedMutation, Drug
-from django.db import transaction
+import os
+import subprocess
+from datetime import datetime
+from glob import glob
+
+from celery import Task
 from django.conf import settings
-from iomanager.models import File
+from django.db import transaction
+import uuid
+from django.utils.timezone import now
+
+from microwarrior.celery import app
+from samplesbrowser.models import Sample, Lineage, Evidence, Mutation, UnverifiedMutation, Drug
+from .models import Task as djTask
 
 
 class Task_handler(Task):
@@ -121,79 +124,99 @@ def update_status():
     return results
 
 
-def save_report(report_json, task):
+def save_report(report_json, user_id=1, task=None):
     # Load JSON data
     with open(report_json) as json_file:
         data = json.load(json_file)
 
-    catalog = ['CRyPTIC', 'WHO-UCN-2023.5', 'TB-Profiler']
+    catalogs = data['catalogs_repo']
 
     with transaction.atomic():
+
+        if task is None:
+            # Generate a new task_id and create a new Task object
+            task_id = str(uuid.uuid4())
+            task = Task.objects.create(
+                task_id=task_id,
+                ticket=task_id,
+                name="JSON-IMPORT",
+                samples_count=len(data.get('samples', [])),
+                status=0,
+                user_id=user_id,
+                logs="",
+                submission_timestamp=now(),
+                completion_timestamp=now()
+            )
         # Iterate over each sample
-        for seqid, sample_data in data.items():
+        for sample_data in data['samples']:
             try:
                 sid = transaction.savepoint()
-
-                pe_file = File.objects.filter(ticket=task.ticket, sample=sample_data['seqid']).first()
-                collection_date = None
-                if pe_file.collection_date:
-                    try:
-                        collection_date = datetime.strptime(pe_file.collection_date, '%Y-%m-%d').date()
-                    except ValueError:
-                        pass
-
-                cat_chck = {}
-                for cat in catalog:
-                    cat_chck[cat] = False
-                    if cat in sample_data['catalogs']:
-                        cat_chck[cat] = True
+                cat_chck = {k: v in sample_data['catalogs'] for k, v in catalogs.item()}
 
                 # Create Sample
+                # Create or retrieve Sample object
                 sample, created = Sample.objects.get_or_create(
                     sample=sample_data['seqid'],
-                    defaults={"task_id": task.id,
-                              "collection_date": collection_date,
-                              "category": sample_data["category"],
-                              "passed_tbprofiler": cat_chck["TB-Profiler"],
-                              "passed_cryptic": cat_chck["CRyPTIC"],
-                              "passed_who": cat_chck['WHO-UCN-2023.5'],
-                              "genome_depth": sample_data["genome_median_depth"],
-                              "mapped_reads": sample_data["num_mapped_reads"],
-                              "mapped_reads_pct": sample_data["pct_mapped_reads"]
-                              })
+                    defaults={
+                        "task_id": task.id,
+                        "category": sample_data["category"],
+                        "passed_tbprofiler": cat_chck.get("tbdb", None),
+                        "passed_cryptic": cat_chck.get("cryptic", None),
+                        "passed_who": cat_chck.get("who", None),
+                        "genome_depth": sample_data["genome_median_depth"],
+                        "mapped_reads": sample_data["num_mapped_reads"],
+                        "mapped_reads_pct": sample_data["percent_reads_mapped"]
+                    }
+                )
                 # Create Lineage
+                lineage_data = sample_data.get('lineage', {})
                 Lineage.objects.create(
                     sample=sample,
-                    lin=sample_data['lineage']['lin'],
-                    family=sample_data['lineage']['family'],
-                    rd=sample_data['lineage']['rd'],
-                    spoligotype=sample_data['lineage']['spoligotype'],
-                    is_mixed=sample_data['lineage']['is_mixed'])
+                    lin=lineage_data.get('lineage', None),
+                    family=lineage_data.get('family', None),
+                    rd=lineage_data.get('rd', None),
+                    spoligotype=lineage_data.get('spoligotype', None),
+                    is_mixed=lineage_data.get('is_mixed', None)
+                )
 
                 # Create Mutations
                 for var in sample_data['variants']:
                     drug = Drug.objects.filter(name=var['drug']).first()
                     if drug is None:
                         print('####COULD NOT FOUND THIS DRUG: ' + var['drug'])
+                    cat = var.get('catalog')
                     Mutation.objects.create(
                         sample=sample,
-                        catalog=var.get('catalog'),
-                        gene=var.get('gene'),
+                        catalog=cat,
+                        gene=var.get('gene_name'),
+                        position=var.get("pos"),
+                        change=var.get("change"),
+                        nucleotide_change=var.get("nucleotide_change"),
+                        protein_change=var.get("protein_change"),
+                        effect=var.get("effect"),
                         variant=var.get('variant'),
-                        prediction=var.get('pred'),
+                        prediction=var.get('prediction'),
                         drug=drug,
                         freq=var.get('freq'),
-                        depth=var.get('depth'))
+                        depth=var.get('depth'),
+                        comment=var.get('comment_1') if cat.startswith('TB-Profier') else None,
+                        source=var.get("footnote") if cat.startswith('TB-Profier') else None)
 
                 # Create Unverified Mutations
                 for unverified_key, unverified_value in sample_data.get('unverified_mutations', {}).items():
                     # Look up the Catalogue entry
+                    cat = unverified_value.get['catalog']
+                    # just interested in unverified mutations from WHO catalogue
+                    if cat != catalogs['who']:
+                        continue
+
                     catalog_entries = Evidence.objects.filter(
-                        name=unverified_value['catalog'],
-                        gene=unverified_value['gene'],
-                        variant=unverified_value['variant'])
+                        name=cat,
+                        gene=unverified_value.get('gene'),
+                        variant=unverified_value.get('variant'))
+
+                    # Create UnverifiedMutation
                     for entry in catalog_entries:
-                        # Create UnverifiedMutation
                         UnverifiedMutation.objects.create(
                             sample=sample,
                             variant=entry)
