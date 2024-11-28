@@ -15,8 +15,7 @@ from .models import Sample, Evidence, Drug, Meta
 
 @login_required
 def samplesbrowser(request):
-    fname = request.user.first_name
-    return render(request, 'sambrow.html', {"name": fname})
+    return render(request, 'sambrow.html', {"name": request.user.first_name, 'is_staff': request.user.is_staff})
 
 
 # TODO: use django-ratelimit to control the rate of request

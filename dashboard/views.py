@@ -18,8 +18,7 @@ def home(request):
 
 @login_required
 def dashboard(request):
-    fname = request.user.first_name
-    return render(request, 'dashboard.html', {"name": fname})
+    return render(request, 'dashboard.html', {"name": request.user.first_name, 'is_staff': request.user.is_staff})
 
 
 @login_required

@@ -79,6 +79,13 @@
                            href="{% url 'catalog' %}">{% trans "Mutationskatalog" %}</a>
 
                     </li>
+                    {% if user.is_staff %}
+                        <li>
+                            <a class="nav-link" aria-disabled="true"
+                               href="{% url 'settings_page' %}">{% trans "Inställningar" %}</a>
+
+                        </li>
+                    {% endif %}
                     <li>
                         <a class="nav-link" aria-disabled="true" href="{% url 'help' %}">{% trans "Hjälp" %}</a>
 
@@ -95,13 +102,13 @@
 
                     </li>
                 {% endif %}
-            <div class="vr mx-2 bg-white"></div>
-                  <form id="language-switcher" action="{% url 'set_language' %}" method="post">
+                <div class="vr mx-2 bg-white"></div>
+                <form id="language-switcher" action="{% url 'set_language' %}" method="post">
                     {% csrf_token %}
                     {% if  request.LANGUAGE_CODE == 'sv' %}
-                       <li> <a class="nav-link lan-link"  href="#" data-lan="en">In English</a></li>
+                        <li><a class="nav-link lan-link" href="#" data-lan="en">In English</a></li>
                     {% else %}
-                          <li> <a class="nav-link lan-link"  href="#" data-lan="sv">På Svenska</a></li>
+                        <li><a class="nav-link lan-link" href="#" data-lan="sv">På Svenska</a></li>
                     {% endif %}
                 </form>
 

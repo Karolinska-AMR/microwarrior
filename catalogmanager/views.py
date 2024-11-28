@@ -11,8 +11,7 @@ from .models import Note
 
 @login_required
 def catalogs(request):
-    fname = request.user.first_name
-    return render(request, 'catalogs.html', {"name": fname})
+    return render(request, 'catalogs.html', {"name": request.user.first_name, 'is_staff': request.user.is_staff})
 
 
 @login_required()
