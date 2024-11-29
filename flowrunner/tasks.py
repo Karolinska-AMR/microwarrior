@@ -4,13 +4,13 @@ import glob
 import json
 import os
 import subprocess
+import uuid
 from datetime import datetime
 from glob import glob
 
 from celery import Task
 from django.conf import settings
 from django.db import transaction
-import uuid
 from django.utils.timezone import now
 
 from microwarrior.celery import app
@@ -130,44 +130,50 @@ def save_report(report_json, user_id=1, task=None):
         data = json.load(json_file)
 
     catalogs = data['catalogs_repo']
-
+    if task is None:
+        # Generate a new task_id and create a new Task object
+        task_id = str(uuid.uuid4())
+        task = djTask.objects.create(
+            task_id=task_id,
+            ticket=task_id,
+            name="JSON-IMPORT",
+            samples_count=len(data.get('samples', [])),
+            status=0,
+            user_id=user_id,
+            logs="",
+            submission_timestamp=now(),
+            completion_timestamp=now()
+        )
     with transaction.atomic():
-
-        if task is None:
-            # Generate a new task_id and create a new Task object
-            task_id = str(uuid.uuid4())
-            task = Task.objects.create(
-                task_id=task_id,
-                ticket=task_id,
-                name="JSON-IMPORT",
-                samples_count=len(data.get('samples', [])),
-                status=0,
-                user_id=user_id,
-                logs="",
-                submission_timestamp=now(),
-                completion_timestamp=now()
-            )
         # Iterate over each sample
         for sample_data in data['samples']:
             try:
                 sid = transaction.savepoint()
-                cat_chck = {k: v in sample_data['catalogs'] for k, v in catalogs.item()}
-
+                cat_chck = {k: v in sample_data['analyzed_catalogs'] for k, v in catalogs.items()}
                 # Create Sample
                 # Create or retrieve Sample object
-                sample, created = Sample.objects.get_or_create(
-                    sample=sample_data['seqid'],
-                    defaults={
-                        "task_id": task.id,
-                        "category": sample_data["category"],
-                        "passed_tbprofiler": cat_chck.get("tbdb", None),
-                        "passed_cryptic": cat_chck.get("cryptic", None),
-                        "passed_who": cat_chck.get("who", None),
-                        "genome_depth": sample_data["genome_median_depth"],
-                        "mapped_reads": sample_data["num_mapped_reads"],
-                        "mapped_reads_pct": sample_data["percent_reads_mapped"]
-                    }
-                )
+                task.logs += f'\n{20 * "-"}\n{sample_data.get("seqid")}:'
+
+                sample = Sample.objects.filter(sample=sample_data.get('seqid')).first()
+
+                # the sample exist so either delete the previous info or skip
+                if sample:
+                    task.logs += f'\n\t!!Error: {sample_data.get("seqid")} was already present in the database.'
+                    continue
+                else:
+                    sample = Sample.objects.create(
+                        sample=sample_data.get('seqid'),
+                        task_id=task.id,
+                        category=sample_data.get("category_who"),
+                        passed_tbprofiler=cat_chck.get("tbdb"),
+                        passed_cryptic=cat_chck.get("cryptic"),
+                        passed_who=cat_chck.get("who"),
+                        genome_depth=sample_data.get("genome_median_depth"),
+                        mapped_reads=sample_data.get("num_mapped_reads"),
+                        mapped_reads_pct=sample_data.get("percent_reads_mapped"),
+                    )
+                    task.logs += f'\n\t1.Sample were created.'
+
                 # Create Lineage
                 lineage_data = sample_data.get('lineage', {})
                 Lineage.objects.create(
@@ -178,12 +184,14 @@ def save_report(report_json, user_id=1, task=None):
                     spoligotype=lineage_data.get('spoligotype', None),
                     is_mixed=lineage_data.get('is_mixed', None)
                 )
-
+                task.logs += f'\n\t2.Lineage were saved.'
                 # Create Mutations
                 for var in sample_data['variants']:
-                    drug = Drug.objects.filter(name=var['drug']).first()
+                    drug = Drug.objects.filter(name=var.get('drug')).first()
+
                     if drug is None:
-                        print('####COULD NOT FOUND THIS DRUG: ' + var['drug'])
+                        task.logs += f'\n!!Error: {var.get("drug")} could not be found. '
+
                     cat = var.get('catalog')
                     Mutation.objects.create(
                         sample=sample,
@@ -202,10 +210,12 @@ def save_report(report_json, user_id=1, task=None):
                         comment=var.get('comment_1') if cat.startswith('TB-Profier') else None,
                         source=var.get("footnote") if cat.startswith('TB-Profier') else None)
 
+                task.logs += f'\n\t3.Mutations were saved.'
+
                 # Create Unverified Mutations
                 for unverified_key, unverified_value in sample_data.get('unverified_mutations', {}).items():
                     # Look up the Catalogue entry
-                    cat = unverified_value.get['catalog']
+                    cat = unverified_value.get('catalog')
                     # just interested in unverified mutations from WHO catalogue
                     if cat != catalogs['who']:
                         continue
@@ -221,11 +231,15 @@ def save_report(report_json, user_id=1, task=None):
                             sample=sample,
                             variant=entry)
 
+                task.logs += f'\n\t4.Unverified mutations were saved.'
             except Exception as e:
-                print(f"Error occurred: {e}, rolling back this sample creation.")
+                task.logs += f"\n!!Error: {e},rolling back the creation of sample: {sample_data.get('seqid')}."
                 transaction.savepoint_rollback(sid)
             else:
                 transaction.savepoint_commit(sid)
+                task.logs += f'\n\t5.saving points.'
+    task.save()
+    return task
 
 
 def clean_storage(ticket, was_success):

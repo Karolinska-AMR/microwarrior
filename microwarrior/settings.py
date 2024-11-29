@@ -10,10 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from pathlib import Path
 import os
-import environ
 import shutil
+from pathlib import Path
+
+import environ
 
 env = environ.Env()
 environ.Env.read_env()
@@ -76,7 +77,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-
 ]
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
@@ -107,7 +107,7 @@ WSGI_APPLICATION = 'microwarrior.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR /'db.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -149,7 +149,6 @@ LOCALE_PATHS = [
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = '/dashboard/'
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -217,6 +216,13 @@ PIPELINE = {
                 'js/d3.v7.min.js',
                 'js/base.js',
                 'js/cata.js',
+            ),
+        },
+        'settings_js': {
+            'output_filename': 'js/settings.min.js',
+            'source_filenames': (
+                'js/base.js',
+                'js/settings.js',
             ),
         },
         'user_js': {
