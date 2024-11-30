@@ -104,11 +104,6 @@ table .badge {
     color: #000;
 }
 
-table td, table th {
-   word-wrap: break-word; /* Break long words */
-    overflow-wrap: break-word; /* Modern browsers */
-    white-space: normal; /* Allow wrapping */
-}
 
 .badge-success {
     background-color: #73EC8B;

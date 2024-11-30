@@ -552,6 +552,15 @@ $(document).ready(function () {
                     }
                     // Apply grade badge
                     m = get_grade_badge(m);
+                    if( m.mu_comment) {
+                        m.comment_wrap = `<div class="text-wrap text-break" style="width: 15rem;">${m.mu_comment}</div>`
+                    }
+                    if(m.relaxed_threshold){
+                        m.relaxed_threshold_wrap = `<div class="text-wrap text-break" style="width: 15rem;">${m.relaxed_threshold}</div>`
+                    }
+                      if(m.footnote){
+                        m.footnote_wrap = `<div class="text-wrap text-break" style="width: 15rem;">${m.footnote}</div>`
+                    }
                     // Insert row into the relevant table
                     targetTable.bootstrapTable("insertRow", {index: 0, row: m});
                 });
