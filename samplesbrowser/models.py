@@ -38,7 +38,6 @@ class Evidence(models.Model):
     version = models.CharField(max_length=50)
     gene = models.CharField(max_length=100)
     variant = models.CharField(max_length=500)
-    prediction = models.CharField(max_length=10)
     drug = models.ForeignKey(Drug, on_delete=models.CASCADE, related_name='d_catalogs')
     grade = models.CharField(max_length=100, null=True, blank=True)
     present_solo_r = models.IntegerField(null=True, blank=True)
@@ -52,6 +51,9 @@ class Evidence(models.Model):
     sensitivity = models.FloatField(null=True, blank=True)
     specificity = models.FloatField(null=True, blank=True)
     effect = models.CharField(max_length=150, null=True, blank=True)
+    comment = models.CharField(max_length=150, null=True, blank=True)
+    relaxed_threshold = models.CharField(max_length=150, null=True, blank=True)
+    footnote = models.CharField(max_length=150, null=True, blank=True)
 
 
 class Mutation(models.Model):

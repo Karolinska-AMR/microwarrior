@@ -209,7 +209,7 @@ def save_report(report_json, user_id=1, task=None):
                         depth=var.get('depth'),
                         grade=var.get('grade') if cat.startswith('TB-Profiler') else None,
                         comment=var.get('comment_1') if cat.startswith('TB-Profiler') else None,
-                        source=var.get("footnote") if cat.startswith('TB-Profiler') else None)
+                        source=var.get("footnote") if not cat.startswith('WHO') else None)
 
                 task.logs += f'\n\t3.Mutations were saved.'
 

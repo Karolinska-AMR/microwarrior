@@ -158,8 +158,12 @@ def fetch_mutations(request):
                     "id": mu.id,
                     "freq": mu.freq,
                     "depth": mu.depth,
-                    "mutation": f"{mu.gene}@{mu.variant}",
+                    "mutation": f"{mu.gene}@{mu.change}",
                     "drug": drug,
+                    "position": mu.position,
+                    "source": [mu.source,'TB-Profiler Catalogue'][mu.source=='tbdb'],
+                    "mu_comment": mu.comment,
+                    "grade":mu.grade,
                     "cat_pred": mu.prediction,
                     "note_pred": None,
                     "notes": [],
@@ -171,7 +175,7 @@ def fetch_mutations(request):
                     if drug not in ptr_prd:
                         ptr_prd[drug] = {}
 
-                    evi = Evidence.objects.filter(name=cat, gene=mu.gene, variant=mu.variant,
+                    evi = Evidence.objects.filter(name=cat, variant=mu.variant,
                                                   drug_id=mu.drug.id).prefetch_related(
                         Prefetch('ev_notes', queryset=Note.objects.filter(is_del=False))
                     ).first()
@@ -179,7 +183,7 @@ def fetch_mutations(request):
                     if evi is not None:
                         ptr_prd[drug][evi.id] = {'catalog': None, "notes": []}
                         tptr = ptr_prd[drug][evi.id]
-                        tptr['catalog'] = evi.prediction
+                        tptr['catalog'] = mu.prediction
                         # Fetch notes
                         notes = []
                         for note in evi.ev_notes.all():
@@ -191,10 +195,10 @@ def fetch_mutations(request):
                             tptr['notes'].append(note.prediction)
 
                         tmp_mu = {**tmp_mu, **{'evi_id': evi.id,
-                                               'ppv': evi.ppv,
+                                               'ppv': str(evi.ppv).strip('%'),
                                                'OR': evi.odd_ratio,
-                                               'sens': evi.sensitivity,
-                                               'spec': evi.specificity,
+                                               'sens': str(evi.sensitivity).strip('%'),
+                                               'spec': str(evi.specificity).strip('%'),
                                                'present_solo_r': evi.present_solo_r,
                                                'present_solo_s': evi.present_solo_s,
                                                'present_r': evi.present_r,
@@ -203,6 +207,9 @@ def fetch_mutations(request):
                                                'absent_s': evi.absent_s,
                                                'grade': evi.grade,
                                                'effect': evi.effect,
+                                               'mu_comment':evi.comment,
+                                               'relaxed_threshold':evi.relaxed_threshold,
+                                               'footnote':evi.footnote,
                                                'notes': notes, }}
                     else:
                         mutation = f'{mu.gene}@{mu.variant}'

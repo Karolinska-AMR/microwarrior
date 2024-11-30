@@ -104,6 +104,12 @@ table .badge {
     color: #000;
 }
 
+table td, table th {
+   word-wrap: break-word; /* Break long words */
+    overflow-wrap: break-word; /* Modern browsers */
+    white-space: normal; /* Allow wrapping */
+}
+
 .badge-success {
     background-color: #73EC8B;
     color: #fff;
@@ -370,12 +376,14 @@ a:focus {
 .user-name {
     font-weight: 500;
 }
+
 .notes-body .container-lg {
     max-height: 400px;
     overflow-y: auto;
     margin: 0 auto;
     padding-right: 10px;
 }
+
 .messages-body .container-lg {
     max-height: 200px;
     overflow-y: auto;
@@ -384,7 +392,7 @@ a:focus {
 }
 
 .messages-body .container-lg::-webkit-scrollbar,
-.notes-body .container-lg::-webkit-scrollbar{
+.notes-body .container-lg::-webkit-scrollbar {
     width: 4px; /* Width of the scrollbar */
 }
 
@@ -398,6 +406,7 @@ a:focus {
 .notes-body .container-lg::-webkit-scrollbar-track {
     background-color: #e0e0e0;
 }
+
 .alert-danger-highlight {
     animation: pulse-shadow 1s infinite alternate;
 }
@@ -410,6 +419,7 @@ a:focus {
         box-shadow: 0 0 10px rgba(217, 83, 79, 0.8);
     }
 }
+
 @keyframes pulse {
     0%, 100% {
         transform: scale(1);

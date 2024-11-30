@@ -636,9 +636,11 @@ $(document).ready(function () {
             '4': "text-bg-si",
             '5': "text-bg-s"
         };
-        const gradeKey = Object.keys(gradeClasses).find(key => d.grade.startsWith(key)) || 'default';
 
         d.grade = trans_grades(d.grade);
+
+        const gradeKey = Object.keys(gradeClasses).find(key => d.grade.startsWith(key)) || 'default';
+
         d.grade_icon = `<span class="badge ${gradeClasses[gradeKey] || ''} ${oclass}">${gettext(d.grade)}</span>`;
         d.effect = d.effect;  // Assuming d.effect is already defined
 
@@ -647,9 +649,9 @@ $(document).ready(function () {
 
     function trans_grades(g) {
         if (!g) return null;
-        return g.startsWith('1') ? "1. " + gettext("Associerad med resistens") :
-            g.startsWith('2') ? "2. " + gettext("Associerad med resistens-interim") :
-                g.startsWith('3') ? "3. " + gettext("Osäker signifikans") :
+        return g.startsWith('1') || g === "Assoc w R" ? "1. " + gettext("Associerad med resistens") :
+            g.startsWith('2') || g.startsWith("Assoc w R - Interim") ? "2. " + gettext("Associerad med resistens-interim") :
+                g.startsWith('3') || g.startsWith("Uncertain significance") ? "3. " + gettext("Osäker signifikans") :
                     g.startsWith('4') ? "4. " + gettext("Känslig-interim") :
                         g.startsWith('5') ? "5. " + gettext("Känslig") : null;
 
