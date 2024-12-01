@@ -9,13 +9,21 @@
 {% endblock %}
 
 {% block menubarcontent %}
+    <li class="nav-item">
+        <a class="nav-link" aria-current="page" href="#upload-card">
+            <i class="fas fa-upload"></i> {% trans "Ladda upp pipelineresultat" %}</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" aria-disabled="true" href="#remove-card">
+            <i class="fas fa-trash"></i> {% trans "Ta bort prover" %} </a>
+    </li>
 
 {% endblock %}
 
 {% block maincontent %}
     <div class="container-fluid">
         <div class="row m-1">
-            <div class="card">
+            <div class="card" id="upload-card">
                 <div class="card-header section-header text-uppercase py-2 bg-white">
                     <i class="fas fa-upload"></i> {% trans "Ladda upp pipelineresultat" %}
                 </div>
@@ -29,15 +37,100 @@
                                 <div class="input-group mb-3">
                                     <input type="file" class="form-control" id="jsonFile" name="json_file"
                                            accept=".json" required>
-                                    <button type="submit" class="btn btn-primary">Upload</button>
+                                    <button type="submit" class="btn btn-outline-primary"><i class="fas fa-upload"></i>
+                                        Upload
+                                    </button>
                                 </div>
                             </form>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="form-floating">
-                            <textarea class="form-control" placeholder="Logs"
-                                      id="log_textarea"></textarea>
+                        <div class="mb-0">
+                            <label class="form-label" for="log_textarea">Server Log:</label>
+                            <textarea class="form-control"
+                                      id="log_textarea" style="height: 100px" readonly></textarea>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="row m-1">
+            <div class="card" id="remove-card">
+                <div class="card-header section-header text-uppercase py-2 bg-white">
+                    <i class="fas fa-trash"></i> {% trans "Ta bort prover" %}
+                </div>
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12">
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <label for="idInput" class="form-label">{% trans "Prov-ID" %}:</label>
+                                    <div class="btn-group w-50">
+                                        <button type="button" class="btn btn-light btn-sm" id="rm-clear-btn"><i
+                                                class="fas fa-broom"></i> {% trans "Rensa" %}
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm" id="rm-search-btn">
+                                            <i class="fas fa-search"></i> {% trans "Sök" %}
+                                        </button>
+                                    </div>
+                                </div>
+                                <textarea class="form-control" id="samples-inpt" rows="5"
+                                          placeholder='{% trans "Ange prov-ID, ett per rad" %}'></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-9 col-sm-12">
+                            <div class="row">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <div id="rm-msg" class="text-muted text-break text-wrap"></div>
+                                    <button type="button" class="btn btn-outline-danger" id="rm-remove-btn"><i
+                                            class="fas fa-trash-alt"></i> {% trans "Radera alla" %}
+                                    </button>
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <table id="rm-samples" class="table table-sm text-sm table-main"
+                                       data-toggle="table"
+                                       data-virtual-scroll="true"
+                                       data-pagination="true"
+                                       data-fixed-columns="true"
+                                       data-unique-id="sample"
+                                       data-fixed-number="3" data-page-size="25">
+                                    <thead>
+                                    <tr>
+                                        <th data-field="action"></th>
+                                        <th data-field="sample" data-sortable="true">{% trans "Prov-ID" %}</th>
+                                        <th data-field="lineage" data-sortable="true">{% trans "Släktlinje" %}</th>
+                                        <th data-field="category" data-sortable="true">{% trans "Kategori" %}</th>
+                                        <th data-field="pass_who_ico"
+                                            data-sortable="true">{% trans "WHO katalog" %}</th>
+                                        <th data-field="pass_cryptic_ico"
+                                            data-sortable="true">{% trans "CRyPTIC katalog" %}</th>
+                                        <th data-field="pass_tbprofiler_ico"
+                                            data-sortable="true">{% trans "TB-Profiler katalog" %}</th>
+                                        <th data-field="mutation_count"
+                                            data-sortable="true">{% trans "Ant. mutationer" %}</th>
+                                        <th data-field="umutation_count"
+                                            data-sortable="true">{% trans "Ant. overifierade mutationer" %}</th>
+                                        <th data-field="ticket_trunc"
+                                            data-sortable="true">{% trans "Ärendenummer" %}</th>
+                                        <th data-field="submission_timestamp"
+                                            data-sortable="true">{% trans "Tidstämpel för inlämning" %}</th>
+                                        <th data-field="genome_depth"
+                                            data-sortable="true">{% trans "Median genomtäckning" %}</th>
+                                        <th data-field="mapped_reads"
+                                            data-sortable="true">{% trans "Kartlagda läsningar" %}</th>
+                                        <th data-field="mapped_reads_pct"
+                                            data-sortable="true">{% trans "Procentandel kartlagda läsningar" %}</th>
+
+
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+
                         </div>
                     </div>
 
@@ -50,6 +143,25 @@
 
 {% block modalcontent %}
 
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-capitalize" id="confirmationModalLabel">{% trans "bekräfta raderingen" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% trans "Är du säker på att du vill radera de markerade proverna?" %}<br/>
+                    <small class="text-muted">{% trans "Denna åtgärd kommer att ta bort all data kopplad till dessa prover och kan inte ångras." %}</small>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Avbryta" %}</button>
+                    <button type="button" class="btn btn-danger" id="confirm-delete">{% trans "Radera" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block jscontent %}
