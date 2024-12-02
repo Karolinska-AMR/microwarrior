@@ -9,6 +9,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import PasswordChangeView
 from .forms import PasswordChangingForm
 from django.utils.translation import gettext as _
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+
+from django.utils.html import escape
+
+from .forms import AddUserForm,EditUserForm, ResetPasswordForm
 
 def login_user(request):
     if request.method == "POST":
@@ -49,3 +56,56 @@ class PasswordsChangeView(LoginRequiredMixin, PasswordChangeView):
 
 def password_success(request):
     return render(request, "password_success.html")
+
+@login_required
+def add_user(request):
+    if request.method == "POST":
+        form = AddUserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({"message": "User added successfully!"}, status=200)
+        error_messages = []
+        for error in form.errors.items():
+            field_name, field_errors = error
+            for error_message in field_errors:
+                error_messages.append(f"{escape(error_message)}")
+
+        return JsonResponse({"errors": '\n'.join(error_messages)}, status=400)
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
+@login_required
+def edit_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    if request.method == "POST":
+        form = EditUserForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({"message": "User updated successfully!"}, status=200)
+
+        error_messages = []
+        for error in form.errors.items():
+            field_name, field_errors = error
+            for error_message in field_errors:
+                error_messages.append(f"{escape(error_message)}")
+
+        return JsonResponse({"errors":'\n'.join(error_messages)}, status=400)
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
+@login_required
+def reset_password(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    if request.method == "POST":
+        form = ResetPasswordForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({"message": "Password was reset successfully!"}, status=200)
+
+        error_messages = []
+        for error in form.errors.items():
+            field_name, field_errors = error
+            for error_message in field_errors:
+                error_messages.append(f"{escape(error_message)}")
+
+        return JsonResponse({"errors": '\n'.join(error_messages)}, status=400)
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+

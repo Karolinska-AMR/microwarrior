@@ -1,7 +1,9 @@
-import os, json
+import json
+import os
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
@@ -15,6 +17,7 @@ def get_page(request):
     if request.user.is_staff:
         return render(request, 'settings.html', {"name": request.user.first_name, 'is_staff': request.user.is_staff})
     return redirect('home')
+
 
 @login_required
 def upload_json(request):
@@ -30,6 +33,7 @@ def upload_json(request):
 
         return JsonResponse({"message": task.logs})
     return JsonResponse({"error": "Invalid request."}, status=400)
+
 
 @login_required
 def fetch_del_samples(request):
@@ -60,6 +64,7 @@ def fetch_del_samples(request):
 
     return JsonResponse(samples_info)
 
+
 @login_required
 def delete_samples(request):
     if request.method == 'POST':
@@ -79,7 +84,21 @@ def delete_samples(request):
                 if sample:
                     sample.delete()
                     success_del += 1
-            return JsonResponse({'message': f'Samples received successfully: {success_del} of {len(sample_ids)} were deleted.'})
+            return JsonResponse(
+                {'message': f'Samples received successfully: {success_del} of {len(sample_ids)} were deleted.'})
         except json.JSONDecodeError:
             return JsonResponse({'message': 'Invalid JSON data'}, status=400)
     return JsonResponse({'message': 'Invalid request method'}, status=405)
+
+
+@login_required
+def fetch_users(request):
+    non_superuser_users = User.objects.exclude(is_superuser=True)
+    # Serialize the users to JSON
+    user_data = [
+        {'id': user.id, 'username': user.username, 'email': user.email,
+         'first_name': user.first_name, 'last_name': user.last_name,
+         "last_login": user.last_login, "is_active": user.is_active, "is_staff": user.is_staff}
+        for user in non_superuser_users
+    ]
+    return JsonResponse(user_data, safe=False)

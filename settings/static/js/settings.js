@@ -1,11 +1,16 @@
 $(document).ready(function () {
 
     function init() {
+        send_get_users();
+
         connect_upload_json();
+
         $("#rm-search-btn").click(send_search_sample);
+        $("#addUserForm").submit(send_new_user);
+        $("#editUserForm").submit(send_edit_user);
+        $("#resetPasswordForm").submit(send_reset_pass);
 
-        let tables = ['rm-samples'];
-
+        let tables = ['users-table', 'rm-samples',];
         tables.forEach((tn) => {
             const tbl = document.getElementById(tn);
             $(tbl).bootstrapTable('destroy');
@@ -16,6 +21,8 @@ $(document).ready(function () {
                 classes: "table table-sm text-sm table-hover table-striped table-bordered table-main",
                 onResetView: function (e) {
                     $(".undo-btn").click(undo_btn_rm);
+                    $(".edit-usr-btn").click(set_edit_user_modal);
+                    $(".reset-pass-btn").click(set_reset_pass_modal);
                 }
             });
         });
@@ -121,8 +128,6 @@ $(document).ready(function () {
             .catch(error => {
                 auto_hide_message("#rm-msg", error.message, 'danger');
             });
-
-
     }
 
     function fill_rm_samples(data) {
@@ -164,13 +169,157 @@ $(document).ready(function () {
             "success": {"icon": `<i class="fas fa-exclamation-circle"></i>`, "klass": "text-success"}
         }
         let tf = type_finder[type]
-        $(tag).html(`<span class="${tf.klass}">${tf.icon} ${message}</span>`)
+        $(tag).html(`<p class="${tf.klass}">${tf.icon} ${message.replace(/\n/g, '<br>')}</p>`)
         setTimeout(function () {
             $(tag).html("");
         }, time);
 
     }
 
-    //-------
+    function send_get_users() {
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/get-users/', true);
+
+        xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                let data = JSON.parse(xhr.responseText);
+                fill_user_tbl(data);
+            } else {
+                auto_hide_message("#usr-msg", gettext("Error sending request: ") + xhr.statusText, 'danger')
+            }
+        };
+
+        xhr.onerror = function () {
+            auto_hide_message("#usr-msg", gettext("Request failed."), 'danger')
+        };
+
+        xhr.send();
+    }
+
+    function fill_user_tbl(data) {
+        console.log(data);
+
+        const usrTable = $('#users-table');
+        usrTable.bootstrapTable("removeAll");
+
+        const check = {
+            true: {ico: `<i class="fas fa-lg fa-check-circle"></i>`, klass: 'text-success'},
+            false: {ico: `<i class="fas fa-lg fa-times-circle"></i>`, klass: 'text-danger'}
+        };
+
+        data.forEach((m) => {
+            ['is_active', 'is_staff'].forEach((key) => {
+                m[`${key}_ico`] = `<span class="${check[m[key]].klass}">${check[m[key]].ico}</span>`;
+            });
+
+            Object.assign(m, {
+                action: `<button class="btn btn-link edit-usr-btn text-success " data-userid="${m.id}" title="${gettext("Redigera användare")}">
+                                                            <i class="fas fa-lg fa-user-edit"></i></button>
+                          <button class="btn btn-link reset-pass-btn text-warning" data-userid="${m.id}" title="${gettext(" Återställ lösenord")}">
+                                                            <i class="fas fa-lg fa-key"></i></button>`,
+            });
+
+            usrTable.bootstrapTable("insertRow", {index: 0, row: m});
+
+        });
+    }
+
+    function send_new_user(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+
+        fetch('/add-user/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    location.reload();
+                    auto_hide_message("#usr-msg", data.message, 'info', timer = 10000);
+                } else if (data.errors) {
+                    auto_hide_message("#add-usr-msg", data.errors, 'danger', timer = 10000);
+                }
+            })
+            .catch(error => auto_hide_message("#add-usr-msg", error, 'danger', timer = 10000));
+    }
+
+    function set_edit_user_modal() {
+        const usr_id = $(this).data('userid');
+        const users = $('#users-table').bootstrapTable('getData');
+        const sel_user = users.find(u => u.id === usr_id);
+
+        $("#ed-user-id").val(sel_user.id);
+        $("#ed-email-inpt").val(sel_user.email);
+        $("#ed-first-name-inpt").val(sel_user.first_name);
+        $("#ed-last-name-inpt").val(sel_user.last_name);
+
+        $("#EditUserModal").modal("show");
+    }
+
+    function send_edit_user(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const userId = $("#ed-user-id").val();
+
+        fetch(`/edit-user/${userId}/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    location.reload();
+                    auto_hide_message("#usr-msg", data.message, 'info', timer = 10000);
+                } else if (data.errors) {
+                    auto_hide_message("#edit-usr-msg", data.errors, 'danger', timer = 10000);
+                }
+            })
+            .catch(error => auto_hide_message("#edit-usr-msg", error, 'danger', timer = 10000));
+    }
+
+    function set_reset_pass_modal() {
+        const usr_id = $(this).data('userid');
+        const users = $('#users-table').bootstrapTable('getData');
+        const sel_user = users.find(u => u.id === usr_id);
+
+         $("#reset-user-id").val(sel_user.id);
+         $("#reset-user-name").html(`${sel_user.last_name}, ${sel_user.first_name}`);
+         $("#reset-email").html(sel_user.email);
+
+         $("#resetPasswordModal").modal("show");
+    }
+
+    function send_reset_pass(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const userId = $("#reset-user-id").val();
+
+        fetch(`/reset-password/${userId}/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    auto_hide_message("#reset-pass-msg", data.message, 'success', timer = 10000);
+                } else if (data.errors) {
+                    auto_hide_message("#reset-pass-msg", data.errors, 'danger', timer = 10000);
+                }
+            })
+            .catch(error => auto_hide_message("#reset-pass-msg", error, 'danger', timer = 10000));
+    }
+
+    //---------------------------------
     init()
 });
