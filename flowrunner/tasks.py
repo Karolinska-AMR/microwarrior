@@ -221,9 +221,11 @@ def save_report(report_json, user_id=1, task=None):
                     if cat != catalogs['who']:
                         continue
 
+                    drug = Drug.objects.filter(name=unverified_value.get('drug')).first()
+
                     catalog_entries = Evidence.objects.filter(
                         name=cat,
-                        gene=unverified_value.get('gene'),
+                        drug=drug.id,
                         variant=unverified_value.get('variant'))
 
                     # Create UnverifiedMutation
