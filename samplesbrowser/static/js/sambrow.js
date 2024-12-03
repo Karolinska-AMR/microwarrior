@@ -177,6 +177,8 @@ $(document).ready(function () {
             var panelId = $(navlink).attr('data-target');
             $('#' + panelId).show();
         });
+
+
     }
 
     function adjust_viewbar() {
@@ -502,7 +504,9 @@ $(document).ready(function () {
         //meta-data
         fill_metadata(data.info);
 
-
+        if ($('#pred_card ul li div.nav-link.active').length === 0) {
+            $('#pred_card ul li div.nav-link:first').trigger('click');
+        }
         update_table_loading('hideLoading');
     }
 
@@ -546,19 +550,22 @@ $(document).ready(function () {
                 if (!targetTable) return;
 
                 mulst.forEach((m) => {
+                    if (cat_name.startsWith('WHO')) {
+                        m.OR_inf = m.OR === -999 ? "∞" : m.OR;
+                    }
                     // Add freq_icon if necessary (for WHO and TB-Profiler)
                     if (cat_name.startsWith('WHO') || cat_name.startsWith('TB-Profiler')) {
                         m.freq_icon = get_freq_badge(m.freq);
                     }
                     // Apply grade badge
                     m = get_grade_badge(m);
-                    if( m.mu_comment) {
+                    if (m.mu_comment) {
                         m.comment_wrap = `<div class="text-wrap text-break" style="width: 15rem;">${m.mu_comment}</div>`
                     }
-                    if(m.relaxed_threshold){
+                    if (m.relaxed_threshold) {
                         m.relaxed_threshold_wrap = `<div class="text-wrap text-break" style="width: 15rem;">${m.relaxed_threshold}</div>`
                     }
-                      if(m.footnote){
+                    if (m.footnote) {
                         m.footnote_wrap = `<div class="text-wrap text-break" style="width: 15rem;">${m.footnote}</div>`
                     }
                     // Insert row into the relevant table
@@ -681,151 +688,21 @@ $(document).ready(function () {
         });
     }
 
-    //---------------
+
     function put_pred_layout() {
 
-        let cardBody = $("#pred_card .card-body");
-        let active_row;
 
         $.each(TB_DRUGS, function (k, v) {
-            cardBody.append(`<h5 class="mt-2 text-center text-muted">${v.title}</h5>`)
+
             names = v.drugs
             for (let index = 0; index < names.length; index++) {
-                if (index % 2 === 0) {
-                    if (index > 0) {
-                        cardBody.append(active_row);
-                    }
-                    active_row = document.createElement("div");
-                    active_row.className = "row";
-                }
-                active_row.append(create_drug_card(names[index]));
                 create_drug_tabs(names[index]);
             }
-            cardBody.append(active_row);
-        });
-        // Add event listeners to handle icon toggle
-        document.querySelectorAll('.collapse').forEach(collapse => {
-            collapse.addEventListener('show.bs.collapse', function (event) {
-                const button = this.previousElementSibling.querySelector('.toggle-icon');
-                button.classList.remove('fa-plus');
-                button.classList.add('fa-minus');
-            });
-
-            collapse.addEventListener('hide.bs.collapse', function (event) {
-                const button = this.previousElementSibling.querySelector('.toggle-icon');
-                button.classList.remove('fa-minus');
-                button.classList.add('fa-plus');
-            });
         });
 
     }
 
-    function create_drug_card(dname) {
-
-        dname = dname.toLowerCase()
-        // Create the new content to be added
-        var newContent = document.createElement("div");
-        newContent.className = "col-md-6 mb-1";
-
-        // Create the card element
-        var card = document.createElement("div");
-        card.className = "card border-left-o shadow-sm";
-        card.id = `${dname}-card`
-        newContent.appendChild(card);
-
-        // Create the card header
-        var cardHeader = document.createElement("div");
-        cardHeader.className = "card-header pred-box-header bg-light py-1";
-        card.appendChild(cardHeader);
-
-        // Create the icon circle
-        var iconCircle = document.createElement("div");
-        iconCircle.className = "icon-circle";
-        cardHeader.appendChild(iconCircle);
-
-        // Create the pred-circle
-        var predCircle = document.createElement("div");
-        predCircle.className = "pred-circle text-capitalize shadow-text text-bg-o";
-        predCircle.id = `${dname}-predcircle`
-        predCircle.textContent = "?";
-        iconCircle.appendChild(predCircle);
-
-        // Create the card title
-        var cardTitle = document.createElement("span");
-        cardTitle.className = "card-title mb-0 text-uppercase";
-        cardTitle.textContent = dname;
-        cardHeader.appendChild(cardTitle);
-
-        var infoIcons = document.createElement("div");
-        infoIcons.id = `${dname}-info`;
-        infoIcons.className = "info-icons";
-
-        // Create the collapse button
-        let collapse_id = `collapseCard-${dname}`
-        var collapseButton = document.createElement("button");
-        collapseButton.className = "btn btn-link btn-sm";
-        collapseButton.type = "button";
-        collapseButton.setAttribute("data-bs-toggle", "collapse");
-        collapseButton.setAttribute("data-bs-target", '#' + collapse_id);
-        collapseButton.setAttribute("aria-expanded", "false");
-        collapseButton.setAttribute("aria-controls", collapse_id);
-
-        infoIcons.appendChild(collapseButton);
-        cardHeader.appendChild(infoIcons);
-
-        // Create the collapse icon
-        var collapseIcon = document.createElement("i");
-        collapseIcon.className = "fas fa-plus toggle-icon";
-        collapseButton.appendChild(collapseIcon);
-
-        // Create the collapse content
-        var collapseContent = document.createElement("div");
-        collapseContent.id = collapse_id;
-        collapseContent.className = "collapse";
-        card.appendChild(collapseContent);
-
-        // Create the card body
-        var cardBodyInner = document.createElement("div");
-        cardBodyInner.className = "card-body p-1";
-        collapseContent.appendChild(cardBodyInner);
-
-        var container = document.createElement("div");
-        container.className = "info-header-cont";
-
-        // Create the resistance mutations paragraph
-        var resistanceMutationsParagraph = document.createElement("p");
-        resistanceMutationsParagraph.className = "my-1 text-center fs-6 fw-bold";
-        resistanceMutationsParagraph.textContent = gettext("Resistansmutationer");
-        container.appendChild(resistanceMutationsParagraph);
-
-        // Create the mubadges div
-        var mubadgesDiv = document.createElement("div");
-        mubadgesDiv.className = "d-flex justify-content-center mubadges";
-        container.appendChild(mubadgesDiv);
-
-        // Create the horizontal line
-        var horizontalLine = document.createElement("hr");
-        horizontalLine.className = "m-1";
-        container.appendChild(horizontalLine);
-        cardBodyInner.append(container);
-
-        // Create the notes paragraph
-        var notesParagraph = document.createElement("p");
-        notesParagraph.className = "my-1 text-center fs-6 fw-bold";
-        notesParagraph.textContent = gettext("Noteringar");
-        cardBodyInner.appendChild(notesParagraph);
-
-
-        // Create the notes div
-        var notesDiv = document.createElement("div");
-        notesDiv.className = "d-flex flex-column notes";
-        cardBodyInner.appendChild(notesDiv);
-
-        return newContent;
-
-    }
-
-    function create_drug_tabs(dname, active = false) {
+    function create_drug_tabs(dname) {
 
         dname = dname.toLowerCase();
         const listItem = $('<li></li>');
