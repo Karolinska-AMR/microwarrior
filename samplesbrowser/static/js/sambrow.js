@@ -7,13 +7,13 @@ $(document).ready(function () {
     var TB_DRUGS = {
         "first_line": {
             "title": gettext("Första linjens anti-TB-läkemedel"),
-            "drugs": ["isoniazid", "rifampicin", "pyrazinamide", "ethambutol", "streptomycin"]
+            "drugs": ["rifampicin", "isoniazid", "pyrazinamide", "ethambutol"]
         }, "second_line": {
             "title": gettext("Andra linjens anti-TB-läkemedel"),
-            "drugs": ["linezolid", "ethionamide", "levofloxacin", "moxifloxacin"]
+            "drugs": ["levofloxacin", "moxifloxacin", "linezolid","bedaquiline" ]
         }, "other": {
             "title": gettext("Övriga anti-TB-läkemedel"),
-            "drugs": ["bedaquiline", "delamanid", "amikacin", "capreomycin", "kanamycin", "clofazimine"]
+            "drugs": ["clofazimine", "delamanid","ethionamide", "amikacin", "capreomycin", "kanamycin", "streptomycin"]
         }
     };
     let WHO_Drugs = Object.values(TB_DRUGS).flatMap(it => it.drugs);
