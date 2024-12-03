@@ -44,7 +44,7 @@ def fetch_evidence(request):
     results = Evidence.objects.filter(query).distinct()
     data = {}
     for evi in results:
-        data[evi.id] = {"id": evi.id, "gene": evi.gene, "variant": evi.variant, "drug": evi.drug.name,
+        data[evi.id] = {"id": evi.id, "gene": evi.gene, "variant": evi.variant.split('_')[-1], "drug": evi.drug.name,
                         "grade": evi.grade,
                         'ppv': evi.ppv,
                         'OR': evi.odd_ratio,
