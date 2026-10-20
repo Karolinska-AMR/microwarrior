@@ -137,8 +137,13 @@ def get_log(request):
 @login_required
 def enqueue_task(request):
     if request.method == 'POST':
-        ticket = request.POST["ticket"]
-        count = request.POST["samples_count"]
+        ticket = request.POST.get("ticket", "")
+        if not tasks.is_valid_ticket(ticket):
+            return JsonResponse({'error': 'Invalid ticket'}, status=400)
+        try:
+            count = int(request.POST.get("samples_count", 0))
+        except ValueError:
+            return JsonResponse({'error': 'Invalid samples count'}, status=400)
         res = tasks.spear_mtb.delay(ticket)
         ts = Task(name="spear-mtb",
                   status=-2,

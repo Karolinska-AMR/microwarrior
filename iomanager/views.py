@@ -1,14 +1,20 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 import os
+import re
 from .models import File
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from flowrunner.tasks import is_valid_ticket
+
+SAMPLE_RE = re.compile(r'^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$')
 
 
 @login_required
 def upload(request, ticket):
     if request.method == 'POST':
+        if not is_valid_ticket(ticket):
+            return JsonResponse({'data': 'Invalid ticket'}, status=400)
         fdir = os.path.join(settings.MEDIA_ROOT, ticket)
         if not os.path.isdir(fdir):
             os.makedirs(fdir, exist_ok=True)
@@ -25,7 +31,12 @@ def upload(request, ticket):
             res = JsonResponse({'data': 'Invalid Request'})
             return res
         else:
+            if not SAMPLE_RE.match(sample) or read not in ('1', '2'):
+                return JsonResponse({'data': 'Invalid sample name'}, status=400)
             fileName = f"{sample}_{read}.fastq.gz"
+            # the client may only continue the file it started, never point elsewhere
+            if existingPath not in ('null', f"{ticket}/{fileName}"):
+                return JsonResponse({'data': 'Invalid path'}, status=400)
 
             if existingPath == 'null':
 
