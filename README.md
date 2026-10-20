@@ -39,7 +39,7 @@ settings/          admin page: JSON import, sample deletion, users
 templates/         shared base templates
 locale/            project-wide translations (sv, en)
 deploy/            systemd, nginx and RabbitMQ configuration
-scripts/           standalone maintenance scripts working on the SQLite DB
+scripts/           maintenance script working directly on the SQLite DB
 docs/              documentation
 ```
 
@@ -51,6 +51,7 @@ conda activate microwarrior
 
 cp .env.example microwarrior/.env      # then edit the values
 python manage.py migrate
+python manage.py loaddata reference_data   # drugs and WHO catalogue
 python manage.py createsuperuser
 python manage.py runserver
 ```

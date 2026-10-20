@@ -132,13 +132,13 @@ samplesbrowser.Meta  (lists used by the filters)
   each catalogue (`passed_who`, `passed_cryptic`, `passed_tbprofiler`).
 - `Mutation`: a variant reported for a sample and drug by one catalogue, with
   prediction (`R`, `U`, `S`, ...), frequency and depth.
-- `Evidence`: catalogue entries (WHO 2023 catalogue, loaded with
-  `scripts/update_catalog.py`).
+- `Evidence`: catalogue entries (WHO 2023 catalogue). PPV, sensitivity and
+  specificity are stored as text with a `%` sign, as provided by the catalogue.
 - `UnverifiedMutation`: WHO-catalogue entries linked to a sample that the pipeline
   could not confirm.
-- `Drug`, `Evidence` and `Meta` are reference data. They are not created by
-  migrations and must be copied from the existing database (or reloaded) on a new
-  installation.
+- `Drug`, `Evidence` and `Meta` are reference data, shipped as the fixture
+  `samplesbrowser/fixtures/reference_data.json.gz`
+  (`python manage.py loaddata reference_data`).
 
 ## Report format
 
@@ -185,17 +185,27 @@ python manage.py makemessages -d djangojs -l en -l sv
 python manage.py compilemessages
 ```
 
-## Maintenance scripts (`scripts/`)
+## Migrations
 
-These work directly on the SQLite file (`--db`), not through Django.
+Each app has a single `0001_initial` migration generated from the current models
+(the earlier migration history had diverged from the production database and was
+squashed). `samplesbrowser/0002` stores the catalogue percentages as text.
 
-| Script | Purpose |
-|--------|---------|
-| `reshub_cleaner.py` | Remove a ticket and/or samples with all their records |
-| `update_catalog.py` | Load or refresh `Evidence` from the WHO catalogue CSV (`WHO-UCN-TB-2023.5-eng.csv`, not in git because of its size) |
-| `save_mutations_offline.py` | Back-fill missing CRyPTIC mutations from report JSON files |
+## Security
 
-Make a copy of the database before running any of them.
+- Admin endpoints (users, sample deletion, JSON import) require a staff user
+  (`users/decorators.py: staff_required`); staff cannot edit or reset superusers.
+- Tickets and sample names are validated (`flowrunner.tasks.is_valid_ticket`,
+  `iomanager.views.SAMPLE_RE`) before they are used in file paths.
+- The pipeline is started without a shell, and temporary folders are removed with
+  `shutil.rmtree` only inside `WORKING_ROOT`/`MEDIA_ROOT`.
+- Cookies are https-only when `DEBUG=False`.
+
+## Maintenance script (`scripts/`)
+
+`reshub_cleaner.py` removes a ticket (`--ticket`) or samples (`--samples a,b`) with
+all their records, working directly on the SQLite file (`--db`). Make a copy of
+the database before running it.
 
 ## Unfinished parts
 

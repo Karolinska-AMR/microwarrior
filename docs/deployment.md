@@ -30,9 +30,18 @@ conda env create -f environment.yaml
 cp .env.example microwarrior/.env      # fill in, see Configuration
 conda activate microwarrior
 python manage.py migrate
+python manage.py loaddata reference_data
+python manage.py createsuperuser
 python manage.py collectstatic
 python manage.py compilemessages
 ```
+
+`reference_data` (`samplesbrowser/fixtures/reference_data.json.gz`) holds the
+drugs, the catalogue names and the WHO 2023 catalogue. Load it once on a new,
+empty database; without it the drug lists and the mutation catalogue are empty.
+
+To continue with an existing ResHub database instead, point `SQLITE_DB` at its
+folder and run `python manage.py migrate`; no schema changes are needed.
 
 ## 3. Configuration (`microwarrior/.env`)
 
@@ -41,6 +50,7 @@ python manage.py compilemessages
 | `SECRET_KEY` | Django secret key |
 | `DEBUG` | `False` in production |
 | `ALLOWED_HOSTS` | comma separated host names |
+| `SECURE_COOKIES` | send session/CSRF cookies over https only (default: on when `DEBUG=False`) |
 | `CELERY_BROKER_URL` | `amqp://user:password@localhost:5672//` |
 | `CELERY_RESULT_BACKEND` | `db+sqlite:///tasks_q.sqlite3` (relative to the working directory) |
 | `SQLITE_DB` | folder containing `db.sqlite3` (default: project folder) |
@@ -58,7 +68,15 @@ python manage.py compilemessages
 ```bash
 sudo cp deploy/rabbitmq/rabbitmq-env.conf deploy/rabbitmq/enabled_plugins /etc/rabbitmq/
 sudo systemctl restart rabbitmq-server
+
+# use a dedicated account instead of the default guest user
+sudo rabbitmqctl add_user microwarrior '<password>'
+sudo rabbitmqctl add_vhost microwarrior
+sudo rabbitmqctl set_permissions -p microwarrior microwarrior '.*' '.*' '.*'
+sudo rabbitmqctl delete_user guest
 ```
+
+Then set `CELERY_BROKER_URL=amqp://microwarrior:<password>@localhost:5672/microwarrior`.
 
 `consumer_timeout` is raised to 24 h. With the default (30 min) RabbitMQ closes the
 channel while a long pipeline run is still in progress. `enabled_plugins` turns on
