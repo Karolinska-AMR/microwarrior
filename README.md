@@ -82,6 +82,10 @@ is in use. Some parts are unfinished: the help page is a placeholder, the
 *Dropbox mode* buttons do nothing yet.
 See [docs/architecture.md](docs/architecture.md#unfinished-parts).
 
+## Releases
+
+Current version: **v1.0.0**. See [CHANGELOG.md](CHANGELOG.md).
+
 ## License
 
 GPL-3.0, see [LICENSE](LICENSE).
