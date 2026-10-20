@@ -120,6 +120,15 @@ sudo rabbitmqctl list_queues
 
 The original deployment, kept for reference when moving or restoring the service.
 
+![ResHub server](img/reshub.png)
+
+The server sits inside the KI/hospital network and is reached by users over the
+KI VPN or the SAM VPN. nginx terminates TLS and forwards requests to gunicorn,
+which runs Django. Django puts jobs on the Celery queue (RabbitMQ), and the
+worker runs SPEAR-MTB with Nextflow on the same machine. Data is split over two
+disks: a 200 GiB SSD for the database and active data (uploads, Nextflow work
+directory, assets) and a 1 TB SATA disk for the archive, raw reads and logs.
+
 | Item | Location |
 |------|----------|
 | Code | `/home/h5admin/private/source/microwarrior` |
@@ -132,17 +141,3 @@ The original deployment, kept for reference when moving or restoring the service
 | Static files | `/var/www/static` |
 | TLS certificate | HARICA, `/etc/ssl/harica/`, key in `/etc/ssl/private/` |
 | Celery node | `hamal1`, logs in `/var/log/celery/` |
-
-### What to keep when decommissioning
-
-Not stored in git and needed to restore the service with its data:
-
-- `db.sqlite3` (all users, samples, results, notes and the reference tables `Drug`,
-  `Evidence`, `Meta`)
-- `microwarrior/.env` (secrets; keep it somewhere safe, not in git)
-- the spear-MTB output archive (`ARCHIVE_ROOT`) and raw reads (`RAWSEQ_ROOT`)
-- the spear-MTB reference assets (`ASSETS_ROOT`)
-- the WHO catalogue CSV used by `scripts/update_catalog.py`
-
-Make a consistent copy of the database with
-`sqlite3 db.sqlite3 ".backup db-backup.sqlite3"` while the services are stopped.
