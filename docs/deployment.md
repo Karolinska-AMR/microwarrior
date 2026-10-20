@@ -10,7 +10,8 @@ Production runs as four services on one Linux host:
 | Celery worker | runs spear-MTB jobs, one at a time | `deploy/systemd/celery.service`, `deploy/celery.conf`, `deploy/run_celery.sh` |
 
 The files under `deploy/` use placeholders: `<USER>`, `<APP_DIR>` (this repository),
-`<CONDA_ENV_DIR>` (e.g. `~/miniconda3/envs/microwarrior`) and the certificate paths.
+`<CONDA_ENV_DIR>` (e.g. `~/miniconda3/envs/microwarrior`), `<SERVER_NAME>` and the
+certificate paths.
 
 ## 1. Prerequisites
 
@@ -140,15 +141,12 @@ The original deployment, kept for reference when moving or restoring the service
 
 See the diagram in the [README](../README.md#reshub-server).
 
-| Item | Location |
-|------|----------|
-| Code | `/home/h5admin/private/source/microwarrior` |
-| spear-MTB | `/home/h5admin/private/source/spear-mtb` |
-| conda env | `/home/h5admin/miniconda3/envs/microwarrior` |
-| Database | `/srv/data_ssd/reshub/db/db.sqlite3` |
-| Uploads / work / assets | `/srv/data_ssd/reshub/{uploads,working_dir,assets}` |
-| Archive / raw reads | `/srv/data_sata/reshub/{spear_out,raw_seq}` |
-| Django log | `/srv/data_sata/reshub/.logs/debug.log` |
-| Static files | `/var/www/static` |
-| TLS certificate | HARICA, `/etc/ssl/harica/`, key in `/etc/ssl/private/` |
-| Celery node | `hamal1`, logs in `/var/log/celery/` |
+- One Ubuntu server inside the KI network, reachable over VPN only.
+- The code, spear-MTB and the conda environments lived in the service user's home
+  directory.
+- Two data disks: an SSD (200 GiB) for the database, uploads, the Nextflow work
+  directory and the reference assets, and a SATA disk (1 TB) for the pipeline
+  archive, raw reads and logs. Each `*_ROOT` setting pointed to a folder on one
+  of them.
+- Static files in `/var/www/static`, served by nginx.
+- TLS certificate issued by HARICA.
