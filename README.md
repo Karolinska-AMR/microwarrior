@@ -12,6 +12,19 @@ and English.
 
 It was deployed as **ResHub** at `reshub.labmed.ki.se` (Karolinska Institutet).
 
+## ResHub server
+
+![ResHub server](docs/img/reshub.png)
+
+The server sits inside the KI/hospital network and is reached by users over the
+KI VPN or the SAM VPN. nginx terminates TLS and forwards requests to gunicorn,
+which runs Django. Django puts jobs on the Celery queue (RabbitMQ), and the
+worker runs SPEAR-MTB with Nextflow on the same machine. Data is split over two
+disks: a 200 GiB SSD for the database and active data (uploads, Nextflow work
+directory, assets) and a 1 TB SATA disk for the archive, raw reads and logs.
+
+Details in [docs/deployment.md](docs/deployment.md).
+
 ## Repository layout
 
 ```
