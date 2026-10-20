@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-20 20:05+0200\n"
+"POT-Creation-Date: 2024-12-03 18:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,18 +18,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: users/forms.py:7
+#: users/forms.py:9
 #, fuzzy
 msgid "Gammalt lösenord"
 msgstr "Changing Password"
 
-#: users/forms.py:8
+#: users/forms.py:10
 #, fuzzy
 #| msgid "Lösenord"
 msgid "Nytt lösenord"
 msgstr "Change password"
 
-#: users/forms.py:9
+#: users/forms.py:11
 #, fuzzy
 #| msgid "Lösenord"
 msgid "Bekräfta lösenord"
@@ -84,11 +84,11 @@ msgstr "Password"
 msgid "Logga in"
 msgstr "Login"
 
-#: users/views.py:22
+#: users/views.py:29
 msgid "Användaren hittades inte."
 msgstr "The user was not found."
 
-#: users/views.py:23
+#: users/views.py:30
 msgid ""
 "Vänligen kontrollera ditt användarnamn och försök igen. Om du inte har ett "
 "konto, kontakta administratören."
@@ -96,10 +96,10 @@ msgstr ""
 "Please check your username and try again. If you don't have an account, "
 "contact the administrator."
 
-#: users/views.py:32
+#: users/views.py:39
 msgid "Ett fel inträffade vid inloggningen"
 msgstr ""
 
-#: users/views.py:33
+#: users/views.py:40
 msgid "Försök igen senare eller kontakta supporten om problemet kvarstår"
 msgstr "Please try again later or contact support if the issue persists"

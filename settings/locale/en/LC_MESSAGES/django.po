@@ -1,0 +1,192 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-03 17:49+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: settings/templates/settings.html:5
+msgid "Inställningar"
+msgstr "Settings"
+
+#: settings/templates/settings.html:14 settings/templates/settings.html:34
+msgid "Användarhantering"
+msgstr "User management"
+
+#: settings/templates/settings.html:18 settings/templates/settings.html:80
+msgid "Ta bort prover"
+msgstr "Remove samples"
+
+#: settings/templates/settings.html:22 settings/templates/settings.html:162
+msgid "Ladda upp pipelineresultat"
+msgstr "Upload pipeline results"
+
+#: settings/templates/settings.html:41 settings/templates/settings.html:228
+msgid "Lägg till en användare"
+msgstr "Add a new user"
+
+#: settings/templates/settings.html:58
+msgid "ID"
+msgstr "ID"
+
+#: settings/templates/settings.html:59 settings/templates/settings.html:234
+#: settings/templates/settings.html:281
+msgid "E-postadress"
+msgstr "Email"
+
+#: settings/templates/settings.html:60 settings/templates/settings.html:242
+#: settings/templates/settings.html:289
+msgid "Efternamn"
+msgstr "Last name"
+
+#: settings/templates/settings.html:61 settings/templates/settings.html:238
+#: settings/templates/settings.html:285
+msgid "Förnamn"
+msgstr "First name"
+
+#: settings/templates/settings.html:63
+msgid "Senaste inloggningen"
+msgstr "Last login"
+
+#: settings/templates/settings.html:65
+msgid "Pseudo admin"
+msgstr "Pseudo admin"
+
+#: settings/templates/settings.html:67
+msgid "Aktiv"
+msgstr "Active"
+
+#: settings/templates/settings.html:87 settings/templates/settings.html:122
+msgid "Prov-ID"
+msgstr "Sample ID"
+
+#: settings/templates/settings.html:90
+msgid "Rensa"
+msgstr "Clear"
+
+#: settings/templates/settings.html:93
+msgid "Sök"
+msgstr "Search"
+
+#: settings/templates/settings.html:98
+msgid "Ange prov-ID, ett per rad"
+msgstr "Enter sample IDs, one per line"
+
+#: settings/templates/settings.html:106
+msgid "Radera alla"
+msgstr "Delete all"
+
+#: settings/templates/settings.html:123
+msgid "Släktlinje"
+msgstr "Lineage"
+
+#: settings/templates/settings.html:124
+msgid "Kategori"
+msgstr "Category"
+
+#: settings/templates/settings.html:126
+msgid "WHO katalog"
+msgstr "WHO Catalogue"
+
+#: settings/templates/settings.html:128
+msgid "CRyPTIC katalog"
+msgstr "CRyPTIC Catalogue"
+
+#: settings/templates/settings.html:130
+msgid "TB-Profiler katalog"
+msgstr "TB-Profiler Catalogue"
+
+#: settings/templates/settings.html:132
+msgid "Ant. mutationer"
+msgstr "Nr. mutations"
+
+#: settings/templates/settings.html:134
+msgid "Ant. overifierade mutationer"
+msgstr "Nr. unverified mutations"
+
+#: settings/templates/settings.html:136
+msgid "Ärendenummer"
+msgstr "Ticket"
+
+#: settings/templates/settings.html:138
+msgid "Tidstämpel för inlämning"
+msgstr "Submission timestamp"
+
+#: settings/templates/settings.html:140
+msgid "Median genomtäckning"
+msgstr "Median genome depth"
+
+#: settings/templates/settings.html:142
+msgid "Kartlagda läsningar"
+msgstr "Nr. Mapped reads"
+
+#: settings/templates/settings.html:144
+msgid "Procentandel kartlagda läsningar"
+msgstr "Percentage of mapped reads"
+
+#: settings/templates/settings.html:206
+msgid "bekräfta raderingen"
+msgstr "Confirm the deletion"
+
+#: settings/templates/settings.html:210
+msgid "Är du säker på att du vill radera de markerade proverna?"
+msgstr "Are you sure you want to delete the selected samples?"
+
+#: settings/templates/settings.html:211
+msgid ""
+"Denna åtgärd kommer att ta bort all data kopplad till dessa prover och kan "
+"inte ångras."
+msgstr "This action will delete all data associated with these samples and cannot be undone."
+
+#: settings/templates/settings.html:215 settings/templates/settings.html:258
+#: settings/templates/settings.html:295 settings/templates/settings.html:333
+msgid "Avbryta"
+msgstr "Cancel"
+
+#: settings/templates/settings.html:216
+msgid "Radera"
+msgstr "Delete"
+
+#: settings/templates/settings.html:246
+msgid "Lösenord"
+msgstr "Password"
+
+#: settings/templates/settings.html:251 settings/templates/settings.html:326
+msgid "Bekräfta lösenordet"
+msgstr "Confirm password"
+
+#: settings/templates/settings.html:259
+msgid "Spara"
+msgstr "Save"
+
+#: settings/templates/settings.html:274
+msgid "Redigera användare"
+msgstr "Edit user"
+
+#: settings/templates/settings.html:296
+msgid "Redigera"
+msgstr "Edit"
+
+#: settings/templates/settings.html:312
+msgid "Återställ lösenord"
+msgstr "Reset password"
+
+#: settings/templates/settings.html:322
+msgid "Nytt lösenord"
+msgstr "New password"
+
+#: settings/templates/settings.html:334
+msgid "Återställa"
+msgstr "Resetdjango-admin compilemessages"

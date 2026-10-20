@@ -1,0 +1,92 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-03 17:34+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: users/forms.py:9
+msgid "Gammalt lösenord"
+msgstr ""
+
+#: users/forms.py:10
+msgid "Nytt lösenord"
+msgstr ""
+
+#: users/forms.py:11
+msgid "Bekräfta lösenord"
+msgstr ""
+
+#: users/templates/change-password.html:9
+msgid "Lösenordsändring"
+msgstr ""
+
+#: users/templates/change-password.html:39
+msgid "Instrumentpanel"
+msgstr ""
+
+#: users/templates/change-password.html:50
+msgid "Ändra lösenord"
+msgstr ""
+
+#: users/templates/change-password.html:72
+msgid "Byt Lösenord"
+msgstr ""
+
+#: users/templates/login.html:9
+msgid "Inloggning"
+msgstr ""
+
+#: users/templates/login.html:39
+msgid "Hem"
+msgstr ""
+
+#: users/templates/login.html:50
+msgid "Har du ett konto?"
+msgstr ""
+
+#: users/templates/login.html:52
+msgid "Logga in genom att ange följande information"
+msgstr ""
+
+#: users/templates/login.html:77
+msgid "e-post"
+msgstr ""
+
+#: users/templates/login.html:86
+msgid "Lösenord"
+msgstr ""
+
+#: users/templates/login.html:91
+msgid "Logga in"
+msgstr ""
+
+#: users/views.py:29
+msgid "Användaren hittades inte."
+msgstr ""
+
+#: users/views.py:30
+msgid ""
+"Vänligen kontrollera ditt användarnamn och försök igen. Om du inte har ett "
+"konto, kontakta administratören."
+msgstr ""
+
+#: users/views.py:39
+msgid "Ett fel inträffade vid inloggningen"
+msgstr ""
+
+#: users/views.py:40
+msgid "Försök igen senare eller kontakta supporten om problemet kvarstår"
+msgstr ""

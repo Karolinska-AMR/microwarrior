@@ -1,0 +1,140 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-03 18:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: catalogmanager/templates/catalogs.html:5
+msgid "Mutationskatalog"
+msgstr "Mutations catalogue"
+
+#: catalogmanager/templates/catalogs.html:19
+msgid "Filteralternativ"
+msgstr "Filtering options"
+
+#: catalogmanager/templates/catalogs.html:25
+#: catalogmanager/templates/catalogs.html:78
+msgid "Gennamn"
+msgstr "Gene name"
+
+#: catalogmanager/templates/catalogs.html:30
+#: catalogmanager/templates/catalogs.html:79
+#: catalogmanager/templates/catalogs.html:98
+#: catalogmanager/templates/catalogs.html:189
+msgid "Mutation"
+msgstr "Mutation"
+
+#: catalogmanager/templates/catalogs.html:36
+#: catalogmanager/templates/catalogs.html:38
+#: catalogmanager/templates/catalogs.html:81
+msgid "Grad"
+msgstr "Grade"
+
+#: catalogmanager/templates/catalogs.html:38
+#: catalogmanager/templates/catalogs.html:44
+msgid "Välj"
+msgstr "Choose"
+
+#: catalogmanager/templates/catalogs.html:42
+#: catalogmanager/templates/catalogs.html:44
+#: catalogmanager/templates/catalogs.html:80
+#: catalogmanager/templates/catalogs.html:102
+#: catalogmanager/templates/catalogs.html:193
+msgid "Läkemedel"
+msgstr "Drug"
+
+#: catalogmanager/templates/catalogs.html:56
+#: catalogmanager/templates/catalogs.html:246
+msgid "Rensa"
+msgstr "Clear"
+
+#: catalogmanager/templates/catalogs.html:59
+msgid "Sök"
+msgstr "Search"
+
+#: catalogmanager/templates/catalogs.html:92
+msgid "detaljer om mutationer"
+msgstr "details of mutations"
+
+#: catalogmanager/templates/catalogs.html:107
+#: catalogmanager/templates/catalogs.html:198
+msgid "WHO Grad"
+msgstr "WHO Grade"
+
+#: catalogmanager/templates/catalogs.html:111
+msgid "Förutsägelse"
+msgstr "Prediction"
+
+#: catalogmanager/templates/catalogs.html:129
+msgid "Effekt"
+msgstr "Effect"
+
+#: catalogmanager/templates/catalogs.html:149
+msgid "Noteringar"
+msgstr "Notes"
+
+#: catalogmanager/templates/catalogs.html:152
+msgid "Lägg till ny notering"
+msgstr "Add new note"
+
+#: catalogmanager/templates/catalogs.html:157
+msgid "Inga noteringar att visa"
+msgstr "No notes to show"
+
+#: catalogmanager/templates/catalogs.html:179
+msgid "ny notering"
+msgstr "New note"
+
+#: catalogmanager/templates/catalogs.html:211
+msgid "Föreslagit resultat"
+msgstr "Suggested result"
+
+#: catalogmanager/templates/catalogs.html:223
+msgid "Mutationsresultaten skiljer sig från WHO katalog."
+msgstr "The mutation outcome differs from WHO catalogue."
+
+#: catalogmanager/templates/catalogs.html:233
+msgid "Notering"
+msgstr "Note"
+
+#: catalogmanager/templates/catalogs.html:249
+msgid "Spara"
+msgstr "Save"
+
+#: catalogmanager/templates/catalogs.html:255
+#: catalogmanager/templates/catalogs.html:291
+msgid "Avbryt"
+msgstr ""
+
+#: catalogmanager/templates/catalogs.html:257
+msgid "Ändra"
+msgstr "Change"
+
+#: catalogmanager/templates/catalogs.html:274
+msgid "Bekräfta Radering"
+msgstr "Confirm Edit"
+
+#: catalogmanager/templates/catalogs.html:279
+msgid "Är du säker på att du vill radera denna notering?"
+msgstr ""
+
+#: catalogmanager/templates/catalogs.html:280
+msgid "Den kommer att arkiveras och inte visas igen."
+msgstr "Are you sure you want to delete this note?"
+
+#: catalogmanager/templates/catalogs.html:294
+msgid "Radera"
+msgstr "Delete"

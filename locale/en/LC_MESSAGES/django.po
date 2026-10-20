@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-20 20:05+0200\n"
+"POT-Creation-Date: 2024-12-03 18:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,11 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: microwarrior/settings.py:140
+#: microwarrior/settings.py:142
 msgid "English"
 msgstr ""
 
-#: microwarrior/settings.py:141
+#: microwarrior/settings.py:143
 msgid "Svenska"
 msgstr ""
 
@@ -43,17 +43,43 @@ msgid "Mutationskatalog"
 msgstr "Mutations catalogue"
 
 #: templates/base.html:89 templates/base.html:91
+msgid "Inställningar"
+msgstr ""
+
+#: templates/base.html:97 templates/base.html:99
 msgid "Hjälp"
 msgstr "Help"
 
-#: templates/base.html:135
+#: templates/base.html:143
 msgid "Hej"
 msgstr "Hello"
 
-#: templates/base.html:152
+#: templates/base.html:160
 msgid "ändra lösenord"
 msgstr "change password"
 
-#: templates/base.html:164
+#: templates/base.html:172
 msgid "Logga ut"
 msgstr "logout"
+
+#: templates/base.html:195
+msgid "Klar att avsluta?"
+msgstr ""
+
+#: templates/base.html:197
+msgid "Din nuvarande session kommer att avslutas."
+msgstr ""
+
+#: templates/base.html:198
+msgid ""
+"Om du håller på att ladda upp filer, säkerställ att dina jobb har skickats "
+"in helt innan du loggar ut."
+msgstr ""
+
+#: templates/base.html:201
+msgid "Avbryt"
+msgstr ""
+
+#: templates/base.html:202
+msgid "Fortsätt"
+msgstr ""

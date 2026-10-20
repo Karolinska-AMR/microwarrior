@@ -1,0 +1,85 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-03 17:49+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: microwarrior/settings.py:142
+msgid "English"
+msgstr ""
+
+#: microwarrior/settings.py:143
+msgid "Svenska"
+msgstr ""
+
+#: templates/base.html:57 templates/base.html:59
+msgid "Hem"
+msgstr ""
+
+#: templates/base.html:66 templates/base.html:68
+msgid "Instrumentpanel"
+msgstr ""
+
+#: templates/base.html:73 templates/base.html:75
+msgid "Analysresultat"
+msgstr ""
+
+#: templates/base.html:80 templates/base.html:82
+msgid "Mutationskatalog"
+msgstr ""
+
+#: templates/base.html:89 templates/base.html:91
+msgid "Inställningar"
+msgstr ""
+
+#: templates/base.html:97 templates/base.html:99
+msgid "Hjälp"
+msgstr ""
+
+#: templates/base.html:143
+msgid "Hej"
+msgstr ""
+
+#: templates/base.html:160
+msgid "ändra lösenord"
+msgstr ""
+
+#: templates/base.html:172
+msgid "Logga ut"
+msgstr ""
+
+#: templates/base.html:195
+msgid "Klar att avsluta?"
+msgstr ""
+
+#: templates/base.html:197
+msgid "Din nuvarande session kommer att avslutas."
+msgstr ""
+
+#: templates/base.html:198
+msgid ""
+"Om du håller på att ladda upp filer, säkerställ att dina jobb har skickats "
+"in helt innan du loggar ut."
+msgstr ""
+
+#: templates/base.html:201
+msgid "Avbryt"
+msgstr ""
+
+#: templates/base.html:202
+msgid "Fortsätt"
+msgstr ""

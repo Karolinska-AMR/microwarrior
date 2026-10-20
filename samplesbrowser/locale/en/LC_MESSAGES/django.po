@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-21 13:09+0200\n"
+"POT-Creation-Date: 2024-12-03 18:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,10 +35,12 @@ msgid "Colls klassificering"
 msgstr "Coll's classification"
 
 #: samplesbrowser/templates/sambrow.html:40
-#: samplesbrowser/templates/sambrow.html:325
-#: samplesbrowser/templates/sambrow.html:327
-#: samplesbrowser/templates/sambrow.html:386
-msgid "Släkten"
+#: samplesbrowser/templates/sambrow.html:383
+#: samplesbrowser/templates/sambrow.html:385
+#: samplesbrowser/templates/sambrow.html:445
+#, fuzzy
+#| msgid "Släkten"
+msgid "Släktlinje"
 msgstr "Lineage"
 
 #: samplesbrowser/templates/sambrow.html:41
@@ -53,169 +55,251 @@ msgstr "Spoligotype"
 msgid "Läkemedelsresistensprediktioner"
 msgstr "Drug resistance predictions"
 
-#: samplesbrowser/templates/sambrow.html:57
+#: samplesbrowser/templates/sambrow.html:75
 msgid "Identifierade mutationer"
 msgstr "identified mutations"
 
-#: samplesbrowser/templates/sambrow.html:63
-#: samplesbrowser/templates/sambrow.html:66
-#: samplesbrowser/templates/sambrow.html:70
+#: samplesbrowser/templates/sambrow.html:81
+#: samplesbrowser/templates/sambrow.html:84
+#: samplesbrowser/templates/sambrow.html:88
 msgid "Katalog"
 msgstr "Catalogue"
 
-#: samplesbrowser/templates/sambrow.html:88
-#: samplesbrowser/templates/sambrow.html:117
-#: samplesbrowser/templates/sambrow.html:138
-#: samplesbrowser/templates/sambrow.html:171
-#: samplesbrowser/templates/sambrow.html:338
+#: samplesbrowser/templates/sambrow.html:106
+#: samplesbrowser/templates/sambrow.html:159
+#: samplesbrowser/templates/sambrow.html:180
+#: samplesbrowser/templates/sambrow.html:217
+#: samplesbrowser/templates/sambrow.html:396
 msgid "Läkemedel"
 msgstr "Drug"
 
-#: samplesbrowser/templates/sambrow.html:90
-#: samplesbrowser/templates/sambrow.html:118
-#: samplesbrowser/templates/sambrow.html:139
-#: samplesbrowser/templates/sambrow.html:172
-#: samplesbrowser/templates/sambrow.html:330
-#: samplesbrowser/templates/sambrow.html:332
+#: samplesbrowser/templates/sambrow.html:108
+#: samplesbrowser/templates/sambrow.html:160
+#: samplesbrowser/templates/sambrow.html:181
+#: samplesbrowser/templates/sambrow.html:218
+#: samplesbrowser/templates/sambrow.html:388
+#: samplesbrowser/templates/sambrow.html:390
 msgid "Mutation"
 msgstr "Mutation"
 
-#: samplesbrowser/templates/sambrow.html:92
-#: samplesbrowser/templates/sambrow.html:140
-msgid "Variantläsdjup"
-msgstr "Variant calling depth"
-
-#: samplesbrowser/templates/sambrow.html:94
-#: samplesbrowser/templates/sambrow.html:141
-msgid "Variantfrekvens"
-msgstr "Variant frequency"
-
-#: samplesbrowser/templates/sambrow.html:96
-#: samplesbrowser/templates/sambrow.html:173
-msgid "Effekt"
-msgstr "Effect"
-
-#: samplesbrowser/templates/sambrow.html:97
-#: samplesbrowser/templates/sambrow.html:119
-#: samplesbrowser/templates/sambrow.html:144
-#: samplesbrowser/templates/sambrow.html:174
+#: samplesbrowser/templates/sambrow.html:109
+#: samplesbrowser/templates/sambrow.html:161
+#: samplesbrowser/templates/sambrow.html:186
+#: samplesbrowser/templates/sambrow.html:220
 msgid "Grad"
 msgstr "Grade"
 
-#: samplesbrowser/templates/sambrow.html:153
+#: samplesbrowser/templates/sambrow.html:111
+msgid "Genomisk position"
+msgstr ""
+
+#: samplesbrowser/templates/sambrow.html:113
+#: samplesbrowser/templates/sambrow.html:182
+msgid "Variantläsdjup"
+msgstr "Variant calling depth"
+
+#: samplesbrowser/templates/sambrow.html:115
+#: samplesbrowser/templates/sambrow.html:183
+msgid "Variantfrekvens"
+msgstr "Variant frequency"
+
+#: samplesbrowser/templates/sambrow.html:117
+#: samplesbrowser/templates/sambrow.html:219
+msgid "Effekt"
+msgstr "Effect"
+
+#: samplesbrowser/templates/sambrow.html:119
+#: samplesbrowser/templates/sambrow.html:222
+msgid "närvarande solo R"
+msgstr "present solo R"
+
+#: samplesbrowser/templates/sambrow.html:121
+#: samplesbrowser/templates/sambrow.html:224
+msgid "närvarande solo S"
+msgstr "present solo S"
+
+#: samplesbrowser/templates/sambrow.html:123
+#: samplesbrowser/templates/sambrow.html:226
+msgid "närvarande R"
+msgstr "present R"
+
+#: samplesbrowser/templates/sambrow.html:125
+#: samplesbrowser/templates/sambrow.html:228
+msgid "närvarande S"
+msgstr "present S"
+
+#: samplesbrowser/templates/sambrow.html:127
+#: samplesbrowser/templates/sambrow.html:230
+msgid "Sensitivitet"
+msgstr "Sensitivity"
+
+#: samplesbrowser/templates/sambrow.html:130
+#: samplesbrowser/templates/sambrow.html:233
+msgid "Specificitet"
+msgstr "Specificity"
+
+#: samplesbrowser/templates/sambrow.html:133
+#: samplesbrowser/templates/sambrow.html:236
+msgid "Oddskvot"
+msgstr "Odd-ratio"
+
+#: samplesbrowser/templates/sambrow.html:135
+#: samplesbrowser/templates/sambrow.html:188
+#: samplesbrowser/templates/sambrow.html:238
+msgid "Kommentar"
+msgstr "Comments"
+
+#: samplesbrowser/templates/sambrow.html:137
+#: samplesbrowser/templates/sambrow.html:240
+msgid "AwRi med avslappnade trösklar"
+msgstr "AwRi with relaxed threshold"
+
+#: samplesbrowser/templates/sambrow.html:139
+#: samplesbrowser/templates/sambrow.html:242
+msgid "Fotnot"
+msgstr "Footnote"
+
+#: samplesbrowser/templates/sambrow.html:162
+#: samplesbrowser/templates/sambrow.html:189
+msgid "Källa"
+msgstr "Source"
+
+#: samplesbrowser/templates/sambrow.html:199
 msgid "overifierade mutationer"
 msgstr "unverified mutations"
 
-#: samplesbrowser/templates/sambrow.html:195
+#: samplesbrowser/templates/sambrow.html:253
 msgid "metadata"
 msgstr "Meta-data"
 
-#: samplesbrowser/templates/sambrow.html:204
-#: samplesbrowser/templates/sambrow.html:296
-#: samplesbrowser/templates/sambrow.html:298
-#: samplesbrowser/templates/sambrow.html:381
+#: samplesbrowser/templates/sambrow.html:262
+#: samplesbrowser/templates/sambrow.html:354
+#: samplesbrowser/templates/sambrow.html:356
+#: samplesbrowser/templates/sambrow.html:439
 msgid "Ärendenummer"
 msgstr "Ticket"
 
-#: samplesbrowser/templates/sambrow.html:205
-#: samplesbrowser/templates/sambrow.html:303
-#: samplesbrowser/templates/sambrow.html:305
-#: samplesbrowser/templates/sambrow.html:382
+#: samplesbrowser/templates/sambrow.html:263
+#: samplesbrowser/templates/sambrow.html:361
+#: samplesbrowser/templates/sambrow.html:363
+#: samplesbrowser/templates/sambrow.html:440
 msgid "Prov-id"
 msgstr "Sample id"
 
-#: samplesbrowser/templates/sambrow.html:207
-#: samplesbrowser/templates/sambrow.html:384
+#: samplesbrowser/templates/sambrow.html:265
+#: samplesbrowser/templates/sambrow.html:442
 msgid "Tidstämpel för inlämning"
 msgstr "Submission time-stamp"
 
-#: samplesbrowser/templates/sambrow.html:209
+#: samplesbrowser/templates/sambrow.html:267
 msgid "Median genomtäckning"
 msgstr "Median genome coverage"
 
-#: samplesbrowser/templates/sambrow.html:211
+#: samplesbrowser/templates/sambrow.html:269
 msgid "Kartlagda läsningar"
 msgstr "Mapped reads"
 
-#: samplesbrowser/templates/sambrow.html:213
+#: samplesbrowser/templates/sambrow.html:271
 msgid "Procentandel kartlagda läsningar"
 msgstr "precentage of mapped reads"
 
-#: samplesbrowser/templates/sambrow.html:227
+#: samplesbrowser/templates/sambrow.html:285
 msgid "Visa Lista"
 msgstr "View list"
 
-#: samplesbrowser/templates/sambrow.html:232
+#: samplesbrowser/templates/sambrow.html:290
 msgid "Importera isolat"
 msgstr "Import isolates"
 
-#: samplesbrowser/templates/sambrow.html:239
+#: samplesbrowser/templates/sambrow.html:297
 msgid "Exportera"
 msgstr "Export"
 
-#: samplesbrowser/templates/sambrow.html:247
+#: samplesbrowser/templates/sambrow.html:305
 msgid "Fäst/lossa alla"
 msgstr "Pin/unpin all"
 
-#: samplesbrowser/templates/sambrow.html:256
+#: samplesbrowser/templates/sambrow.html:314
 msgid "Ta bort alla"
 msgstr "Delete all"
 
-#: samplesbrowser/templates/sambrow.html:286
+#: samplesbrowser/templates/sambrow.html:344
 msgid "sök prover"
 msgstr "Search samples"
 
-#: samplesbrowser/templates/sambrow.html:308
+#: samplesbrowser/templates/sambrow.html:366
 msgid "Veckans nummer"
 msgstr "Week number"
 
-#: samplesbrowser/templates/sambrow.html:315
+#: samplesbrowser/templates/sambrow.html:373
 msgid "Datum från"
 msgstr "Date from"
 
-#: samplesbrowser/templates/sambrow.html:319
+#: samplesbrowser/templates/sambrow.html:377
 msgid "Datum till"
 msgstr "Date to"
 
-#: samplesbrowser/templates/sambrow.html:337
+#: samplesbrowser/templates/sambrow.html:395
 msgid "Resistent mot"
 msgstr "Resistant against"
 
-#: samplesbrowser/templates/sambrow.html:341
-#: samplesbrowser/templates/sambrow.html:343
-#: samplesbrowser/templates/sambrow.html:387
+#: samplesbrowser/templates/sambrow.html:399
+#: samplesbrowser/templates/sambrow.html:401
+#: samplesbrowser/templates/sambrow.html:446
 msgid "Resistenskategori"
 msgstr "Resistance Category"
 
-#: samplesbrowser/templates/sambrow.html:343
+#: samplesbrowser/templates/sambrow.html:401
 msgid "osv."
 msgstr "etc."
 
-#: samplesbrowser/templates/sambrow.html:349
+#: samplesbrowser/templates/sambrow.html:407
 msgid "Rensa"
 msgstr "Clear"
 
-#: samplesbrowser/templates/sambrow.html:352
+#: samplesbrowser/templates/sambrow.html:410
 msgid "Sök"
 msgstr "Search"
 
-#: samplesbrowser/templates/sambrow.html:360
+#: samplesbrowser/templates/sambrow.html:418
 #, fuzzy
 #| msgid "Importera isolat"
 msgid "Importera Utvalda"
 msgstr "Import selected"
 
-#: samplesbrowser/templates/sambrow.html:363
+#: samplesbrowser/templates/sambrow.html:421
 #, fuzzy
 #| msgid "Ta bort alla"
 msgid "Ta Bort Alla"
 msgstr "Delete all"
 
-#: samplesbrowser/templates/sambrow.html:367
+#: samplesbrowser/templates/sambrow.html:425
 #, fuzzy
 #| msgid "Importera isolat"
 msgid "Importera Alla"
 msgstr "Import all"
+
+#: samplesbrowser/views.py:149
+msgid "Minst en resistensmutation hittades."
+msgstr "At least one resistance mutation was found."
+
+#: samplesbrowser/views.py:154
+msgid ""
+"Mutationer med osäker signifikans hittades. Se tabellen nedan för mer "
+"information."
+msgstr "Mutations of uncertain significance were found. See the table below for more information."
+
+#: samplesbrowser/views.py:289
+msgid ""
+"Ofullständiga resultat på grund av inkonsekvenser i WHO katalog och "
+"noteringar."
+msgstr "Contradictory results due to inconsistencies in WHO catalog and notes."
+
+#: samplesbrowser/views.py:301
+msgid ""
+"En mutation med osäker signifikans från WHO-katalogen har markerats som en "
+"resistensmutation i noteringar."
+msgstr "A mutation with uncertain significance from WHO catalog has been marked as a resistance mutation in the notes."
 
 #~ msgid "3) Uncertain significance"
 #~ msgstr "3) Osäker signifikans"

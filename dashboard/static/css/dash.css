@@ -20,12 +20,12 @@
     opacity: 0.8;
 }
 
-.section-header {
-    font-size: 1rem;
-    font-family: "Poppins", sans-serif;
-    color: #16365f;
-    font-weight: 700;
-}
+/*.section-header {*/
+/*    font-size: 1rem;*/
+/*    font-family: "Poppins", sans-serif;*/
+/*    color: #16365f;*/
+/*    font-weight: 700;*/
+/*}*/
 
 #import-card a:hover {
     opacity: 1;

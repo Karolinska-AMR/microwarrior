@@ -29,7 +29,7 @@ class Task_handler(Task):
 
         status = 1
         if len(json_file) > 0:
-            save_report(json_file[0], tsk)
+            save_report(json_file[0],tsk.user_id,tsk)
             status = 0
         djTask.objects.filter(task_id=task_id).update(status=status)
 

@@ -1,0 +1,100 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-03 18:25+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: catalogmanager/static/js/cata.js:19
+msgid "Inga data att visa."
+msgstr ""
+
+#: catalogmanager/static/js/cata.js:46
+msgid "Vänligen fyll i minst ett fält."
+msgstr "Please fill in at least one field."
+
+#: catalogmanager/static/js/cata.js:125
+msgid "rediger anteckningen"
+msgstr "Editing notes"
+
+#: catalogmanager/static/js/cata.js:148
+msgid "Redigerades på"
+msgstr "Edited on"
+
+#: catalogmanager/static/js/cata.js:160
+msgid "Av"
+msgstr "by"
+
+#: catalogmanager/static/js/cata.js:203
+msgid "föreslagit resultat"
+msgstr "Suggested outcome"
+
+#: catalogmanager/static/js/cata.js:237
+msgid "ny notering"
+msgstr "New note"
+
+#: catalogmanager/static/js/cata.js:249
+msgid "Ändra notering"
+msgstr "Modify note"
+
+#: catalogmanager/static/js/cata.js:290 catalogmanager/static/js/cata.js:311
+msgid "Nätverksfel"
+msgstr "Network Error"
+
+#: catalogmanager/static/js/cata.js:307
+msgid "Fel vid hämtning av metadata"
+msgstr "Error retrieving metadata"
+
+#: catalogmanager/static/js/cata.js:328 catalogmanager/static/js/cata.js:457
+msgid "Associerad med resistens"
+msgstr "Associated with resistance"
+
+#: catalogmanager/static/js/cata.js:329 catalogmanager/static/js/cata.js:458
+msgid "Associerad med resistens-interim"
+msgstr "Associated with resistance-interim"
+
+#: catalogmanager/static/js/cata.js:330 catalogmanager/static/js/cata.js:459
+msgid "Osäker signifikans"
+msgstr "Uncertain significance"
+
+#: catalogmanager/static/js/cata.js:331 catalogmanager/static/js/cata.js:460
+msgid "Känslig-interim"
+msgstr "Senstive-interim"
+
+#: catalogmanager/static/js/cata.js:332 catalogmanager/static/js/cata.js:461
+msgid "Känslig"
+msgstr "Sensetive"
+
+#: catalogmanager/static/js/cata.js:479
+msgid "?"
+msgstr ""
+
+#: catalogmanager/static/js/cata.js:504 catalogmanager/static/js/cata.js:642
+msgid "Vänligen ange text till noten."
+msgstr "Please enter text for the note."
+
+#: catalogmanager/static/js/cata.js:528 catalogmanager/static/js/cata.js:667
+msgid "Noten har sparats."
+msgstr "The note has been saved."
+
+#: catalogmanager/static/js/cata.js:534 catalogmanager/static/js/cata.js:540
+#: catalogmanager/static/js/cata.js:606 catalogmanager/static/js/cata.js:673
+#: catalogmanager/static/js/cata.js:678
+msgid "Ett oväntat fel inträffade."
+msgstr "An unexpected error occurred."
+
+#: catalogmanager/static/js/cata.js:593
+msgid "Noten raderas."
+msgstr "The note is deleted."

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-19 20:25+0200\n"
+"POT-Creation-Date: 2024-12-03 18:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -51,7 +51,6 @@ msgid "Radera alla"
 msgstr "Delete all"
 
 #: dashboard/templates/dashboard.html:64 dashboard/templates/dashboard.html:65
-#: dashboard/templates/dashboard.html:234
 msgid "Fortsätt"
 msgstr "Proceed"
 
@@ -59,7 +58,7 @@ msgstr "Proceed"
 msgid "Skicka in"
 msgstr "Submit"
 
-#: dashboard/templates/dashboard.html:83 dashboard/templates/dashboard.html:253
+#: dashboard/templates/dashboard.html:83 dashboard/templates/dashboard.html:234
 msgid "Prov-id"
 msgstr "Sample-id"
 
@@ -127,31 +126,11 @@ msgstr "Top abundant Resistance mutations"
 msgid "Mest förekommande osäkra mutationer"
 msgstr "Top abundant Uncertain mutations"
 
-#: dashboard/templates/dashboard.html:227
-msgid "Klar att avsluta?"
-msgstr "Ready to Leave?"
-
-#: dashboard/templates/dashboard.html:229
-msgid "Din nuvarande session kommer att avslutas."
-msgstr "Your current session will be terminated."
-
-#: dashboard/templates/dashboard.html:230
-msgid ""
-"Om du håller på att ladda upp filer, säkerställ att dina jobb har skickats "
-"in helt innan du loggar ut."
-msgstr ""
-"If you are in the process of uploading files, please ensure that your jobs "
-"have been fully submitted before proceeding with the logout."
-
-#: dashboard/templates/dashboard.html:233
-msgid "Avbryt"
-msgstr "Cancel"
-
-#: dashboard/templates/dashboard.html:254
+#: dashboard/templates/dashboard.html:235
 msgid "Art"
 msgstr "Species"
 
-#: dashboard/templates/dashboard.html:265
+#: dashboard/templates/dashboard.html:246
 msgid "Stäng"
 msgstr "Close"
 
@@ -159,15 +138,15 @@ msgstr "Close"
 msgid "Hem"
 msgstr "Home"
 
-#: dashboard/templates/home.html:46 dashboard/templates/home.html:133
+#: dashboard/templates/home.html:46 dashboard/templates/home.html:140
 msgid "Nyheter"
 msgstr "News"
 
-#: dashboard/templates/home.html:50 dashboard/templates/home.html:149
+#: dashboard/templates/home.html:50 dashboard/templates/home.html:156
 msgid "Uppdateringar"
 msgstr "Updates"
 
-#: dashboard/templates/home.html:55 dashboard/templates/home.html:175
+#: dashboard/templates/home.html:55 dashboard/templates/home.html:182
 msgid "Om oss"
 msgstr "About us"
 
@@ -183,35 +162,39 @@ msgstr "Analysis results"
 msgid "Mutationskatalog"
 msgstr "Mutations catalogues"
 
-#: dashboard/templates/home.html:83
+#: dashboard/templates/home.html:85
+msgid "Inställningar"
+msgstr ""
+
+#: dashboard/templates/home.html:90
 msgid "Hjälp"
 msgstr "Help"
 
-#: dashboard/templates/home.html:89
+#: dashboard/templates/home.html:96
 msgid "Logga ut"
 msgstr "Logout"
 
-#: dashboard/templates/home.html:94
+#: dashboard/templates/home.html:101
 msgid "Logga in"
 msgstr "Login"
 
-#: dashboard/templates/home.html:118
+#: dashboard/templates/home.html:125
 msgid "Bekämpar antimikrobiell resistens vid den genomiska fronten"
 msgstr "Fights antimicrobial resistance at the genomic front"
 
-#: dashboard/templates/home.html:119
+#: dashboard/templates/home.html:126
 msgid "Din portal till genomiska lösningar mot tuberkulos"
 msgstr "Your portal to genomic solutions against tuberculosis"
 
-#: dashboard/templates/home.html:127
+#: dashboard/templates/home.html:134
 msgid "Håll dig uppdaterad: Utveckling inom Tuberkulos"
 msgstr "Stay up to date: Developments in Tuberculosis"
 
-#: dashboard/templates/home.html:139
+#: dashboard/templates/home.html:146
 msgid "Publikationer"
 msgstr "Publications"
 
-#: dashboard/templates/home.html:161
+#: dashboard/templates/home.html:168
 msgid ""
 "Håll utkik efter de senaste uppdateringarna och nyheterna om pipeline, som "
 "kommer att delas här!"
@@ -219,7 +202,7 @@ msgstr ""
 "Stay tuned for the latest pipeline updates and news, which will be shared "
 "here!"
 
-#: dashboard/templates/home.html:185
+#: dashboard/templates/home.html:192
 msgid ""
 "Välkommen till vårt projekt, dedikerat till att bekämpa läkemedelsresistent "
 "tuberkulos (TB) genom innovativ forskning. På KI är vi djupt engagerade i "
@@ -235,7 +218,7 @@ msgstr ""
 "cutting-edge technology to develop a solution aimed at anticipating drug-"
 "resistant TB."
 
-#: dashboard/templates/home.html:188
+#: dashboard/templates/home.html:195
 msgid ""
 "Vårt uppdrag är att minska påverkan av läkemedelsresistent TB på individer, "
 "samhällen och hälso- och sjukvårdssystem. Vi strävar efter en värld där TB "
@@ -254,16 +237,32 @@ msgstr ""
 "effective resistance management, and ongoing research and development "
 "efforts to improve our predictive algorithms."
 
-#: dashboard/templates/home.html:212
+#: dashboard/templates/home.html:219
 msgid "Alla rättigheter reserverade"
 msgstr "All rights reserved"
 
-#: dashboard/templates/home.html:222
+#: dashboard/templates/home.html:229
 msgid "Drift av innovation och teknik."
 msgstr "Powered by Innovation and Technology."
 
-#: dashboard/templates/home.html:222
+#: dashboard/templates/home.html:229
 #, fuzzy
 #| msgid "Designad och utvecklad vid KI i samarbete med KUL."
 msgid " Utvecklad vid KI i samarbete med KUL."
 msgstr "Designed and developed by at KI in partnership with KUL."
+
+#~ msgid "Klar att avsluta?"
+#~ msgstr "Ready to Leave?"
+
+#~ msgid "Din nuvarande session kommer att avslutas."
+#~ msgstr "Your current session will be terminated."
+
+#~ msgid ""
+#~ "Om du håller på att ladda upp filer, säkerställ att dina jobb har "
+#~ "skickats in helt innan du loggar ut."
+#~ msgstr ""
+#~ "If you are in the process of uploading files, please ensure that your "
+#~ "jobs have been fully submitted before proceeding with the logout."
+
+#~ msgid "Avbryt"
+#~ msgstr "Cancel"

@@ -31,7 +31,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["127.0.0.1", "reshub.ki.se", 'localhost', 'reshub.labmed.ki.se']
 
@@ -107,7 +107,7 @@ WSGI_APPLICATION = 'microwarrior.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.path.join(env('SQLITE_DB'), 'db.sqlite3'),
     }
 }
 
@@ -152,12 +152,17 @@ LOGIN_REDIRECT_URL = '/dashboard/'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
-# STATIC_ROOT = '/var/www/static'
-STATIC_ROOT = 'static/'
+
+STATIC_ROOT = '/var/www/static'
+
+#STATIC_ROOT = 'static/'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'dashboard/static'),
     os.path.join(BASE_DIR, 'samplesbrowser/static'),
+    os.path.join(BASE_DIR, 'settings/static'),
+    os.path.join(BASE_DIR, 'catalogmanager/static'),
+    os.path.join(BASE_DIR, 'users/static'),
 )
 
 STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
@@ -206,7 +211,6 @@ PIPELINE = {
             'output_filename': 'js/sambrow.min.js',
             'source_filenames': (
                 'js/d3.v7.min.js',
-                'js/base.js',
                 'js/sambrow.js',
             ),
         },
@@ -252,21 +256,21 @@ RAWSEQ_ROOT = env('RAWSEQ_ROOT')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         "file": {
-#             "level": "INFO",
-#             "class": "logging.FileHandler",
-#             "filename": "/srv/data_sata/reshub/.logs/debug.log",
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'level': 'INFO',
-#             'handlers': ['file'],
-#             'propagate': True,
-#         },
-#     }
-# }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": "/srv/data_sata/reshub/.logs/debug.log",
+        },
+    },
+    'loggers': {
+        'django': {
+            'level': 'INFO',
+            'handlers': ['file'],
+            'propagate': True,
+        },
+    }
+}

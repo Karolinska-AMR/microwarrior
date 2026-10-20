@@ -1,1 +1,11 @@
 /microwarrior/.env
+.env
+__pycache__/
+*.pyc
+*.sqlite3
+erl_crash.dump
+*.cer
+*.csr
+*.key
+.idea/
+/static/

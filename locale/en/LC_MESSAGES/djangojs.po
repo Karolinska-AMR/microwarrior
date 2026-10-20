@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-21 12:42+0200\n"
+"POT-Creation-Date: 2024-12-03 18:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -331,29 +331,115 @@ msgstr ""
 msgid "Hide"
 msgstr ""
 
-#: static/js/bootstrap-table.min.js:10
+#: static/js/base.min.js:11 static/js/bootstrap-table.min.js:10
 msgid " rader per sida"
 msgstr ""
 
-#: static/js/bootstrap-table.min.js:10
+#: static/js/base.min.js:11 static/js/bootstrap-table.min.js:10
 msgid "Visar "
 msgstr ""
 
-#: static/js/bootstrap-table.min.js:10
+#: static/js/base.min.js:11 static/js/bootstrap-table.min.js:10
 msgid " till "
 msgstr ""
 
-#: static/js/bootstrap-table.min.js:10
+#: static/js/base.min.js:11 static/js/bootstrap-table.min.js:10
 msgid " av "
 msgstr ""
 
-#: static/js/bootstrap-table.min.js:10
+#: static/js/base.min.js:11 static/js/bootstrap-table.min.js:10
 msgid " rader"
 msgstr ""
 
-#: static/js/bootstrap-table.min.js:10
+#: static/js/base.min.js:11 static/js/bootstrap-table.min.js:10
 msgid "Sök"
 msgstr ""
+
+#: static/js/cata.js:19 static/js/catmgr.min.js:1 static/js/sambrow.js:57
+#: static/js/sambrow.min.js:2 static/js/settings.js:19
+#: static/js/settings.min.js:1
+msgid "Inga data att visa."
+msgstr ""
+
+#: static/js/cata.js:46 static/js/sambrow.js:86
+msgid "Vänligen fyll i minst ett fält."
+msgstr ""
+
+#: static/js/cata.js:125
+msgid "rediger anteckningen"
+msgstr ""
+
+#: static/js/cata.js:148 static/js/catmgr.min.js:4
+msgid "Redigerades på"
+msgstr ""
+
+#: static/js/cata.js:160 static/js/catmgr.min.js:4
+msgid "Av"
+msgstr ""
+
+#: static/js/cata.js:203 static/js/catmgr.min.js:5
+msgid "föreslagit resultat"
+msgstr ""
+
+#: static/js/cata.js:237 static/js/catmgr.min.js:8
+msgid "ny notering"
+msgstr ""
+
+#: static/js/cata.js:249 static/js/catmgr.min.js:9
+msgid "Ändra notering"
+msgstr ""
+
+#: static/js/cata.js:290 static/js/cata.js:311
+msgid "Nätverksfel"
+msgstr ""
+
+#: static/js/cata.js:307
+msgid "Fel vid hämtning av metadata"
+msgstr ""
+
+#: static/js/cata.js:328 static/js/cata.js:457 static/js/sambrow.js:639
+#: static/js/sambrow.js:668 static/js/sambrow.js:948
+#: static/js/sambrow.min.js:45 static/js/sambrow.min.js:58
+msgid "Associerad med resistens"
+msgstr "Associated with resistance"
+
+#: static/js/cata.js:329 static/js/cata.js:458 static/js/sambrow.js:669
+msgid "Associerad med resistens-interim"
+msgstr "Associated with resistance-interim"
+
+#: static/js/cata.js:330 static/js/cata.js:459 static/js/sambrow.js:636
+#: static/js/sambrow.js:670 static/js/sambrow.min.js:45
+msgid "Osäker signifikans"
+msgstr "Uncertain significance"
+
+#: static/js/cata.js:331 static/js/cata.js:460 static/js/sambrow.js:671
+msgid "Känslig-interim"
+msgstr "Sensitive-interim"
+
+#: static/js/cata.js:332 static/js/cata.js:461 static/js/sambrow.js:672
+msgid "Känslig"
+msgstr "Sensitive"
+
+#: static/js/cata.js:479 static/js/catmgr.min.js:24
+msgid "?"
+msgstr ""
+
+#: static/js/cata.js:504 static/js/cata.js:642
+msgid "Vänligen ange text till noten."
+msgstr "Please enter a text for the note."
+
+#: static/js/cata.js:528 static/js/cata.js:667
+msgid "Noten har sparats."
+msgstr "The note was saved."
+
+#: static/js/cata.js:534 static/js/cata.js:540 static/js/cata.js:606
+#: static/js/cata.js:673 static/js/cata.js:678
+msgid "Ett oväntat fel inträffade."
+msgstr ""
+
+#: static/js/cata.js:593
+msgid "Noten raderas."
+msgstr "The note was modified."
 
 #: static/js/dash.js:50 static/js/dash.js:655
 msgid "Ingen matchande data hittades"
@@ -363,7 +449,7 @@ msgstr ""
 msgid ""
 "Vissa inmatningsfiler ignorerades eftersom de har samma namn som tidigare "
 "prov."
-msgstr ""
+msgstr "Some input files were ignored because they have the same name as previous samples."
 
 #: static/js/dash.js:307
 msgid "Detta prov har analyserats tidigare."
@@ -371,23 +457,23 @@ msgstr ""
 
 #: static/js/dash.js:308
 msgid "Detta prov är schemalagt för analys."
-msgstr ""
+msgstr "This sample has been analyzed previously."
 
 #: static/js/dash.js:577
 msgid "Vänligen importera Illumina-filer i parformatet ({*_1/*_2}.fastq.gz)."
-msgstr ""
+msgstr "Please import Illumina files in the pair format ({*_1/*_2}.fastq.gz)."
 
 #: static/js/dash.js:640 static/js/dash.min.js:46
 msgid "Laddar, vänligen vänta..."
-msgstr ""
+msgstr "Loading, please wait..."
 
 #: static/js/dash.js:903
 msgid "Totalt analyserat prov"
-msgstr ""
+msgstr "Total sample analyzed"
 
 #: static/js/dash.js:904
 msgid "Känsligt"
-msgstr ""
+msgstr "Sensitive"
 
 #: static/js/dash.js:905
 msgid "Monoresistens"
@@ -442,94 +528,114 @@ msgstr ""
 msgid "Övriga anti-TB-läkemedel"
 msgstr ""
 
-#: static/js/sambrow.js:55
-msgid "Inga data att visa."
-msgstr ""
-
-#: static/js/sambrow.js:84
-msgid "Vänligen fyll i minst ett fält."
-msgstr ""
-
-#: static/js/sambrow.js:112 static/js/sambrow.js:153
+#: static/js/sambrow.js:114 static/js/sambrow.js:155
 msgid "Sök och hämta minst ett prov."
 msgstr ""
 
-#: static/js/sambrow.js:244
+#: static/js/sambrow.js:242
 msgid "Inga matchningar hittades."
 msgstr ""
 
-#: static/js/sambrow.js:347
+#: static/js/sambrow.js:345 static/js/sambrow.min.js:14
 msgid "För närvarande Visas"
 msgstr ""
 
-#: static/js/sambrow.js:594
+#: static/js/sambrow.js:606 static/js/sambrow.min.js:39
 msgid ""
 "En lågfrevent mutation har hittats. Vänligen diskutera dess möjliga påverkan "
 "på resultaten."
 msgstr ""
 
-#: static/js/sambrow.js:595
+#: static/js/sambrow.js:607
 msgid "Lågfrevent mutation upptäckt"
 msgstr ""
 
-#: static/js/sambrow.js:615
+#: static/js/sambrow.js:626 static/js/sambrow.min.js:43
 msgid ""
 "Ingen exakt matchning för mutationen hittades i WHO:s katalog. Förutspådd "
 "funktionell påverkan: funktionsförlust"
 msgstr ""
 
-#: static/js/sambrow.js:616
+#: static/js/sambrow.js:627
 msgid "Länka mutation och bevis"
 msgstr ""
 
-#: static/js/sambrow.js:625 static/js/sambrow.js:650
-msgid "Osäker signifikans"
+#: static/js/sambrow.js:772
+msgid "Meddelanden"
 msgstr ""
 
-#: static/js/sambrow.js:628 static/js/sambrow.js:648
-msgid "Associerad med resistens"
-msgstr ""
-
-#: static/js/sambrow.js:649
-msgid "Associerad med resistens-interim"
-msgstr ""
-
-#: static/js/sambrow.js:651
-msgid "Känslig-intrim"
-msgstr ""
-
-#: static/js/sambrow.js:652
-msgid "Känslig"
-msgstr ""
-
-#: static/js/sambrow.js:788
+#: static/js/sambrow.js:789
 msgid "Resistansmutationer"
 msgstr ""
 
-#: static/js/sambrow.js:804
-msgid "Anteckningar"
-msgstr ""
-
-#: static/js/sambrow.js:864
-msgid ""
-"Mutationer med osäker signifikans hittades. Se tabellen nedan för mer "
-"information."
-msgstr ""
+#: static/js/sambrow.js:808
+msgid "noteringar"
+msgstr "Notes"
 
 #: static/js/sambrow.js:871
-msgid "Inga mutationer associerade med resistens eller osäker signifikans från"
-msgstr ""
-
-#: static/js/sambrow.js:872
-msgid "katalog hittades."
-msgstr ""
-
-#: static/js/sambrow.js:873
 msgid ""
-"Inga mutationer associerade med resistens eller osäker signifikans från "
-"några kataloger hittades."
+"Inga mutationer associerade med resistens eller osäker signifikans från WHO "
+"katalog hittades."
+msgstr "No mutations associated with resistance or uncertain significance from WHO catalogues were found."
+
+#: static/js/sambrow.js:884
+msgid "resistent"
+msgstr "resistant"
+
+#: static/js/sambrow.js:895 static/js/sambrow.js:911
+msgid "känslig"
+msgstr "Sensetive"
+
+#: static/js/sambrow.js:897 static/js/sambrow.min.js:56
+msgid "inga resistensmutationer hittades"
+msgstr "No resistance mutations was found."
+
+#: static/js/sambrow.js:902
+msgid "Inte avgörande"
+msgstr "Not conclusive"
+
+#: static/js/sambrow.js:913 static/js/sambrow.min.js:56
+msgid "inga resistensmutationer hittades."
+msgstr "no resistance mutations were found."
+
+#: static/js/sambrow.js:979 static/js/sambrow.js:993
+#: static/js/sambrow.min.js:61 static/js/sambrow.min.js:63
+msgid "Inga sparade noteringar."
+msgstr "No recorded notes."
+
+#: static/js/settings.js:35 static/js/settings.min.js:1
+msgid "Ingen data att radera."
+msgstr "No data to delete."
+
+#: static/js/settings.js:94 static/js/settings.min.js:3
+msgid "Error sending IDs: "
 msgstr ""
 
-#: static/js/sambrow.js:920
-msgid "Inga anteckningar."
+#: static/js/settings.js:99 static/js/settings.js:194
+#: static/js/settings.min.js:3 static/js/settings.min.js:11
+msgid "Request failed."
+msgstr ""
+
+#: static/js/settings.js:105 static/js/settings.min.js:3
+msgid "Enter a valid sample-id."
+msgstr ""
+
+#: static/js/settings.js:148 static/js/settings.min.js:5
+msgid "Ångra"
+msgstr ""
+
+#: static/js/settings.js:189 static/js/settings.min.js:11
+msgid "Error sending request: "
+msgstr ""
+
+#: static/js/settings.js:217 static/js/settings.min.js:12
+msgid "Redigera användare"
+msgstr ""
+
+#: static/js/settings.js:219
+msgid " Återställ lösenord"
+msgstr ""
+
+#: static/js/settings.min.js:12
+msgid "Återställ lösenord"
 msgstr ""

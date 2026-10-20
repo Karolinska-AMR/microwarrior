@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-21 12:42+0200\n"
+"POT-Creation-Date: 2024-12-03 18:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,38 +30,39 @@ msgstr "Second line anti-TB drugs"
 msgid "Övriga anti-TB-läkemedel"
 msgstr "Other anti-TB drugs"
 
-#: samplesbrowser/static/js/sambrow.js:55
+#: samplesbrowser/static/js/sambrow.js:57
 msgid "Inga data att visa."
 msgstr "No data to show."
 
-#: samplesbrowser/static/js/sambrow.js:84
+#: samplesbrowser/static/js/sambrow.js:86
 msgid "Vänligen fyll i minst ett fält."
 msgstr "Please fill in at least one field."
 
-#: samplesbrowser/static/js/sambrow.js:112
-#: samplesbrowser/static/js/sambrow.js:153
+#: samplesbrowser/static/js/sambrow.js:114
+#: samplesbrowser/static/js/sambrow.js:155
 msgid "Sök och hämta minst ett prov."
 msgstr "Search and retrieve at least one sample."
 
-#: samplesbrowser/static/js/sambrow.js:244
+#: samplesbrowser/static/js/sambrow.js:242
 msgid "Inga matchningar hittades."
 msgstr "No matches found."
 
-#: samplesbrowser/static/js/sambrow.js:347
+#: samplesbrowser/static/js/sambrow.js:345
 msgid "För närvarande Visas"
 msgstr "Currently displayed"
 
-#: samplesbrowser/static/js/sambrow.js:594
+#: samplesbrowser/static/js/sambrow.js:606
 msgid ""
 "En lågfrevent mutation har hittats. Vänligen diskutera dess möjliga påverkan "
 "på resultaten."
 msgstr ""
+"A low-frequency mutation has been found. Please discuss its possible impact on the results."
 
-#: samplesbrowser/static/js/sambrow.js:595
+#: samplesbrowser/static/js/sambrow.js:607
 msgid "Lågfrevent mutation upptäckt"
-msgstr ""
+msgstr "Low frequency mutation are detected"
 
-#: samplesbrowser/static/js/sambrow.js:615
+#: samplesbrowser/static/js/sambrow.js:626
 msgid ""
 "Ingen exakt matchning för mutationen hittades i WHO:s katalog. Förutspådd "
 "funktionell påverkan: funktionsförlust"
@@ -69,73 +70,110 @@ msgstr ""
 "No exact match for the mutation was found in the WHO catalog. Predicted "
 "functional impact: loss of function"
 
-#: samplesbrowser/static/js/sambrow.js:616
+#: samplesbrowser/static/js/sambrow.js:627
 msgid "Länka mutation och bevis"
 msgstr "Linking mutation and evidence"
 
-#: samplesbrowser/static/js/sambrow.js:625
-#: samplesbrowser/static/js/sambrow.js:650
+#: samplesbrowser/static/js/sambrow.js:636
+#: samplesbrowser/static/js/sambrow.js:670
 msgid "Osäker signifikans"
 msgstr "Uncertain significance"
 
-#: samplesbrowser/static/js/sambrow.js:628
-#: samplesbrowser/static/js/sambrow.js:648
+#: samplesbrowser/static/js/sambrow.js:639
+#: samplesbrowser/static/js/sambrow.js:668
+#: samplesbrowser/static/js/sambrow.js:948
 msgid "Associerad med resistens"
 msgstr "Associated with resistance"
 
-#: samplesbrowser/static/js/sambrow.js:649
+#: samplesbrowser/static/js/sambrow.js:669
 #, fuzzy
 #| msgid "Associerad med resistens"
 msgid "Associerad med resistens-interim"
 msgstr "Associated with resistance-interm"
 
-#: samplesbrowser/static/js/sambrow.js:651
+#: samplesbrowser/static/js/sambrow.js:671
 #, fuzzy
 #| msgid "Känslig"
-msgid "Känslig-intrim"
+msgid "Känslig-interim"
 msgstr "Sensetive"
 
-#: samplesbrowser/static/js/sambrow.js:652
+#: samplesbrowser/static/js/sambrow.js:672
 msgid "Känslig"
 msgstr "Sensetive"
 
-#: samplesbrowser/static/js/sambrow.js:788
+#: samplesbrowser/static/js/sambrow.js:772
+msgid "Meddelanden"
+msgstr "Messages"
+
+#: samplesbrowser/static/js/sambrow.js:789
 msgid "Resistansmutationer"
 msgstr "Resistance mutations"
 
-#: samplesbrowser/static/js/sambrow.js:804
-msgid "Anteckningar"
-msgstr "Notes"
-
-#: samplesbrowser/static/js/sambrow.js:864
-msgid ""
-"Mutationer med osäker signifikans hittades. Se tabellen nedan för mer "
-"information."
-msgstr ""
-"Mutations with uncertain significance were found. See table below for more "
-"information."
-
-#: samplesbrowser/static/js/sambrow.js:871
-msgid "Inga mutationer associerade med resistens eller osäker signifikans från"
-msgstr "No mutations associated with resistance or uncertain significance from"
-
-#: samplesbrowser/static/js/sambrow.js:872
-msgid "katalog hittades."
-msgstr "catalogue were found."
-
-#: samplesbrowser/static/js/sambrow.js:873
-msgid ""
-"Inga mutationer associerade med resistens eller osäker signifikans från "
-"några kataloger hittades."
-msgstr ""
-"No mutations associated with resistance or uncertain significance from any "
-"catalogues were found."
-
-#: samplesbrowser/static/js/sambrow.js:920
+#: samplesbrowser/static/js/sambrow.js:808
 #, fuzzy
 #| msgid "Anteckningar"
-msgid "Inga anteckningar."
+msgid "noteringar"
+msgstr "notes"
+
+#: samplesbrowser/static/js/sambrow.js:871
+#, fuzzy
+#| msgid ""
+#| "Inga mutationer associerade med resistens eller osäker signifikans från "
+#| "några kataloger hittades."
+msgid ""
+"Inga mutationer associerade med resistens eller osäker signifikans från WHO "
+"katalog hittades."
+msgstr "No mutations associated with resistance or uncertain significance from WHO catalogues were found."
+
+
+#: samplesbrowser/static/js/sambrow.js:884
+msgid "resistent"
+msgstr "resistant"
+
+#: samplesbrowser/static/js/sambrow.js:895
+#: samplesbrowser/static/js/sambrow.js:911
+#, fuzzy
+#| msgid "Känslig"
+msgid "känslig"
+msgstr "sensetive"
+
+#: samplesbrowser/static/js/sambrow.js:897
+#, fuzzy
+#| msgid "Resistansmutationer"
+msgid "inga resistensmutationer hittades"
+msgstr "No resistance mutations was found."
+
+#: samplesbrowser/static/js/sambrow.js:902
+msgid "Inte avgörande"
+msgstr "Not conclusive"
+
+#: samplesbrowser/static/js/sambrow.js:913
+#, fuzzy
+#| msgid "Inga matchningar hittades."
+msgid "inga resistensmutationer hittades."
+msgstr "No matches found."
+
+#: samplesbrowser/static/js/sambrow.js:979
+#: samplesbrowser/static/js/sambrow.js:993
+#, fuzzy
+#| msgid "Anteckningar"
+msgid "Inga sparade noteringar."
 msgstr "Notes"
+
+#~ msgid ""
+#~ "Mutationer med osäker signifikans hittades. Se tabellen nedan för mer "
+#~ "information."
+#~ msgstr ""
+#~ "Mutations with uncertain significance were found. See table below for "
+#~ "more information."
+
+#~ msgid ""
+#~ "Inga mutationer associerade med resistens eller osäker signifikans från"
+#~ msgstr ""
+#~ "No mutations associated with resistance or uncertain significance from"
+
+#~ msgid "katalog hittades."
+#~ msgstr "catalogue were found."
 
 #~ msgid "Inga overifierade mutationer identifierades."
 #~ msgstr "No unverified mutations were identified."

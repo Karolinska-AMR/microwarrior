@@ -881,7 +881,7 @@ $(document).ready(function () {
 
                 $(pred_icon).addClass(source.startsWith('cata') ? 'text-bg-r' : "text-outlined-r");
                 $(pred_icon).text('R');
-                content_h5.text(gettext("resistant"));
+                content_h5.text(gettext("resistent"));
                 content_h5.addClass('text-r');
                 add_resisance_mutations(muBody, muts[key][who_cat]);
 
@@ -899,7 +899,7 @@ $(document).ready(function () {
             } else if (dprd === 'F') {
                 $(pred_icon).addClass('text-bg-k pulse-text');
                 $(pred_icon).text('!');
-                content_h5.text(gettext("inte övertygande"));
+                content_h5.text(gettext("Inte avgörande"));
                 content_h5.addClass('text-o');
 
                 add_resisance_mutations(muBody, muts[key][who_cat]);

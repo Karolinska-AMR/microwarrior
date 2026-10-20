@@ -38,13 +38,17 @@ def get_jobs(request):
     tasks_records = Task.objects.filter(
         submission_timestamp__gte=start_date,
         submission_timestamp__lte=end_date
-    ).order_by('-submission_timestamp') \
-        .values('id', 'task_id', 'ticket', 'submission_timestamp',
+    ).order_by('-submission_timestamp')
+
+    if tasks_records.count() < 20:
+        additional_records = Task.objects.order_by('-submission_timestamp')[tasks_records.count():20]
+        tasks_records = tasks_records | additional_records
+
+    tasks_records = tasks_records.values('id', 'task_id', 'ticket', 'submission_timestamp',
                 'completion_timestamp', 'status', 'samples_count',
                 submitter=Concat(F('user__first_name'),
                                  Value(' '),
-                                 F('user__last_name'), output_field=CharField())
-                )
+                                 F('user__last_name'), output_field=CharField()))
     order = 2
     ongoing_tasks = 0
     tasks_list = []
@@ -220,14 +224,14 @@ def fetch_abundant_mutations(size=10):
             total_freq = Mutation.objects.filter(
                 drug=drug,
                 prediction=prediction_value,
-                catalog='WHO-UCN-2023.5'
+                catalog__startswith='WHO'
             ).aggregate(total=Sum('freq'))['total'] or 1
 
             # Fetch top 10 mutations for the current drug and prediction value
             top_mutations = Mutation.objects.filter(
                 drug=drug,
                 prediction=prediction_value,
-                catalog='WHO-UCN-2023.5'
+                catalog__startswith='WHO'
             ).values(
                 'gene', 'variant'
             ).annotate(
@@ -241,7 +245,7 @@ def fetch_abundant_mutations(size=10):
 
             # Format the results as a list of dictionaries
             formatted_mutations = [
-                {'mutation': f"{mutation['gene']}@{mutation['variant']}",
+                {'mutation': f"{mutation['variant']}",
                  'frequency': mutation['freq_percentage']}
                 for mutation in top_mutations
             ]
