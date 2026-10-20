@@ -192,6 +192,7 @@ def get_overview(request):
     return JsonResponse({"stats": cat_stat, "samples": samlist, "lineages": hlin, 'mutations': top_mu})
 
 
+@login_required
 def check_sample_ids(request):
     sample_names = request.GET.getlist('samples')
 

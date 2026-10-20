@@ -68,6 +68,7 @@ def fetch_evidence(request):
     return JsonResponse(data)
 
 
+@login_required
 def add_note(request):
     if request.method != 'POST':
         return JsonResponse({'success': False, 'message': 'Invalid request method. Only POST requests are allowed.'})
@@ -117,6 +118,7 @@ def add_note(request):
         return JsonResponse({'success': False, 'message': f'An error occurred while saving the note: {str(e)}'})
 
 
+@login_required
 def del_note(request):
     if request.method != 'POST':
         return JsonResponse({'success': False, 'message': 'Invalid request method. Only POST requests are allowed.'})
@@ -140,6 +142,7 @@ def del_note(request):
         return JsonResponse({'success': False, 'message': f'An error occurred while saving the note: {str(e)}'})
 
 
+@login_required
 def edit_note(request):
     if request.method != 'POST':
         return JsonResponse({'success': False, 'message': 'Invalid request method. Only POST requests are allowed.'})
