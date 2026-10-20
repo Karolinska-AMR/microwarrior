@@ -14,7 +14,7 @@ It was deployed as **ResHub** at `reshub.labmed.ki.se` (Karolinska Institutet).
 
 ## ResHub server
 
-![ResHub server](docs/img/reshub.png)
+![ResHub server](docs/img/reshub.jpg)
 
 The server sits inside the KI/hospital network and is reached by users over the
 KI VPN or the SAM VPN. nginx terminates TLS and forwards requests to gunicorn,
