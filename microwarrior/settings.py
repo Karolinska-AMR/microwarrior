@@ -35,15 +35,13 @@ DEBUG = env.bool('DEBUG', default=False)
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost'])
 
-# HTTPS and SSL
-# SECURE_HSTS_SECONDS = 300
-# SECURE_SSL_REDIRECT = True
-# SECURE_HSTS_PRELOAD = True
-# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-
-# CSRF
-# CSRF_COOKIE_SECURE = True
-# SESSION_COOKIE_SECURE = True
+# HTTPS: nginx terminates TLS and redirects http to https.
+# Cookies are only sent over https unless running in debug mode.
+SECURE_COOKIES = env.bool('SECURE_COOKIES', default=not DEBUG)
+CSRF_COOKIE_SECURE = SECURE_COOKIES
+SESSION_COOKIE_SECURE = SECURE_COOKIES
+SESSION_COOKIE_HTTPONLY = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 CELERY_BROKER_URL = env('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND')
