@@ -1,0 +1,23 @@
+[Unit]
+Description=Celery Worker Service for reshub
+After=network.target
+Requires=rabbitmq-server.service
+PartOf=rabbitmq-server.service
+
+[Service]
+User=<USER>
+Group=www-data
+EnvironmentFile=/etc/conf.d/celery
+WorkingDirectory=<APP_DIR>
+ExecStart=<APP_DIR>/deploy/run_celery.sh
+ExecStartPre=/bin/mkdir -p /var/log/celery /var/run/celery
+ExecStartPre=/bin/chown <USER>:www-data /var/log/celery /var/run/celery
+ExecStartPre=/bin/chmod 775 /var/log/celery /var/run/celery
+Restart=always
+RestartSec=5
+TimeoutStopSec=30
+KillMode=control-group
+CPUSchedulingPolicy=idle
+
+[Install]
+WantedBy=multi-user.target
