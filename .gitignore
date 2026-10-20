@@ -1,11 +1,22 @@
-/microwarrior/.env
+# secrets and local configuration
 .env
-__pycache__/
-*.pyc
+.env.*
+!.env.example
+
+# databases and runtime files
 *.sqlite3
 erl_crash.dump
+/logs/
+/static/
+/run_celery.sh
+
+# certificates and keys
 *.cer
+*.crt
 *.csr
 *.key
+
+# python / IDE
+__pycache__/
+*.pyc
 .idea/
-/static/

@@ -4,6 +4,7 @@ import glob
 import json
 import os
 import subprocess
+import sys
 import uuid
 from datetime import datetime
 from glob import glob
@@ -107,12 +108,9 @@ def update_status():
                     print(f"JSON decode error: {e}")
         return out_list
 
-    # TODO: Fix these paths
-    commands = [
-        "/home/h5admin/miniconda3/envs/microwarrior/bin/celery -A microwarrior inspect active",
-        "/home/h5admin/miniconda3/envs/microwarrior/bin/celery -A microwarrior inspect reserved",
-        "/home/h5admin/miniconda3/envs/microwarrior/bin/celery -A microwarrior inspect scheduled"
-    ]
+    # use the celery executable from the same environment as the running interpreter
+    celery_bin = os.path.join(os.path.dirname(sys.executable), 'celery')
+    commands = [f"{celery_bin} -A microwarrior inspect {cmd}" for cmd in ('active', 'reserved', 'scheduled')]
 
     results = {}
     for command in commands:

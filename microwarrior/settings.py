@@ -31,9 +31,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = env.bool('DEBUG', default=False)
 
-ALLOWED_HOSTS = ["127.0.0.1", "reshub.ki.se", 'localhost', 'reshub.labmed.ki.se']
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost'])
 
 # HTTPS and SSL
 # SECURE_HSTS_SECONDS = 300
@@ -107,7 +107,7 @@ WSGI_APPLICATION = 'microwarrior.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(env('SQLITE_DB'), 'db.sqlite3'),
+        'NAME': os.path.join(env('SQLITE_DB', default=str(BASE_DIR)), 'db.sqlite3'),
     }
 }
 
@@ -152,10 +152,7 @@ LOGIN_REDIRECT_URL = '/dashboard/'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
-
-STATIC_ROOT = '/var/www/static'
-
-#STATIC_ROOT = 'static/'
+STATIC_ROOT = env('STATIC_ROOT', default=str(BASE_DIR / 'static'))
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'dashboard/static'),
@@ -256,6 +253,9 @@ RAWSEQ_ROOT = env('RAWSEQ_ROOT')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+LOG_DIR = env('LOG_DIR', default=str(BASE_DIR / 'logs'))
+os.makedirs(LOG_DIR, exist_ok=True)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -263,7 +263,7 @@ LOGGING = {
         "file": {
             "level": "INFO",
             "class": "logging.FileHandler",
-            "filename": "/srv/data_sata/reshub/.logs/debug.log",
+            "filename": os.path.join(LOG_DIR, 'debug.log'),
         },
     },
     'loggers': {
