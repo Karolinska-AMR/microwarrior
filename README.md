@@ -66,6 +66,8 @@ Users log in with their **e-mail address**, so give the superuser an e-mail.
 
 ## Documentation
 
+- [docs/user-guide.md](docs/user-guide.md): screenshots and a walk-through of
+  every page
 - [docs/architecture.md](docs/architecture.md): how the code is organised, the
   data model and the job life cycle
 - [docs/deployment.md](docs/deployment.md): production setup (nginx, gunicorn,
@@ -74,8 +76,9 @@ Users log in with their **e-mail address**, so give the superuser an e-mail.
 ## Status
 
 The core workflow (upload, run, browse results, catalogue notes, administration)
-is in use. Some parts are unfinished: the help page is a placeholder, and the
-news, publications and updates sections of the home page have no content yet.
+is in use. Some parts are unfinished: the help page is a placeholder, the
+*Updates* section of the home page has no content, and the *Export* and
+*Dropbox mode* buttons do nothing yet.
 See [docs/architecture.md](docs/architecture.md#unfinished-parts).
 
 ## License

@@ -200,8 +200,11 @@ Make a copy of the database before running any of them.
 ## Unfinished parts
 
 - `/help/` renders `templates/under_contruction.html`.
-- The home page sections *News*, *Publications* and *Updates* have no content
-  (`news-feed` and `ms-feed` are empty containers).
+- The home page *Updates* section is static placeholder text. (*News* and
+  *Publications* are filled in the browser from RSS feeds via rss2json, see
+  `dashboard/static/js/hm.js`.)
+- Dashboard *Dropbox mode* switch and samples browser *Export* button have no
+  behaviour attached.
 - Not every app has a Swedish message file (`catalogmanager`, `settings`).
 - `samplesbrowser/views.py`: request rate limiting is a TODO.
 - `samplesbrowser/static/js/sambrow.js`: open TODO "Check if WHO passed, Don't show
