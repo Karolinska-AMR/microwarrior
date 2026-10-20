@@ -3,6 +3,8 @@ from __future__ import absolute_import, unicode_literals
 import glob
 import json
 import os
+import re
+import shutil
 import subprocess
 import sys
 import uuid
@@ -17,6 +19,8 @@ from django.utils.timezone import now
 from microwarrior.celery import app
 from samplesbrowser.models import Sample, Lineage, Evidence, Mutation, UnverifiedMutation, Drug
 from .models import Task as djTask
+
+TICKET_RE = re.compile(r'^[A-Za-z0-9]{1,20}$')
 
 
 class Task_handler(Task):
@@ -48,6 +52,8 @@ class Task_handler(Task):
 
 @app.task(base=Task_handler)
 def spear_mtb(ticket):
+    if not is_valid_ticket(ticket):
+        raise ValueError(f'Invalid ticket: {ticket!r}')
     runner = [os.path.join(settings.WORKFLOW_ROOT, 'spear-mtb.sh'),
               "-w", settings.WORKING_ROOT,
               "-c", os.path.join(settings.WORKFLOW_ROOT, 'main.config'),
@@ -58,7 +64,7 @@ def spear_mtb(ticket):
               "-v", settings.RAWSEQ_ROOT,
               os.path.join(settings.MEDIA_ROOT, ticket)]
     # time.sleep(5)
-    subprocess.call(' '.join(runner), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    subprocess.call(runner, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     log_json = trace_to_json(os.path.join(settings.ARCHIVE_ROOT, f'traces/{ticket}.trace'))
     # log_json = {}
     return log_json
@@ -80,7 +86,7 @@ def trace_to_json(trace_txt):
 def update_status():
     def run_celery_inspect(command):
         # Execute the Celery inspect command
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output_b, error = process.communicate()
 
         if process.returncode != 0:
@@ -110,11 +116,11 @@ def update_status():
 
     # use the celery executable from the same environment as the running interpreter
     celery_bin = os.path.join(os.path.dirname(sys.executable), 'celery')
-    commands = [f"{celery_bin} -A microwarrior inspect {cmd}" for cmd in ('active', 'reserved', 'scheduled')]
+    commands = [[celery_bin, '-A', 'microwarrior', 'inspect', cmd] for cmd in ('active', 'reserved', 'scheduled')]
 
     results = {}
     for command in commands:
-        key = command.split()[-1]
+        key = command[-1]
         results[key] = []
         output = run_celery_inspect(command)
         if output:
@@ -243,10 +249,22 @@ def save_report(report_json, user_id=1, task=None):
     return task
 
 
+def is_valid_ticket(ticket):
+    return bool(TICKET_RE.match(ticket or ''))
+
+
+def remove_ticket_dir(root, ticket):
+    # only ever delete a direct sub-folder of root named after a valid ticket
+    if not is_valid_ticket(ticket):
+        return
+    root = os.path.realpath(root)
+    path = os.path.realpath(os.path.join(root, ticket))
+    if os.path.dirname(path) == root and os.path.isdir(path):
+        shutil.rmtree(path, ignore_errors=True)
+
+
 def clean_storage(ticket, was_success):
-    subprocess.call(f'rm -rf {os.path.join(settings.WORKING_ROOT, ticket)}', stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE, shell=True)
+    remove_ticket_dir(settings.WORKING_ROOT, ticket)
     # keep the sequences if it was failed run
     if was_success:
-        subprocess.call(f'rm -rf {os.path.join(settings.MEDIA_ROOT, ticket)}', stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE, shell=True)
+        remove_ticket_dir(settings.MEDIA_ROOT, ticket)
