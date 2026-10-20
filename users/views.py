@@ -16,6 +16,7 @@ from django.http import JsonResponse
 from django.utils.html import escape
 
 from .forms import AddUserForm,EditUserForm, ResetPasswordForm
+from .decorators import staff_required
 
 def login_user(request):
     if request.method == "POST":
@@ -57,7 +58,7 @@ class PasswordsChangeView(LoginRequiredMixin, PasswordChangeView):
 def password_success(request):
     return render(request, "password_success.html")
 
-@login_required
+@staff_required
 def add_user(request):
     if request.method == "POST":
         form = AddUserForm(request.POST)
@@ -73,9 +74,11 @@ def add_user(request):
         return JsonResponse({"errors": '\n'.join(error_messages)}, status=400)
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
-@login_required
+@staff_required
 def edit_user(request, user_id):
     user = get_object_or_404(User, id=user_id)
+    if user.is_superuser and not request.user.is_superuser:
+        return JsonResponse({"error": "Permission denied"}, status=403)
     if request.method == "POST":
         form = EditUserForm(request.POST, instance=user)
         if form.is_valid():
@@ -91,9 +94,11 @@ def edit_user(request, user_id):
         return JsonResponse({"errors":'\n'.join(error_messages)}, status=400)
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
-@login_required
+@staff_required
 def reset_password(request, user_id):
     user = get_object_or_404(User, id=user_id)
+    if user.is_superuser and not request.user.is_superuser:
+        return JsonResponse({"error": "Permission denied"}, status=403)
     if request.method == "POST":
         form = ResetPasswordForm(request.POST, instance=user)
         if form.is_valid():

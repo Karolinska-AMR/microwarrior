@@ -10,6 +10,7 @@ from django.shortcuts import render, redirect
 
 from flowrunner.tasks import save_report
 from samplesbrowser.models import Sample
+from users.decorators import staff_required
 
 
 @login_required
@@ -19,7 +20,7 @@ def get_page(request):
     return redirect('home')
 
 
-@login_required
+@staff_required
 def upload_json(request):
     if request.method == "POST" and request.FILES.get("json_file"):
         json_file = request.FILES["json_file"]
@@ -35,7 +36,7 @@ def upload_json(request):
     return JsonResponse({"error": "Invalid request."}, status=400)
 
 
-@login_required
+@staff_required
 def fetch_del_samples(request):
     samples_str = request.GET.get('ids', '')
     samples = samples_str.split(',')
@@ -65,7 +66,7 @@ def fetch_del_samples(request):
     return JsonResponse(samples_info)
 
 
-@login_required
+@staff_required
 def delete_samples(request):
     if request.method == 'POST':
         try:
@@ -91,7 +92,7 @@ def delete_samples(request):
     return JsonResponse({'message': 'Invalid request method'}, status=405)
 
 
-@login_required
+@staff_required
 def fetch_users(request):
     non_superuser_users = User.objects.exclude(is_superuser=True)
     # Serialize the users to JSON
