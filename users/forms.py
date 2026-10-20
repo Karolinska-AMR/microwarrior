@@ -37,7 +37,7 @@ class AddUserForm(forms.ModelForm):
         if password != confirm_password:
             raise forms.ValidationError("Passwords do not match.")
 
-        self.validate_password(password)
+        self.validate_password(password or '')
 
         return cleaned_data
 
@@ -118,7 +118,7 @@ class ResetPasswordForm(forms.ModelForm):
         if password != confirm_password:
             raise forms.ValidationError("Passwords do not match.")
 
-        self.validate_password(password)
+        self.validate_password(password or '')
 
         return cleaned_data
 
